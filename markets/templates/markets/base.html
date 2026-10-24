@@ -46,7 +46,7 @@
 <header>
   <h1><a href="{% url 'markets:list' %}" style="color:inherit">Meta Market</a></h1>
   <span class="badge">{{ clock.label }}</span>
-  <span class="muted small">{{ now|date:"M j, H:i:s" }} UTC</span>
+  <span class="muted small">{{ now|date:"M j, H:i:s T" }}</span>
   <span class="spacer"></span>
   <a href="{% url 'markets:portfolio' %}">Portfolio</a>
   <strong>{{ account.balance_units|pts }} pts</strong>

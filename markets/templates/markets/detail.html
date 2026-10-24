@@ -22,7 +22,7 @@
 <div class="panel small muted">
   <strong>Rules (frozen at creation).</strong>
   Stat: {{ card.m.stat_kind }} of <strong>{{ card.m.subject }}</strong> ({{ card.m.formula_version }}), scope <code>{{ card.m.scope }}</code>.
-  Window {{ card.m.opens_at|date:"M j H:i" }} to {{ card.m.closes_at|date:"M j H:i" }} UTC. Settles after {{ card.m.settles_after|date:"H:i:s" }}.
+  Window {{ card.m.opens_at|date:"M j H:i" }} to {{ card.m.closes_at|date:"M j H:i T" }}. Settles after {{ card.m.settles_after|date:"H:i:s" }}.
   Start value {{ card.m.start_numerator }}/{{ card.m.start_denominator }} = {{ card.start_pct|floatformat:4 }}{{ card.unit }}.
   The end value is the stat using only data observed by the window end. UP if end &gt; start, DOWN if end &lt; start, otherwise VOID (refund).
   Liquidity b = {{ card.m.liquidity_b }}.

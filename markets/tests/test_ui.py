@@ -43,3 +43,12 @@ class CountdownTests(TestCase):
         self.assertIn('<svg', html)
         self.assertIn('UP chance', html)
         self.assertEqual(Market.objects.count(), 1)
+
+    def test_times_are_labelled_with_the_display_zone_not_utc(self):
+        m = make_market(opens_at=clock.real_now() - timedelta(minutes=5),
+                        closes_at=clock.real_now() + timedelta(minutes=55),
+                        settles_after=clock.real_now() + timedelta(minutes=56))  # fmt: skip
+        for url in ('/markets/?game=siege', f'/markets/{m.pk}/'):
+            html = self.client.get(url).content.decode()
+            self.assertRegex(html, r'\d\d:\d\d(:\d\d)? E[SD]T')  # America/New_York
+            self.assertNotRegex(html, r'\d\d:\d\d(:\d\d)? UTC')
