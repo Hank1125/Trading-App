@@ -4,7 +4,8 @@ from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
-from clashroyale.models import Card
+from clashroyale.models import Card, Source
+from clashroyale.views import price_summary
 from markets import chart, clock, lmsr, providers, services
 from markets.models import Account, Market, Position, Trade
 
@@ -55,6 +56,48 @@ def _with_icons(cards: list[dict]) -> list[dict]:
 def _header(request, game: str) -> dict:
     account = _account(request)
     return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
+
+
+def _open_markets(game: str, now):
+    return Market.objects.filter(game=game, opens_at__lte=now, closes_at__gt=now)
+
+
+def dashboard(request):
+    """Both games at a glance: data mode and freshness, open markets, biggest movers, and the portfolio."""
+    account = _account(request)
+
+    cr_now = clock.now('clash_royale')
+    cr_open = _open_markets('clash_royale', cr_now)
+    cr_hourly = dict(cr_open.filter(window='hourly').values_list('subject', 'pk'))
+    cr = price_summary(Source.LIVE)
+    moved = [r for r in cr['rows'] if r['direction'] in ('up', 'down')]
+    for r in moved:
+        r['market_pk'] = cr_hourly.get(r['snap'].card.name)
+    # By price change, not percent: % has no value from a 0 price and exaggerates low-priced cards.
+    risers = sorted((r for r in moved if r['direction'] == 'up'), key=lambda r: r['change'], reverse=True)
+    fallers = sorted((r for r in moved if r['direction'] == 'down'), key=lambda r: r['change'])
+
+    siege_now = clock.now('siege')
+    siege_open = _open_markets('siege', siege_now)
+    siege_cards = [_card(m, siege_now) for m in siege_open.filter(window='hourly')]
+    siege_movers = sorted(
+        (c for c in siege_cards if c['change_pp']), key=lambda c: abs(c['change_pp']), reverse=True
+    )[:5]
+
+    return render(request, 'markets/dashboard.html', {
+        'account': account,
+        'positions_open': Position.objects.filter(account=account, market__status='open').count(),
+        'cr': cr,
+        'cr_clock': clock.mode('clash_royale'),
+        'cr_now': cr_now,
+        'cr_open_count': cr_open.count(),
+        'cr_risers': risers[:5],
+        'cr_fallers': fallers[:5],
+        'siege_clock': clock.mode('siege'),
+        'siege_now': siege_now,
+        'siege_open_count': siege_open.count(),
+        'siege_movers': siege_movers,
+    })
 
 
 def market_list(request):

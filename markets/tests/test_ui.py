@@ -3,7 +3,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 
-from clashroyale.models import Card
+from clashroyale.models import Card, CardMetricSnapshot
 from markets import chart, clock
 from markets.models import ClockState, Market
 from markets.tests.test_trading import make_market
@@ -68,3 +68,43 @@ class CountdownTests(TestCase):
             html = self.client.get(url).content.decode()
             self.assertRegex(html, r'\d\d:\d\d(:\d\d)? E[SD]T')  # America/New_York
             self.assertNotRegex(html, r'\d\d:\d\d(:\d\d)? UTC')
+
+
+def cr_snap(card, window_end, price):
+    return CardMetricSnapshot.objects.create(
+        card=card, source='live', formula_version='cr-price-v1', window_start=window_end - timedelta(days=7),
+        window_end=window_end, total_appearances=1000, appearances=300, wins=150, losses=150, draws=0,
+        usage_pct=Decimal(30), adj_win_rate=Decimal(50), price=Decimal(price), is_low_sample=False,
+    )  # fmt: skip
+
+
+class DashboardTests(TestCase):
+    def test_empty_install_renders_every_panel_with_guidance(self):
+        html = self.client.get('/').content.decode()
+        self.assertIn('No price snapshots yet', html)
+        self.assertIn('No open markets', html)
+        self.assertIn('Your portfolio', html)
+        self.assertIn('10,000.00 pts', html)
+
+    def test_clash_movers_link_to_their_open_hourly_market(self):
+        now = clock.real_now()
+        t1 = now.replace(minute=0, second=0, microsecond=0)
+        hog = Card.objects.create(api_id=1, name='Hog Rider', rarity='rare', max_level=14, icon_url='https://x/hog.png')
+        zap = Card.objects.create(api_id=2, name='Zap', rarity='common', max_level=16)
+        cr_snap(hog, t1 - timedelta(hours=1), '20'); cr_snap(hog, t1, '22')
+        cr_snap(zap, t1 - timedelta(hours=1), '10'); cr_snap(zap, t1, '9')
+        m = make_market(game='clash_royale', stat_kind='card_price', subject='Hog Rider', scope={'source': 'live'},
+                        formula_version='cr-price-v1', start_numerator=22, start_denominator=1, opens_at=t1,
+                        closes_at=t1 + timedelta(hours=1), settles_after=t1 + timedelta(hours=1, minutes=20))  # fmt: skip
+        resp = self.client.get('/')
+        self.assertEqual([r['snap'].card.name for r in resp.context['cr_risers']], ['Hog Rider'])
+        self.assertEqual([r['snap'].card.name for r in resp.context['cr_fallers']], ['Zap'])
+        html = resp.content.decode()
+        self.assertIn(f'href="/markets/{m.pk}/">Hog Rider</a>', html)
+        self.assertIn('src="https://x/hog.png"', html)
+        self.assertNotIn('Stale', html)
+
+    def test_stale_clash_prices_are_flagged(self):
+        card = Card.objects.create(api_id=1, name='Zap', rarity='common', max_level=16)
+        cr_snap(card, clock.real_now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=5), '10')
+        self.assertIn('Stale: the latest prices are for', self.client.get('/').content.decode())
