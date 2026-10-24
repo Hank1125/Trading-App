@@ -47,7 +47,10 @@ def wipe_namespace(session: Session, namespace: str) -> None:
     session.execute(delete(PageRevision).where(PageRevision.namespace == namespace))
 
 
-def reveal_plan(text: str) -> list[tuple[int, int, list[tuple[int, int, datetime]]]]:
+Plan = list[tuple[int, int, list[tuple[int, int, datetime]]]]
+
+
+def reveal_plan(text: str) -> Plan:
     """For each Match: (start, end, [(map_start, map_end, reveal_time)]) in cleaned-text offsets."""
     plan = []
     for m in find_templates(text, "Match"):
@@ -79,7 +82,7 @@ def _span(text: str, start: int) -> int:
     raise ValueError("unbalanced template")
 
 
-def version_at(text: str, plan, t: datetime) -> str:
+def version_at(text: str, plan: Plan, t: datetime) -> str:
     """The page as it looked at time t: maps not yet revealed are marked unfinished."""
     cuts = sorted((a, b) for _, _, maps in plan for a, b, reveal in maps if reveal > t)
     out, pos = [], 0
