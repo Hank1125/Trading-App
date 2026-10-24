@@ -164,6 +164,16 @@ class ClashExactSnapshotTests(TestCase):
         m = Market.objects.get(opens_at=t(10, 14))
         self.assertEqual((m.status, m.settlement.reason), ('void', 'no data at window end'))
 
+    def test_top_none_opens_a_market_for_every_card(self):
+        names = ['Hog Rider', 'Knight', 'Zap']
+        for i, name in enumerate(names):
+            card = self.hog if name == 'Hog Rider' else Card.objects.create(
+                api_id=10 + i, name=name, rarity='common', max_level=16)  # fmt: skip
+            cr_snapshot(card, 14, f'{10 + i}.0000')
+        with self.settings(MARKET_FEEDS=[{**CR_FEEDS[0], 'top': None}]):
+            self.assertEqual(scheduler.tick(t(10, 14, 6))['created'], 3)
+        self.assertEqual(sorted(Market.objects.values_list('subject', flat=True)), names)
+
 
 class PerGameClockTests(TestCase):
     def test_siege_replay_clock_does_not_move_clash_time(self):
