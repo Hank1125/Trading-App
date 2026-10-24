@@ -22,6 +22,7 @@ from app.siege.catalog import Catalog, CatalogOperator, name_key, team_key
 from app.siege.models import (
     Correction,
     MapInfo,
+    MapObservation,
     MapPlayed,
     Match,
     Operator,
@@ -276,5 +277,39 @@ def ingest_revision(
         match.content = content
         _children(session, match, content, op_ids, map_ids)
         session.flush()
+        _record_observations(session, match.id, content["maps"], rev.id, now)
 
     return report
+
+
+def _record_observations(
+    session: Session, match_id: int, maps: list[dict[str, Any]], revision_id: int, now: datetime
+) -> None:
+    """Append a MapObservation for each map slot whose data differs from the last one observed.
+
+    Slots are only tracked once they have been seen finished; a tracked slot that disappears from
+    the page gets a 'removed' observation so it stops counting from `now` on.
+    """
+    latest: dict[int, MapObservation] = {}
+    for obs in session.scalars(
+        select(MapObservation).where(MapObservation.match_id == match_id).order_by(MapObservation.id)
+    ):
+        latest[obs.order] = obs
+    current = {m["order"]: m for m in maps}
+    for order, m in current.items():
+        prev = latest.get(order)
+        if (prev is None and m["status"] == "finished") or (prev is not None and prev.content != m):
+            session.add(
+                MapObservation(
+                    match_id=match_id, order=order, observed_at=now, revision_id=revision_id,
+                    status=m["status"], content=m,
+                )
+            )  # fmt: skip
+    for order, prev in latest.items():
+        if order not in current and prev.status != "removed":
+            session.add(
+                MapObservation(
+                    match_id=match_id, order=order, observed_at=now, revision_id=revision_id,
+                    status="removed", content={"order": order, "status": "removed"},
+                )
+            )  # fmt: skip

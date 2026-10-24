@@ -176,3 +176,24 @@ class Quarantine(Base):
     reason: Mapped[str] = mapped_column(Text)
     context: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+
+
+class MapObservation(Base):
+    """Append-only history of each map slot's data as we observed it over time.
+
+    A row is added when a map is first seen finished, and whenever its data changes afterwards
+    (correction, un-finished, or removed from the page). Stats "as of time T" read the latest row
+    per slot with observed_at <= T, so later edits never change earlier values.
+    """
+
+    __tablename__ = "siege_map_observation"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    match_id: Mapped[int] = mapped_column(ForeignKey("siege_match.id"), index=True)
+    order: Mapped[int] = mapped_column(Integer)
+    observed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+    revision_id: Mapped[int] = mapped_column(ForeignKey("siege_page_revision.id"))
+    status: Mapped[str] = mapped_column(String(10))
+    content: Mapped[dict[str, Any]] = mapped_column(JSONB)  # same shape as Match.content["maps"][i]
+    __table_args__ = (
+        CheckConstraint("status IN ('finished', 'skipped', 'unplayed', 'removed')", name="obs_status_valid"),
+    )
