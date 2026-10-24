@@ -22,20 +22,15 @@ Fields kept: `id`, `name`, `rarity`, `elixirCost`, `maxLevel`, `maxEvolutionLeve
 
 ### 2. Top-1000 players: Path of Legends leaderboard
 
-Candidate endpoints (**to verify against the live API before building on them**):
+`GET /locations/global/pathoflegend/players?limit=1000`: current season.
 
-- `GET /locations/global/pathoflegend/players?limit=…`: current season
-- `GET /locations/global/pathoflegend/{seasonId}/rankings/players?limit=…`: a given season
-
-Pages are fetched with `paging.cursors.after`. Keep fetching until we have 1000 players or the list ends.
+Verified 2026-10-24: `limit=1000` returns all 1000 players in one page (`paging.cursors` is empty). The client still follows `paging.cursors.after` in case that changes.
 
 Fields kept: `tag`, `name`, `rank`.
 
-**Verification task:** confirm the exact path, the maximum `limit`, and the response shape. Save a scrubbed sample response as a test fixture.
-
 ### 3. Battles: `GET /players/%23{TAG}/battlelog`
 
-Returns **only the most recent ~25 battles** for that player.
+Returns **only the most recent ~30 battles** for that player (verified 2026-10-24). This includes other modes such as `clanMate`, which are skipped.
 
 Keep a battle only if:
 - `type == "pathOfLegend"`
@@ -46,10 +41,11 @@ Fields kept per battle: `battleTime`, `type`, `gameMode.name`. For each side: `t
 
 ## Polling
 
-- Each battlelog holds only ~25 battles, so a player who plays more than that between polls loses data. Poll each top-1000 player **every hour**.
+- Each battlelog holds only ~30 battles, so a player who plays more than that between polls loses data. Poll each top-1000 player **every hour**.
 - Recompute metrics **every hour**, right after the battle sweep (see 02, Window).
 - Refresh the leaderboard **once per day**. A player who drops out of the top 1000 stops being polled, but their battles already stored stay.
-- One full battle sweep is about 1000 requests, so hourly polling is about 24,000 requests per day.
+- One full battle sweep is about 1000 requests, so hourly polling is about 24,000 requests per day. Measured 2026-10-24 with 8 workers: first sweep 93 s, later sweeps ~40 s, no 429s.
+- Schedule `scripts/cr_hourly.sh` from cron at minute 5 (`5 * * * *`), so the snapshot for `HH:00` includes battles polled just after the hour. `cr_hourly` holds a Postgres advisory lock, so overlapping runs exit immediately.
 
 ## Rate limits and retries
 

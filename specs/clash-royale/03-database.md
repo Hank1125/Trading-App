@@ -100,6 +100,7 @@ Index: (card, formula_version, source, window_end) for history charts.
 | `cr_sync_top_players` | Refresh the top-1000 Player rows |
 | `cr_ingest_battles` | Poll battlelogs for tracked players and insert new battles |
 | `cr_compute_metrics [--window-end] [--source]` | Write a CardMetricSnapshot for every non-support card. `--window-end` defaults to the current UTC hour, truncated |
-| `cr_load_mock` | Load fixture JSON with `source=mock` |
+| `cr_hourly` | Sync cards, refresh the leaderboard if the last OK one is >24h old, ingest battles, then compute metrics (skipped if battle ingestion failed) |
+| `cr_load_mock` | Load fixture JSON with `source=mock` (not built yet) |
 
-The metric math lives in `clashroyale/metrics.py` as pure functions over plain deck/result lists, with no ORM access, so it can be unit-tested directly.
+The metric math lives in `clashroyale/metrics.py` as pure functions over plain counts and deck/result lists, with no ORM access, so it can be unit-tested directly. `clashroyale/ingest.py` counts appearances per card in SQL and passes the counts to those functions. A test checks that the SQL counts match the pure `tally_decks`.

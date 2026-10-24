@@ -56,8 +56,8 @@ Connect both games into a clear dashboard and portfolio. Add useful loading, emp
 ## Current status
 
 - **Stack:** Django 5.1 + Postgres 16 (Docker). Project `metamarket/`; Clash Royale app `clashroyale/`.
-- **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Models, initial migration, admin, and DB constraint tests are done. Next: `clashroyale/metrics.py` (pure `cr-price-v1` math + tests), API client, ingestion/management commands, mock fixtures.
-- **Cadence:** battle polling and metric snapshots run hourly; leaderboard refreshes daily. No scheduler is set up yet.
+- **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Done: models and migration, `metrics.py` (pure `cr-price-v1` math), `api.py` (client with 429/503 backoff), `ingest.py` (dedup ingestion and snapshots), management commands, tests. Live ingestion verified against the real API. Next: `cr_load_mock` and mock fixtures, then a UI.
+- **Cadence:** `cr_hourly` polls the top 1000 battlelogs and writes metric snapshots every hour; the leaderboard refreshes daily. Schedule it with cron (`5 * * * * <repo>/scripts/cr_hourly.sh`). On macOS, cron needs Full Disk Access to run from `~/Documents`.
 - **Not started:** Siege, trading, predictions, UI.
 
 ## Local commands
@@ -69,6 +69,8 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python manage.py migrate
 .venv/bin/python manage.py test clashroyale
 .venv/bin/python manage.py makemigrations --check --dry-run   # model/migration drift
+.venv/bin/python manage.py cr_hourly                          # one live ingest + metrics pass (~1-2 min)
+scripts/cr_status.sh [N]                                      # top N card prices, recent runs, battle counts
 docker compose exec db psql -U metamarket -d metamarket       # inspect DB (\dt clashroyale_*)
 ```
 
