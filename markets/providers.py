@@ -82,7 +82,8 @@ def value_at(game: str, stat_kind: str, subject: str, scope: dict, as_of: dateti
         if snap is None:
             return None
         f = Fraction(snap.price)
-        return StatPoint(f.numerator, f.denominator, {'card_metric_snapshot_id': snap.pk, 'price': str(snap.price)})
+        evidence = {'card_metric_snapshot_id': snap.pk, 'price': str(snap.price), 'as_of': snap.window_end.isoformat()}
+        return StatPoint(f.numerator, f.denominator, evidence)
     raise ValueError(f'unsupported stat {game}/{stat_kind}')
 
 

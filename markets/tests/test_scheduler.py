@@ -124,3 +124,55 @@ class SchedulerTests(TestCase):
 
     def test_no_data_means_no_markets(self):
         self.assertEqual(scheduler.tick(t(10, 14, 1))['created'], 0)
+
+
+CR_FEEDS = [{'game': 'clash_royale', 'stat_kind': 'card_price', 'scope': {'source': 'live'}, 'top': 2,
+             'windows': ['hourly'], 'exact_time': True, 'grace_seconds': 1200}]  # fmt: skip
+
+
+def cr_snapshot(card, hour, price):
+    return CardMetricSnapshot.objects.create(
+        card=card, source='live', formula_version='cr-price-v1', window_start=t(3, hour), window_end=t(10, hour),
+        total_appearances=1, appearances=1, wins=1, losses=0, draws=0, usage_pct=Decimal(1),
+        adj_win_rate=Decimal(50), price=Decimal(price), is_low_sample=True,
+    )  # fmt: skip
+
+
+@override_settings(MARKET_FEEDS=CR_FEEDS)
+class ClashExactSnapshotTests(TestCase):
+    def setUp(self):
+        self.hog = Card.objects.create(api_id=1, name='Hog Rider', rarity='rare', max_level=14)
+
+    def test_opens_only_once_the_window_start_snapshot_exists_and_settles_on_the_end_snapshot(self):
+        cr_snapshot(self.hog, 13, '20.0000')
+        self.assertEqual(scheduler.tick(t(10, 14, 2))['created'], 0)  # 14:00 snapshot not written yet
+        cr_snapshot(self.hog, 14, '20.0000')  # cr_hourly writes it at ~14:05
+        self.assertEqual(scheduler.tick(t(10, 14, 6))['created'], 1)
+        m = Market.objects.get()
+        self.assertEqual(m.start_numerator / m.start_denominator, 20)
+        scheduler.tick(t(10, 15, 10))  # closed, within the 20-min grace: waits for the 15:00 snapshot
+        self.assertFalse(Market.objects.filter(settlement__isnull=False).exists())
+        cr_snapshot(self.hog, 15, '21.2500')
+        scheduler.tick(t(10, 15, 21))
+        m.refresh_from_db()
+        self.assertEqual((m.status, m.settlement.outcome), ('settled', 'up'))
+
+    def test_missing_end_snapshot_voids_instead_of_comparing_stale_prices(self):
+        cr_snapshot(self.hog, 14, '20.0000')
+        scheduler.tick(t(10, 14, 6))
+        scheduler.tick(t(10, 15, 21))  # no 15:00 snapshot ever arrived
+        m = Market.objects.get(opens_at=t(10, 14))
+        self.assertEqual((m.status, m.settlement.reason), ('void', 'no data at window end'))
+
+
+class PerGameClockTests(TestCase):
+    def test_siege_replay_clock_does_not_move_clash_time(self):
+        from markets import clock
+        from markets.models import ClockState
+
+        ClockState.objects.create(game='siege', demo_start=t(10, 15), real_start=clock.real_now(),
+                                  speed=Decimal(60), label='replay')  # fmt: skip
+        self.assertLess(abs((clock.now('siege') - t(10, 15)).total_seconds()), 120)
+        self.assertLess(abs((clock.now('clash_royale') - clock.real_now()).total_seconds()), 5)
+        self.assertEqual(clock.mode('clash_royale')['mode'], 'live')
+        self.assertEqual(clock.mode('siege')['mode'], 'replay')

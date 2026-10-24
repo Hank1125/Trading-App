@@ -5,6 +5,10 @@ Feeds (which stats get markets) come from settings.MARKET_FEEDS. Each tick:
    start value frozen at the window start (skipped if the stat has no data yet);
 2. close markets whose window ended;
 3. settle closed markets past their grace time, using the stat value at the window end.
+
+Feed options: `grace_seconds` (default MARKET_SETTLEMENT_GRACE_SECONDS) and `exact_time` — for stats
+published as point snapshots (Clash hourly prices), a market only opens once the snapshot for its
+window start exists, and its end value must be the snapshot for its window end (else VOID).
 """
 
 from datetime import datetime, timedelta
@@ -13,7 +17,7 @@ from decimal import Decimal
 from django.conf import settings
 from django.db import IntegrityError, transaction
 
-from markets import providers, services
+from markets import clock, providers, services
 from markets.models import Market
 
 WINDOW_LENGTH = {
@@ -45,10 +49,23 @@ def _title(feed: dict, subject: str, window: str, start: datetime) -> str:
     return f'{subject} {STAT_LABELS[feed["stat_kind"]]} — {window} ({when}): UP or DOWN?'
 
 
-def open_due_markets(now: datetime) -> int:
-    created = 0
-    grace = timedelta(seconds=settings.MARKET_SETTLEMENT_GRACE_SECONDS)
+def _exact(value: providers.StatPoint | None, at: datetime) -> bool:
+    return value is not None and value.evidence.get('as_of') == at.isoformat()
+
+
+def _feed_for(market: Market) -> dict:
     for feed in settings.MARKET_FEEDS:
+        if feed['game'] == market.game and feed['stat_kind'] == market.stat_kind:
+            return feed
+    return {}
+
+
+def open_due_markets(now: datetime, game: str | None = None) -> int:
+    created = 0
+    for feed in settings.MARKET_FEEDS:
+        if game is not None and feed['game'] != game:
+            continue
+        grace = timedelta(seconds=feed.get('grace_seconds', settings.MARKET_SETTLEMENT_GRACE_SECONDS))
         for window in feed['windows']:
             start = window_start(window, now)
             subjects = providers.top_subjects(feed['game'], feed['stat_kind'], feed['scope'], start, feed['top'])
@@ -56,6 +73,8 @@ def open_due_markets(now: datetime) -> int:
                 value = providers.value_at(feed['game'], feed['stat_kind'], subject, feed['scope'], start)
                 if value is None or value.denominator <= 0:
                     continue
+                if feed.get('exact_time') and not _exact(value, start):
+                    continue  # snapshot for the window start isn't published yet
                 try:
                     with transaction.atomic():
                         Market.objects.create(
@@ -79,13 +98,14 @@ def open_due_markets(now: datetime) -> int:
     return created
 
 
-def close_and_settle(now: datetime) -> tuple[int, int]:
-    closed = Market.objects.filter(status=Market.Status.OPEN, closes_at__lte=now).update(
-        status=Market.Status.CLOSED
-    )
+def close_and_settle(now: datetime, game: str | None = None) -> tuple[int, int]:
+    markets = Market.objects.all() if game is None else Market.objects.filter(game=game)
+    closed = markets.filter(status=Market.Status.OPEN, closes_at__lte=now).update(status=Market.Status.CLOSED)
     settled = 0
-    for m in Market.objects.filter(status=Market.Status.CLOSED, settles_after__lte=now, settlement__isnull=True):
+    for m in markets.filter(status=Market.Status.CLOSED, settles_after__lte=now, settlement__isnull=True):
         end = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, m.closes_at)
+        if _feed_for(m).get('exact_time') and not _exact(end, m.closes_at):
+            end = None  # the end-of-window snapshot never arrived: VOID, refund
         evidence = {
             'start': [m.start_numerator, m.start_denominator, m.opens_at.isoformat()],
             'end': [end.numerator, end.denominator, m.closes_at.isoformat()] if end else None,
@@ -99,7 +119,13 @@ def close_and_settle(now: datetime) -> tuple[int, int]:
     return closed, settled
 
 
-def tick(now: datetime) -> dict:
-    created = open_due_markets(now)
-    closed, settled = close_and_settle(now)
+def tick(now: datetime, game: str | None = None) -> dict:
+    created = open_due_markets(now, game)
+    closed, settled = close_and_settle(now, game)
     return {'created': created, 'closed': closed, 'settled': settled}
+
+
+def tick_all() -> dict[str, dict]:
+    """One tick per game, each at its own clock (Siege may be replaying while Clash is live)."""
+    games = sorted({feed['game'] for feed in settings.MARKET_FEEDS})
+    return {game: tick(clock.now(game), game) for game in games}
