@@ -22,6 +22,14 @@ def _windows(source):
     )
 
 
+def stale_since(source=Source.LIVE):
+    """The latest snapshot's window_end if it is older than STALE_AFTER (None when fresh or empty)."""
+    windows = _windows(source)
+    if windows and timezone.now() - windows[0] > STALE_AFTER:
+        return windows[0]
+    return None
+
+
 def _direction(change):
     if change is None:
         return 'none'

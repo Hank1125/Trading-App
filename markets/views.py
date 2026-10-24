@@ -1,11 +1,13 @@
 import uuid
+from fractions import Fraction
 
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
-from clashroyale.models import Card, Source
-from clashroyale.views import price_summary
+from clashroyale.models import Card, CardMetricSnapshot, Source
+from clashroyale.views import price_summary, stale_since
 from markets import chart, clock, lmsr, providers, services
 from markets.models import Account, Market, Position, Trade
 
@@ -17,14 +19,21 @@ def _account(request) -> Account:
     return services.demo_account(request.session.session_key, clock.real_now())
 
 
-def _card(m: Market, now) -> dict:
-    """Everything a market tile shows: prices, live stat vs start, countdown, people on each side."""
+_UNSET = object()
+
+
+def _card(m: Market, now, mode=None, cur=_UNSET, sides=None) -> dict:
+    """Everything a market tile shows: prices, live stat vs start, countdown, people on each side.
+
+    mode, cur and sides can be passed in pre-fetched (see _cards); otherwise each is looked up here.
+    """
     state = services.state_of(m)
-    speed = clock.mode(m.game)['speed']
+    speed = (mode or clock.mode(m.game))['speed']
     demo_left = max(int((m.closes_at - now).total_seconds()), 0)
     real_left = demo_left / speed
     start_pct = 100 * m.start_numerator / m.start_denominator
-    cur = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, min(now, m.closes_at))
+    if cur is _UNSET:
+        cur = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, min(now, m.closes_at))
     cur_pct = cur.percent if cur else None
     return {
         'm': m,
@@ -39,9 +48,56 @@ def _card(m: Market, now) -> dict:
         'real_seconds_left': real_left,
         'deadline_ms': int((clock.real_now().timestamp() + real_left) * 1000),
         'speed': speed,
-        'sides': services.sides_summary(m),
+        'sides': sides if sides is not None else services.sides_summary(m),
         'unit': '' if m.stat_kind == 'card_price' else '%',
     }
+
+
+def _clash_prices_by(markets: list[Market], now) -> dict:
+    """providers.value_at for many open Clash card-price markets in one query per source.
+
+    Same rule as the provider: the card's latest snapshot with window_end <= as_of (here `now`, since every
+    market passed is still open). Keyed by (source, card name).
+    """
+    wanted = [m for m in markets if m.game == 'clash_royale' and m.stat_kind == 'card_price' and m.closes_at > now]
+    out = {}
+    for source in {m.scope.get('source', 'live') for m in wanted}:
+        names = [m.subject for m in wanted if m.scope.get('source', 'live') == source]
+        snaps = (
+            CardMetricSnapshot.objects.filter(card__name__in=names, source=source, window_end__lte=now)
+            .order_by('card__name', '-window_end', '-id')
+            .distinct('card__name')
+            .select_related('card')
+        )
+        for snap in snaps:
+            f = Fraction(snap.price)
+            evidence = {'card_metric_snapshot_id': snap.pk, 'price': str(snap.price), 'as_of': snap.window_end.isoformat()}
+            out[(source, snap.card.name)] = providers.StatPoint(f.numerator, f.denominator, evidence)
+    return out
+
+
+def _cards(markets, now) -> list[dict]:
+    """_card for a list of markets with the per-tile lookups batched: clock per game, people per side, Clash prices."""
+    markets = list(markets)
+    if not markets:
+        return []
+    modes = {game: clock.mode(game) for game in {m.game for m in markets}}
+    people = {
+        row['market_id']: row
+        for row in Position.objects.filter(market__in=markets)
+        .values('market_id')
+        .annotate(up=Count('id', filter=Q(up_contracts__gt=0)), down=Count('id', filter=Q(down_contracts__gt=0)))
+    }
+    prices = _clash_prices_by(markets, now)
+    cards = []
+    for m in markets:
+        p = people.get(m.pk, {})
+        sides = {'up_people': p.get('up', 0), 'down_people': p.get('down', 0),
+                 'up_contracts': int(m.q_up), 'down_contracts': int(m.q_down)}  # fmt: skip
+        key = (m.scope.get('source', 'live'), m.subject)
+        batched = m.game == 'clash_royale' and m.stat_kind == 'card_price' and m.closes_at > now
+        cards.append(_card(m, now, mode=modes[m.game], sides=sides, cur=prices.get(key) if batched else _UNSET))
+    return _with_icons(cards)
 
 
 def _with_icons(cards: list[dict]) -> list[dict]:
@@ -79,7 +135,7 @@ def dashboard(request):
 
     siege_now = clock.now('siege')
     siege_open = _open_markets('siege', siege_now)
-    siege_cards = [_card(m, siege_now) for m in siege_open.filter(window='hourly')]
+    siege_cards = _cards(siege_open.filter(window='hourly'), siege_now)
     siege_movers = sorted(
         (c for c in siege_cards if c['change_pp']), key=lambda c: abs(c['change_pp']), reverse=True
     )[:5]
@@ -111,10 +167,11 @@ def market_list(request):
     ctx.update(
         window=window,
         game=game,
-        cards=_with_icons([_card(m, now) for m in markets.order_by('stat_kind', 'subject')]),
+        cards=_cards(markets.order_by('stat_kind', 'subject'), now),
         recent=Market.objects.filter(game=game, window=window, status__in=['settled', 'void'])
         .select_related('settlement')
         .order_by('-closes_at')[:8],
+        cr_stale_since=stale_since(Source.LIVE) if game == 'clash_royale' else None,
     )
     template = 'markets/_market_grid.html' if request.headers.get('HX-Request') else 'markets/list.html'
     return render(request, template, ctx)

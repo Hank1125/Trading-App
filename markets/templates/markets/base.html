@@ -40,7 +40,7 @@
   th { font-size:12px; color:var(--muted); } th.l, td.l { text-align:left; }
   form.trade { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
   input, select, button { font:inherit; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--panel); color:var(--text); }
-  button { cursor:pointer; font-weight:600; } button.up { background:var(--up); color:#fff; border:none; } button.down { background:var(--down); color:#fff; border:none; }
+  button { cursor:pointer; font-weight:600; } button[disabled] { opacity:.55; cursor:progress; } button.up { background:var(--up); color:#fff; border:none; } button.down { background:var(--down); color:#fff; border:none; }
   .err { color:var(--down); } .ok { color:var(--up); }
   .warn { background:var(--warn-bg); color:var(--warn); padding:8px 12px; border-radius:10px; margin-bottom:12px; font-size:13px; }
   .err-banner { background:var(--down-bg); color:var(--down); }

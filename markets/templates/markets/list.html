@@ -10,7 +10,46 @@
   <a href="?game={{ game }}&window=weekly" class="{% if window == 'weekly' %}on{% endif %}">Weekly</a>
 </div>
 <p class="muted small">Will the stat end this window <strong>higher (UP)</strong> or <strong>lower (DOWN)</strong> than it started? A winning contract pays 100 pts. No change means the market is voided and refunded. Prices come from an automated market maker and move with every trade.</p>
-<div hx-get="?game={{ game }}&window={{ window }}" hx-trigger="every 3s" hx-swap="innerHTML">
+{% if cr_stale_since %}<p class="warn">Stale: the latest Clash prices are for {{ cr_stale_since|date:"M j, H:i T" }}, more than 2 hours ago, so no new markets will open until the hourly job runs again.</p>{% endif %}
+<div class="toolbar">
+  <input id="q" type="search" placeholder="Search {% if game == 'clash_royale' %}cards{% else %}operators and maps{% endif %}…" autocomplete="off" aria-label="Search markets">
+  <select id="sort" aria-label="Sort markets">
+    <option value="name">Name</option>
+    <option value="value">{% if game == 'clash_royale' %}Card price{% else %}Stat value{% endif %} (high → low)</option>
+    <option value="move">Biggest move this window</option>
+    <option value="up">UP price (high → low)</option>
+    <option value="people">Most traders</option>
+  </select>
+  <span id="shown" class="muted small"></span>
+</div>
+<div id="live" hx-get="?game={{ game }}&window={{ window }}" hx-trigger="every 3s" hx-swap="innerHTML">
   {% include "markets/_market_grid.html" %}
 </div>
+<script>
+  // Search and sort tiles in the browser; re-applied after each 3 s htmx refresh so they stick.
+  (() => {
+    const q = document.getElementById('q'), sort = document.getElementById('sort'), shown = document.getElementById('shown');
+    const num = (el, k) => parseFloat(el.dataset[k]) || 0;
+    const keys = {
+      name: (a, b) => a.dataset.name.localeCompare(b.dataset.name),
+      value: (a, b) => num(b, 'value') - num(a, 'value'),
+      move: (a, b) => Math.abs(num(b, 'move')) - Math.abs(num(a, 'move')),
+      up: (a, b) => num(b, 'up') - num(a, 'up'),
+      people: (a, b) => num(b, 'people') - num(a, 'people'),
+    };
+    function apply() {
+      const grid = document.querySelector('#live .grid');
+      if (!grid) { shown.textContent = ''; return; }
+      const tiles = [...grid.children], term = q.value.trim().toLowerCase();
+      tiles.sort(keys[sort.value]).forEach(t => grid.appendChild(t));
+      let n = 0;
+      tiles.forEach(t => { t.hidden = !!term && !t.dataset.name.includes(term); n += !t.hidden; });
+      shown.textContent = term ? `${n} of ${tiles.length}` : `${tiles.length} markets`;
+    }
+    q.addEventListener('input', apply);
+    sort.addEventListener('change', apply);
+    document.body.addEventListener('htmx:afterSwap', e => { if (e.detail.target.id === 'live') apply(); });
+    apply();
+  })();
+</script>
 {% endblock %}

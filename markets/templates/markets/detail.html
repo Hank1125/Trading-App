@@ -11,13 +11,14 @@
 </div>
 {% if card.m.status == 'open' %}
 <div class="panel">
-  <form class="trade" hx-post="{% url 'markets:quote' card.m.pk %}" hx-target="#quote">
+  <form class="trade" hx-post="{% url 'markets:quote' card.m.pk %}" hx-target="#quote" hx-disabled-elt="find button">
     {% csrf_token %}
     <select name="action" aria-label="Buy or sell"><option value="buy">Buy</option><option value="sell">Sell</option></select>
     <input name="contracts" type="number" min="1" max="10000" value="10" aria-label="Contracts" style="width:100px">
     <span class="muted">contracts of</span>
     <button class="up" name="side" value="up">UP</button>
     <button class="down" name="side" value="down">DOWN</button>
+    <span class="htmx-indicator muted small">Getting a quote…</span>
   </form>
   <div id="quote" style="margin-top:10px"></div>
 </div>

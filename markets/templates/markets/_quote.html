@@ -1,10 +1,11 @@
 {% load markets_extras %}
 {% if error %}<span class="err">{{ error }}</span>{% else %}
-<form class="trade" hx-post="{% url 'markets:trade' market.pk %}" hx-target="#quote">
+<form class="trade" hx-post="{% url 'markets:trade' market.pk %}" hx-target="#quote" hx-disabled-elt="find button">
   {% csrf_token %}
   <input type="hidden" name="side" value="{{ side }}"><input type="hidden" name="action" value="{{ action }}">
   <input type="hidden" name="contracts" value="{{ contracts }}"><input type="hidden" name="limit" value="{{ units }}">
   <input type="hidden" name="key" value="{{ key }}">
   <span>{{ action|capfirst }} <strong>{{ contracts }} {{ side|upper }}</strong> for <strong>{{ units|pts }} pts</strong>{% if action == 'buy' %} (pays {% widthratio contracts 1 100 %} pts if {{ side|upper }} wins){% endif %}.</span>
   <button class="{{ side }}">Confirm</button>
+  <span class="htmx-indicator muted small">Placing trade…</span>
 </form>{% endif %}

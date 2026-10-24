@@ -37,7 +37,7 @@
 <div class="panel">Your position: <strong>{{ position.up_contracts }}</strong> UP, <strong>{{ position.down_contracts }}</strong> DOWN · net cost {{ position.net_cost_units|pts }} pts</div>
 {% endif %}
 {% if trades %}
-<div class="panel"><table><tr><th class="l">Time ({% now "T" %})</th><th class="l">Trade</th><th>Contracts</th><th>Points</th><th>UP price after</th></tr>
+<div class="panel scroll"><table><tr><th class="l">Time ({% now "T" %})</th><th class="l">Trade</th><th>Contracts</th><th>Points</th><th>UP price after</th></tr>
 {% for t in trades %}<tr><td class="l">{{ t.created_at|date:"M j H:i:s" }}</td><td class="l">{{ t.action }} {{ t.side|upper }}</td><td>{{ t.contracts }}</td><td>{{ t.units|pts }}</td><td>{{ t.up_price_after }}</td></tr>{% endfor %}
 </table></div>
 {% endif %}

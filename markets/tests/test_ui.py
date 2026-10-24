@@ -108,3 +108,86 @@ class DashboardTests(TestCase):
         card = Card.objects.create(api_id=1, name='Zap', rarity='common', max_level=16)
         cr_snap(card, clock.real_now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=5), '10')
         self.assertIn('Stale: the latest prices are for', self.client.get('/').content.decode())
+
+
+class ListPolishTests(TestCase):
+    def test_tiles_carry_sort_and_search_data_and_the_toolbar_renders(self):
+        now = clock.real_now()
+        make_market(opens_at=now - timedelta(minutes=5), closes_at=now + timedelta(minutes=55),
+                    settles_after=now + timedelta(minutes=56))  # fmt: skip
+        html = self.client.get('/markets/?game=siege').content.decode()
+        self.assertIn('id="q"', html)
+        self.assertIn('<select id="sort"', html)
+        self.assertIn('data-name="mira"', html)
+        self.assertRegex(html, r'data-value="72\.0000"')  # start value until a current value exists
+
+    def test_clash_list_explains_when_markets_open_and_flags_stale_prices(self):
+        html = self.client.get('/markets/?game=clash_royale').content.decode()
+        self.assertIn('Clash markets open a few minutes past each hour', html)
+        self.assertNotIn('Stale:', html)
+        card = Card.objects.create(api_id=1, name='Zap', rarity='common', max_level=16)
+        cr_snap(card, clock.real_now().replace(minute=0, second=0, microsecond=0) - timedelta(hours=5), '10')
+        self.assertIn('Stale: the latest Clash prices are for', self.client.get('/markets/?game=clash_royale').content.decode())
+
+    def test_trade_forms_disable_their_buttons_while_submitting(self):
+        now = clock.real_now()
+        m = make_market(opens_at=now - timedelta(minutes=5), closes_at=now + timedelta(minutes=55),
+                        settles_after=now + timedelta(minutes=56))  # fmt: skip
+        self.assertIn('hx-disabled-elt="find button"', self.client.get(f'/markets/{m.pk}/').content.decode())
+        quote = self.client.post(f'/markets/{m.pk}/quote/', {'side': 'up', 'action': 'buy', 'contracts': '5'})
+        self.assertIn('hx-disabled-elt="find button"', quote.content.decode())
+
+
+class BatchedTilesTests(TestCase):
+    def test_batched_tiles_match_per_tile_lookups(self):
+        from markets import services, views
+
+        now = clock.real_now()
+        t1 = now.replace(minute=0, second=0, microsecond=0)
+        window = dict(opens_at=t1, closes_at=t1 + timedelta(hours=1), settles_after=t1 + timedelta(hours=1, minutes=20))
+        markets = []
+        for i, (name, prices) in enumerate([('Hog Rider', ['20', '22']), ('Zap', ['10.5']), ('Mirror', [])]):
+            card = Card.objects.create(api_id=i + 1, name=name, rarity='common', max_level=16)
+            for h, p in enumerate(prices):
+                cr_snap(card, t1 - timedelta(hours=len(prices) - 1 - h), p)
+            markets.append(make_market(game='clash_royale', stat_kind='card_price', subject=name,
+                                       scope={'source': 'live'}, formula_version='cr-price-v1',
+                                       start_numerator=20, start_denominator=1, **window))  # fmt: skip
+        markets.append(make_market(**window))  # Siege: falls back to the per-tile provider lookup
+        alice, bob = (services.demo_account(k, now) for k in ('alice', 'bob'))
+        for who, side, key in ((alice, 'up', 'a'), (bob, 'down', 'b'), (bob, 'up', 'c')):
+            services.execute_trade(account_id=who.pk, market_id=markets[0].pk, side=side, action='buy', contracts=5,
+                                   limit_units=10**9, idempotency_key=key, now=now)  # fmt: skip
+        for m in markets:
+            m.refresh_from_db()
+
+        batched = {c['m'].pk: c for c in views._cards(markets, now)}
+        for m in markets:
+            single = views._card(m, now)
+            with self.subTest(m.subject):
+                for k in ('cur_pct', 'cur_sample', 'change_pp', 'sides', 'up_price', 'speed'):
+                    self.assertEqual(batched[m.pk][k], single[k], k)
+        self.assertEqual(batched[markets[0].pk]['sides']['up_people'], 2)
+        self.assertEqual(batched[markets[0].pk]['cur_pct'], 2200.0)
+        self.assertIsNone(batched[markets[2].pk]['cur_pct'])  # Mirror: no snapshot
+
+    def test_list_query_count_does_not_grow_per_tile(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        now = clock.real_now()
+        t1 = now.replace(minute=0, second=0, microsecond=0)
+        window = dict(opens_at=t1, closes_at=t1 + timedelta(hours=1), settles_after=t1 + timedelta(hours=1, minutes=20))
+
+        def queries_with(n):
+            for i in range(Market.objects.count(), n):
+                card = Card.objects.create(api_id=100 + i, name=f'Card {i}', rarity='common', max_level=16)
+                cr_snap(card, t1, '10')
+                make_market(game='clash_royale', stat_kind='card_price', subject=card.name, scope={'source': 'live'},
+                            formula_version='cr-price-v1', start_numerator=10, start_denominator=1, **window)  # fmt: skip
+            self.client.get('/markets/?game=clash_royale')  # warm the session/account
+            with CaptureQueriesContext(connection) as ctx:
+                self.client.get('/markets/?game=clash_royale', HTTP_HX_REQUEST='true')
+            return len(ctx.captured_queries)
+
+        self.assertEqual(queries_with(2), queries_with(12))

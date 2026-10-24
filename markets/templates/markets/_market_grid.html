@@ -2,7 +2,9 @@
 {% if cards %}
 <div class="grid">
 {% for c in cards %}
-  <a class="tile" href="{% url 'markets:detail' c.m.pk %}">
+  <a class="tile" href="{% url 'markets:detail' c.m.pk %}" data-name="{{ c.m.subject|lower }}"
+     data-value="{{ c.cur_pct|default_if_none:c.start_pct|floatformat:'4u' }}" data-move="{{ c.change_pp|default_if_none:0|floatformat:'4u' }}"
+     data-up="{{ c.up_price }}" data-people="{{ c.sides.up_people|add:c.sides.down_people }}">
     <div class="t subject">
       {% if c.icon %}<img class="icon" src="{{ c.icon }}" alt="" loading="lazy" width="36" height="43">{% else %}<span class="initial" aria-hidden="true">{{ c.m.subject|slice:":1" }}</span>{% endif %}
       <span>{{ c.m.subject }} <span class="muted small">{{ c.m.get_stat_kind_display|default:c.m.stat_kind }}</span></span>
@@ -23,11 +25,18 @@
 {% endfor %}
 </div>
 {% else %}
-<p class="panel muted">No open {{ window }} markets right now. Markets open when the worker runs (<code>manage.py markets_worker</code>) and the stat has data.</p>
+<div class="panel muted">
+  <strong>No open {{ window }} markets right now.</strong>
+  {% if game == 'clash_royale' %}
+    Clash markets open a few minutes past each hour, once that hour's price snapshot is written (<code>cr_hourly</code>, run by cron at :05){% if window != 'hourly' %}. Daily and weekly markets need the snapshot at 00:00 (and Monday 00:00 for weekly){% endif %}.
+  {% else %}
+    Siege markets open when the worker runs (<code>manage.py markets_worker</code>) and maps have been played in the window's event.
+  {% endif %}
+</div>
 {% endif %}
 {% if recent %}
 <h2>Recently settled</h2>
-<div class="panel"><table>
+<div class="panel scroll"><table>
 <tr><th class="l">Market</th><th>Start</th><th>End</th><th>Result</th></tr>
 {% for m in recent %}
 <tr><td class="l"><a href="{% url 'markets:detail' m.pk %}">{{ m.title }}</a></td>
