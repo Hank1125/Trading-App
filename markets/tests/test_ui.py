@@ -127,7 +127,7 @@ class MarketPageTests(TestCase):
         m = clash_market()
         html = self.client.get(f'/markets/{m.pk}/').content.decode()
         self.assertIn('<svg', html)
-        self.assertIn('UP chance', html)
+        self.assertIn('UP vs DOWN split', html)
         self.assertIn('src="https://x/hog.png"', html)
         self.assertIn(f'href="/clash/cards/{self.hog.api_id}/"', html)
         self.assertNotIn('maps so far', html)
@@ -210,7 +210,9 @@ class DashboardTests(TestCase):
         resp = self.client.get('/')
         self.assertEqual([t['snap'].card.name for t in resp.context['tiles']], ['Hog Rider', 'Zap'])
         html = resp.content.decode()
-        self.assertIn('<a class="main" href="/clash/cards/1/"', html)  # the card itself opens its price history
+        self.assertIn(f'<a class="main" href="/markets/{m.pk}/"', html)  # a card with an open market opens it (split + price)
+        zap_id = resp.context['tiles'][1]['snap'].card.api_id
+        self.assertIn(f'<a class="main" href="/clash/cards/{zap_id}/"', html)  # no market yet: its price history
         self.assertIn(f'<a class="btn-trade" href="/markets/{m.pk}/">Trade</a>', html)
         self.assertIn('No market for this card yet', html)  # Zap
         self.assertIn('class="btn-trade off"', html)
@@ -377,3 +379,36 @@ class WalletTabTests(TestCase):
     def test_wallet_tab_points_127_users_to_localhost(self):
         html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
         self.assertIn('http://localhost:8000/markets/wallet/', html)
+
+
+class SplitAndPriceChartTests(TestCase):
+    def test_split_lines_mirror_each_other(self):
+        t0 = datetime(2026, 11, 6, 14, tzinfo=timezone.utc)
+        c = chart.split_chart(t0, t0 + timedelta(hours=1), t0 + timedelta(minutes=30),
+                              [(t0 + timedelta(minutes=10), 64)], current_up=64)  # fmt: skip
+        self.assertEqual((c['current'], c['current_down']), (64, 36))
+        self.assertEqual(c['up']['last_y'], chart._y(64))
+        self.assertEqual(c['down']['last_y'], chart._y(36))
+        self.assertEqual(c['up']['last_x'], c['down']['last_x'])
+
+    def test_market_page_shows_split_and_card_price_charts(self):
+        from clashroyale.models import Card, CardMetricSnapshot
+
+        now = clock.real_now()
+        start = now.replace(minute=0, second=0, microsecond=0)
+        card = Card.objects.create(api_id=26000021, name='Hog Rider', rarity='rare', max_level=14)
+        for h, price in ((2, '20.0000'), (1, '21.0000'), (0, '21.5000')):
+            CardMetricSnapshot.objects.create(
+                card=card, source='live', formula_version='cr-price-v1', window_start=start - timedelta(days=7),
+                window_end=start - timedelta(hours=h), total_appearances=1, appearances=1, wins=1, losses=0, draws=0,
+                usage_pct=Decimal(1), adj_win_rate=Decimal(50), price=Decimal(price), is_low_sample=True,
+            )  # fmt: skip
+        m = make_market(game='clash_royale', stat_kind='card_price', subject='Hog Rider', scope={'source': 'live'},
+                        formula_version='cr-price-v1', start_numerator=43, start_denominator=2,
+                        opens_at=start, closes_at=start + timedelta(hours=1),
+                        settles_after=start + timedelta(hours=1, minutes=20))  # fmt: skip
+        html = self.client.get(f'/markets/{m.pk}/').content.decode()
+        self.assertIn('UP vs DOWN split', html)
+        self.assertIn('Hog Rider meta price', html)
+        self.assertEqual(html.count('<svg'), 2)
+        self.assertIn("This market's start price", html)

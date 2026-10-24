@@ -46,3 +46,12 @@ def price_chart(
         'label_y': H - 8,
         'trades': len(points),
     }
+
+
+def split_chart(
+    opens_at: datetime, closes_at: datetime, now: datetime, points: list[tuple[datetime, int]], current_up: int
+) -> dict:
+    """UP vs DOWN split over the window: the UP price and its mirror DOWN = 100 - UP (they always sum to 100)."""
+    up = price_chart(opens_at, closes_at, now, points, current_up)
+    down = price_chart(opens_at, closes_at, now, [(t, 100 - p) for t, p in points], 100 - current_up)
+    return {**up, 'up': up, 'down': down, 'current_down': 100 - current_up}

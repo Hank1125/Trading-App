@@ -24,7 +24,7 @@
         <td class="l" data-v="{{ card.name }}">
           <div class="cardcell">
             {% if card.icon_url %}<img src="{{ card.icon_url }}" alt="" loading="lazy" width="30" height="36">{% endif %}
-            <div><a href="{% url 'cr_card' card.api_id %}">{{ card.name }}</a>{% if r.hot %} <span class="hot-chip" title="{{ r.hot.contracts }} contracts traded in the last hour">🔥 Hot</span>{% endif %}
+            <div><a href="{% if r.is_open %}{% url 'markets:detail' m.m.pk %}{% else %}{% url 'cr_card' card.api_id %}{% endif %}">{{ card.name }}</a>{% if r.hot %} <span class="hot-chip" title="{{ r.hot.contracts }} contracts traded in the last hour">🔥 Hot</span>{% endif %}
               <div class="rarity">{{ card.rarity }}{% if card.elixir is not None %} · {{ card.elixir }} elixir{% endif %}</div></div>
           </div>
         </td>

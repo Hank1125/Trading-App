@@ -5,7 +5,7 @@
   <div class="tile cardtile{% if t.hot %} hot{% endif %}" data-name="{{ card.name|lower }}" data-value="{{ t.snap.price|floatformat:'4u' }}"
        data-move="{{ t.change|default_if_none:0|floatformat:'4u' }}" data-up="{{ m.up_price|default:0 }}"
        data-people="{% if m %}{{ m.sides.up_people|add:m.sides.down_people }}{% else %}0{% endif %}" data-hot="{{ t.hot.contracts|default:0 }}">
-    <a class="main" href="{% url 'cr_card' card.api_id %}" title="{{ card.name }} price history">
+    <a class="main" href="{% if t.is_open %}{% url 'markets:detail' m.m.pk %}{% else %}{% url 'cr_card' card.api_id %}{% endif %}" title="{{ card.name }}: UP/DOWN split and price">
       {% if card.icon_url %}<img class="art" src="{{ card.icon_url }}" alt="" loading="lazy" width="58" height="70">{% endif %}
       <div>
         <div class="name">{{ card.name }}</div>

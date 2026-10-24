@@ -8,6 +8,7 @@ from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
+from clashroyale import history
 from clashroyale.models import Card, CardMetricSnapshot, Source
 from clashroyale.views import price_summary, stale_since
 from markets import chart, clock, lmsr, providers, scheduler, services
@@ -227,13 +228,27 @@ def market_detail(request, pk: int):
     ctx.update(
         card=card,
         card_api_id=Card.objects.filter(name=market.subject).values_list('api_id', flat=True).first(),
-        chart=chart.price_chart(market.opens_at, market.closes_at, ctx['now'], points, card['up_price']),
+        chart=chart.split_chart(market.opens_at, market.closes_at, ctx['now'], points, card['up_price']),
+        price_chart=_card_price_chart(market),
         position=Position.objects.filter(account=ctx['account'], market=market).first(),
         trades=Trade.objects.filter(market=market)[:15],
         settlement=getattr(market, 'settlement', None),
     )
     template = 'markets/_detail_live.html' if request.headers.get('HX-Request') else 'markets/detail.html'
     return render(request, template, ctx)
+
+
+def _card_price_chart(market: Market) -> dict | None:
+    """The card's hourly meta price (last 48 snapshots), with this market's start snapshot marked."""
+    rows = (
+        CardMetricSnapshot.objects.filter(card__name=market.subject, source=market.scope.get('source', Source.LIVE))
+        .order_by('-window_end')
+        .values_list('window_end', 'price')[:48]
+    )
+    drawn = history.price_chart(list(rows))
+    if drawn is not None:
+        drawn['window_start'] = next((d for d in drawn['dots'] if d['t'] == market.opens_at), None)
+    return drawn
 
 
 def _trade_args(request):
