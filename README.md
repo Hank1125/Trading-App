@@ -12,13 +12,16 @@ Pro matches from the [Liquipedia](https://liquipedia.net/rainbowsix) MediaWiki A
 
 ## Backend setup
 
-Requires Python 3.13 and PostgreSQL. Locally, Postgres 16 runs on port 5433.
+Requires Python 3.13 and PostgreSQL 16. Both games share one database: the Docker Postgres from `docker-compose.yml` (`metamarket`/`metamarket` on localhost:5433), or an identical local Postgres with the same role and database.
 
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r backend/requirements-dev.txt
 cp backend/.env.example backend/.env   # then set your email and a random ADMIN_TOKEN
-createdb -p 5433 meta_market && createdb -p 5433 meta_market_test
+# Without Docker, create the same role/databases in a local Postgres on 5433:
+#   CREATE ROLE metamarket LOGIN PASSWORD 'metamarket' CREATEDB;
+#   CREATE DATABASE metamarket OWNER metamarket;
+#   CREATE DATABASE metamarket_siege_test OWNER metamarket;   -- disposable, wiped by tests
 
 cd backend
 ../.venv/bin/alembic upgrade head                        # create tables
