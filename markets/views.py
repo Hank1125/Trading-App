@@ -35,17 +35,17 @@ def _card(m: Market, now) -> dict:
     }
 
 
-def _header(request) -> dict:
+def _header(request, game: str) -> dict:
     account = _account(request)
-    return {'account': account, 'clock': clock.mode(), 'now': clock.now()}
+    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
 
 
 def market_list(request):
-    ctx = _header(request)
     window = request.GET.get('window', 'hourly')
     game = request.GET.get('game', 'siege')
     if window not in Market.Window.values or game not in Market.Game.values:
         return HttpResponseBadRequest('unknown window or game')
+    ctx = _header(request, game)
     now = ctx['now']
     markets = Market.objects.filter(window=window, game=game, opens_at__lte=now, closes_at__gt=now)
     ctx.update(
@@ -61,8 +61,8 @@ def market_list(request):
 
 
 def market_detail(request, pk: int):
-    ctx = _header(request)
     market = get_object_or_404(Market, pk=pk)
+    ctx = _header(request, market.game)
     ctx.update(
         card=_card(market, ctx['now']),
         position=Position.objects.filter(account=ctx['account'], market=market).first(),
@@ -110,7 +110,7 @@ def trade(request, pk: int):
             contracts=contracts,
             limit_units=int(request.POST.get('limit', '-1')),
             idempotency_key=request.POST.get('key', ''),
-            now=clock.now(),
+            now=clock.now(Market.objects.get(pk=pk).game),
         )
         ctx['trade'] = result.trade
     except services.TradeError as e:
@@ -122,7 +122,7 @@ def trade(request, pk: int):
 
 
 def portfolio(request):
-    ctx = _header(request)
+    ctx = _header(request, request.GET.get('game', 'siege') if request.GET.get('game') in Market.Game.values else 'siege')
     account = ctx['account']
     positions = (
         Position.objects.filter(account=account)

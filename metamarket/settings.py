@@ -152,6 +152,7 @@ MARKET_SETTLEMENT_GRACE_SECONDS = int(os.environ.get('MARKET_SETTLEMENT_GRACE_SE
 MARKET_FEEDS = [
     {'game': 'siege', 'stat_kind': 'operator_ban_rate', 'scope': _SIEGE_SCOPE, 'top': 8, 'windows': MARKET_WINDOWS},
     {'game': 'siege', 'stat_kind': 'map_play_rate', 'scope': _SIEGE_SCOPE, 'top': 5, 'windows': MARKET_WINDOWS},
-    {'game': 'clash_royale', 'stat_kind': 'card_price', 'scope': {'source': 'live'}, 'top': 8,
-     'windows': MARKET_WINDOWS},
+    # Clash prices are hourly snapshots written ~5 min past the hour by cr_hourly, so wait for them.
+    {'game': 'clash_royale', 'stat_kind': 'card_price', 'scope': {'source': os.environ.get('CR_MARKET_SOURCE', 'live')},
+     'top': 8, 'windows': MARKET_WINDOWS, 'exact_time': True, 'grace_seconds': 20 * 60},
 ]

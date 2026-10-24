@@ -1,7 +1,7 @@
-"""One server-side clock for markets, shared by the web process and the worker via the database.
+"""Server-side market clocks, shared by the web process and the worker via the database.
 
-Live: wall-clock UTC. Replay demo: `demo_start + (real elapsed) * speed`, so a replayed event plays
-out faster than real time (e.g. speed 60 = one demo hour per real minute). Always labelled.
+Each game has its own clock: live wall-clock UTC by default, or an accelerated replay clock
+(`demo_start + real elapsed * speed`) when a ClockState row exists for that game. Always labelled.
 """
 
 from datetime import datetime, timezone
@@ -13,15 +13,15 @@ def real_now() -> datetime:
     return datetime.now(timezone.utc)
 
 
-def now() -> datetime:
-    state = ClockState.objects.filter(pk=1).first()
+def now(game: str) -> datetime:
+    state = ClockState.objects.filter(game=game).first()
     if state is None:
         return real_now()
     return state.demo_start + (real_now() - state.real_start) * float(state.speed)
 
 
-def mode() -> dict:
-    state = ClockState.objects.filter(pk=1).first()
+def mode(game: str) -> dict:
+    state = ClockState.objects.filter(game=game).first()
     if state is None:
         return {'mode': 'live', 'label': 'LIVE DATA / DEMO POINTS', 'speed': 1}
     return {

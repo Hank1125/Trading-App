@@ -169,12 +169,13 @@ class LedgerEntry(models.Model):
 
 
 class ClockState(models.Model):
-    """Singleton (pk=1). Present = replay demo clock; absent = live wall clock. See markets/clock.py."""
+    """Replay clock for one game. A game with a row uses its demo clock; without one, live UTC.
 
+    Per game so a Siege replay (May 2026) never hides live Clash Royale data. See markets/clock.py.
+    """
+
+    game = models.CharField(max_length=20, unique=True, default='siege')  # existing row = Siege replay
     demo_start = models.DateTimeField()
     real_start = models.DateTimeField()
     speed = models.DecimalField(max_digits=8, decimal_places=2)
     label = models.CharField(max_length=100)
-
-    class Meta:
-        constraints = [models.CheckConstraint(condition=Q(pk=1), name='clock_singleton')]
