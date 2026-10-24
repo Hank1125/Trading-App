@@ -43,3 +43,17 @@ class CountdownTests(TestCase):
         self.assertIn('<svg', html)
         self.assertIn('UP chance', html)
         self.assertEqual(Market.objects.count(), 1)
+
+
+class ClashDisplayTests(TestCase):
+    def test_card_price_is_shown_in_points_not_scaled_as_a_percent(self):
+        now = clock.real_now()
+        make_market(game='clash_royale', stat_kind='card_price', subject='Barbarian Barrel',
+                    scope={'source': 'live'}, formula_version='cr-price-v1',
+                    start_numerator=163413, start_denominator=5000,  # 32.6826
+                    opens_at=now - timedelta(minutes=5), closes_at=now + timedelta(minutes=55),
+                    settles_after=now + timedelta(minutes=75))  # fmt: skip
+        html = self.client.get('/markets/?game=clash_royale').content.decode()
+        self.assertIn('start 32.68 pts', html)
+        self.assertIn('meta price', html)
+        self.assertNotIn('3268', html)
