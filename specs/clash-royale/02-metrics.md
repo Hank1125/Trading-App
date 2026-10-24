@@ -22,6 +22,8 @@ Compare crowns for each side:
 
 Rolling **7 days** by `battleTime` (UTC): `window_end - 7d ≤ battleTime < window_end`.
 
+Metrics are computed hourly. `window_end` defaults to the current UTC hour, truncated (e.g. 14:37 → 14:00). Re-running within the same hour hits the unique constraint and is a no-op, so retries are safe.
+
 Every computation writes a new snapshot row. Old snapshots are never overwritten.
 
 ## Formulas

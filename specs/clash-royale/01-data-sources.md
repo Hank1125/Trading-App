@@ -4,7 +4,7 @@ Official Clash Royale API: `https://api.clashroyale.com/v1`
 
 ## Auth
 
-- Header: `Authorization: Bearer $CR_API_TOKEN`
+- Header: `Authorization: Bearer $CLASHROYALE_API_KEY`
 - Put the token in `.env`, which is gitignored. Never commit it or send it to the client.
 - Keys are tied to **whitelisted IP addresses** (configured at developer.clashroyale.com). Run ingestion from a whitelisted machine. A `403 accessDenied.invalidIp` means the IP is wrong, not the key.
 - Player tags contain `#`, which must be URL-encoded as `%23` in paths.
@@ -46,9 +46,10 @@ Fields kept per battle: `battleTime`, `type`, `gameMode.name`. For each side: `t
 
 ## Polling
 
-- Each battlelog holds only ~25 battles, so a player who plays more than that between polls loses data. Poll each top-1000 player **every 2–4 hours**.
+- Each battlelog holds only ~25 battles, so a player who plays more than that between polls loses data. Poll each top-1000 player **every hour**.
+- Recompute metrics **every hour**, right after the battle sweep (see 02, Window).
 - Refresh the leaderboard **once per day**. A player who drops out of the top 1000 stops being polled, but their battles already stored stay.
-- One full battle sweep is about 1000 requests.
+- One full battle sweep is about 1000 requests, so hourly polling is about 24,000 requests per day.
 
 ## Rate limits and retries
 

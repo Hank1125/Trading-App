@@ -99,7 +99,7 @@ Index: (card, formula_version, source, window_end) for history charts.
 | `cr_sync_cards` | Upsert the card catalog |
 | `cr_sync_top_players` | Refresh the top-1000 Player rows |
 | `cr_ingest_battles` | Poll battlelogs for tracked players and insert new battles |
-| `cr_compute_metrics [--window-end] [--source]` | Write a CardMetricSnapshot for every non-support card |
+| `cr_compute_metrics [--window-end] [--source]` | Write a CardMetricSnapshot for every non-support card. `--window-end` defaults to the current UTC hour, truncated |
 | `cr_load_mock` | Load fixture JSON with `source=mock` |
 
 The metric math lives in `clashroyale/metrics.py` as pure functions over plain deck/result lists, with no ORM access, so it can be unit-tested directly.

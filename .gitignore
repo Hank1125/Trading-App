@@ -1,2 +1,7 @@
 .env
-.pycache/venv
+__pycache__/
+*.pyc
+.venv/
+venv/
+db.sqlite3
+.DS_Store

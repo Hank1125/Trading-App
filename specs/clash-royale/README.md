@@ -21,6 +21,7 @@ Branch: `CLashRoyale`. This branch covers only Clash Royale data. Siege, trading
 | Population | **Both sides** of every battle played by a top-1000 Path of Legends player |
 | Game modes | **Path of Legends ranked 1v1 only** |
 | Window | Rolling 7 days by `battleTime` (UTC) |
+| Update cadence | Battle polling and metric snapshots **hourly**; leaderboard daily |
 | Win rate | Wins / (wins + losses); draws excluded and reported separately |
 | Adjusted win rate | Bayesian shrinkage toward 50%, k = 100 |
 | Formula version | `cr-price-v1` |

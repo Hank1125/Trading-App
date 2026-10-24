@@ -53,6 +53,25 @@ Connect both games into a clear dashboard and portfolio. Add useful loading, emp
 
 **Done when:** a fresh setup can demonstrate browsing, trading, predicting, and settlement for both games without live API access.
 
+## Current status
+
+- **Stack:** Django 5.1 + Postgres 16 (Docker). Project `metamarket/`; Clash Royale app `clashroyale/`.
+- **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Models, initial migration, admin, and DB constraint tests are done. Next: `clashroyale/metrics.py` (pure `cr-price-v1` math + tests), API client, ingestion/management commands, mock fixtures.
+- **Cadence:** battle polling and metric snapshots run hourly; leaderboard refreshes daily. No scheduler is set up yet.
+- **Not started:** Siege, trading, predictions, UI.
+
+## Local commands
+
+```bash
+cp .env.example .env                      # add CLASHROYALE_API_KEY (IP-whitelisted)
+docker compose up -d db                   # Postgres on localhost:5433
+python -m venv .venv && .venv/bin/pip install -r requirements.txt
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py test clashroyale
+.venv/bin/python manage.py makemigrations --check --dry-run   # model/migration drift
+docker compose exec db psql -U metamarket -d metamarket       # inspect DB (\dt clashroyale_*)
+```
+
 ## Working instructions for Claude Code
 
 1. Read the existing repository instructions and code before making changes. Preserve unrelated work.
