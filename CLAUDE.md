@@ -59,7 +59,8 @@ Connect both games into a clear dashboard and portfolio. Add useful loading, emp
 - **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Done: models and migration, `metrics.py` (pure `cr-price-v1` math), `api.py` (client with 429/503 backoff), `ingest.py` (dedup ingestion and snapshots), management commands, tests. Live ingestion verified against the real API. Price page at `/` (`clashroyale/views.py`) shows the latest snapshot with change vs the previous hour. Next: `cr_load_mock` and mock fixtures.
 - **Cadence:** `cr_hourly` polls the top 1000 battlelogs and writes metric snapshots every hour; the leaderboard refreshes daily. Schedule it with cron (`5 * * * * <repo>/scripts/cr_hourly.sh`). On macOS, with the repo in `~/Documents`, Full Disk Access is needed for both `/usr/sbin/cron` and the venv's Python (python.org: `/Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app`).
 - **Time:** stored in UTC; displayed in `America/New_York` (`TIME_ZONE`).
-- **Not started:** Siege, trading, predictions, UI.
+- **Siege:** separate FastAPI + SQLAlchemy backend in `backend/` (Liquipedia pro matches; metric is operator ban rate). See README for setup and the overlaps with the Django app.
+- **Not started:** trading, predictions, shared dashboard. The shared stack for them is not decided yet.
 
 ## Local commands
 

@@ -1,8 +1,15 @@
-.env
-__pycache__/
-*.pyc
+# Python
 .venv/
 venv/
+__pycache__/
+*.pyc
+.pytest_cache/
 db.sqlite3
-.DS_Store
+
+# Keep environment variables out of version control
+.env
+
+# Local job output (cr_hourly, runserver)
 logs/
+
+.DS_Store
