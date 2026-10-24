@@ -1,0 +1,16 @@
+{% extends "markets/base.html" %}
+{% block content %}
+<div class="tabs">
+  <strong>Game:</strong>
+  <a href="?game=siege&window={{ window }}" class="{% if game == 'siege' %}on{% endif %}">Rainbow Six Siege (pro)</a>
+  <a href="?game=clash_royale&window={{ window }}" class="{% if game == 'clash_royale' %}on{% endif %}">Clash Royale</a>
+  &nbsp; <strong>Window:</strong>
+  <a href="?game={{ game }}&window=hourly" class="{% if window == 'hourly' %}on{% endif %}">Hourly</a>
+  <a href="?game={{ game }}&window=daily" class="{% if window == 'daily' %}on{% endif %}">Daily</a>
+  <a href="?game={{ game }}&window=weekly" class="{% if window == 'weekly' %}on{% endif %}">Weekly</a>
+</div>
+<p class="muted small">Will the stat end this window <strong>higher (UP)</strong> or <strong>lower (DOWN)</strong> than it started? A winning contract pays 100 pts. No change means the market is voided and refunded. Prices come from an automated market maker and move with every trade.</p>
+<div hx-get="?game={{ game }}&window={{ window }}" hx-trigger="every 3s" hx-swap="innerHTML">
+  {% include "markets/_market_grid.html" %}
+</div>
+{% endblock %}

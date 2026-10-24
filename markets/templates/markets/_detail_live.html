@@ -1,0 +1,30 @@
+{% load markets_extras %}
+<div class="panel">
+  <div class="row">
+    <span class="price up" style="font-size:20px">UP {{ card.up_price }}</span>
+    <div style="text-align:center">
+      <div class="muted small">start → now</div>
+      <div><strong>{{ card.start_pct|floatformat:2 }}{{ card.unit }}</strong> →
+        <strong>{% if card.cur_pct is not None %}{{ card.cur_pct|floatformat:2 }}{{ card.unit }}{% else %}—{% endif %}</strong>
+        <span class="chg {% if card.change_pp > 0 %}up{% elif card.change_pp < 0 %}down{% endif %}">({{ card.change_pp|signed:2 }})</span></div>
+      <div class="muted small">{% if card.cur_sample %}{{ card.cur_sample }} maps so far · {% endif %}{% if card.m.status == 'open' %}closes in {{ card.seconds_left|countdown }}{% else %}{{ card.m.status|upper }}{% endif %}</div>
+    </div>
+    <span class="price down" style="font-size:20px">DOWN {{ card.down_price }}</span>
+  </div>
+  <div class="bar"><div style="width:{{ card.up_price }}%"></div></div>
+  <div class="row small"><span><strong>{{ card.sides.up_people }}</strong> people UP · {{ card.sides.up_contracts }} contracts</span>
+    <span><strong>{{ card.sides.down_people }}</strong> people DOWN · {{ card.sides.down_contracts }} contracts</span></div>
+</div>
+{% if settlement %}
+<div class="panel"><strong>Result: <span class="{% if settlement.outcome == 'up' %}ok{% elif settlement.outcome == 'down' %}err{% endif %}">{{ settlement.outcome|upper }}</span></strong> ({{ settlement.reason }}) ·
+  end {{ settlement.end_numerator|default:"—" }}/{{ settlement.end_denominator|default:"—" }} · paid {{ settlement.total_paid_units|pts }} pts · {{ settlement.settled_at|date:"M j H:i:s" }}
+  <details class="small"><summary>Evidence</summary><pre style="white-space:pre-wrap">{{ settlement.evidence }}</pre></details></div>
+{% endif %}
+{% if position %}
+<div class="panel">Your position: <strong>{{ position.up_contracts }}</strong> UP, <strong>{{ position.down_contracts }}</strong> DOWN · net cost {{ position.net_cost_units|pts }} pts</div>
+{% endif %}
+{% if trades %}
+<div class="panel"><table><tr><th class="l">Time (UTC)</th><th class="l">Trade</th><th>Contracts</th><th>Points</th><th>UP price after</th></tr>
+{% for t in trades %}<tr><td class="l">{{ t.created_at|date:"M j H:i:s" }}</td><td class="l">{{ t.action }} {{ t.side|upper }}</td><td>{{ t.contracts }}</td><td>{{ t.units|pts }}</td><td>{{ t.up_price_after }}</td></tr>{% endfor %}
+</table></div>
+{% endif %}

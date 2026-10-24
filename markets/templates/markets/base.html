@@ -1,0 +1,59 @@
+{% load markets_extras %}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Market · {% block title %}Markets{% endblock %}</title>
+<script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
+<style>
+  :root { --bg:#f6f7f9; --panel:#fff; --text:#16181d; --muted:#646b78; --border:#e3e6eb;
+          --up:#13824a; --up-bg:#e3f5ea; --down:#c62f2f; --down-bg:#fbe6e6; --accent:#3b5bdb;
+          --warn-bg:#fff4d6; --warn:#8a5a00; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#101216; --panel:#181b21; --text:#e8eaee; --muted:#9aa1ad;
+          --border:#2a2e37; --up:#3ccf7f; --up-bg:#12301f; --down:#ff6b6b; --down-bg:#3a1717; --accent:#8ea6ff;
+          --warn-bg:#3a2e10; --warn:#f5c451; } }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+  main { max-width:1100px; margin:0 auto; padding:20px 16px 48px; }
+  a { color:var(--accent); text-decoration:none; }
+  header { display:flex; flex-wrap:wrap; align-items:center; gap:8px 16px; margin-bottom:14px; }
+  h1 { font-size:22px; margin:0; } h2 { font-size:16px; margin:22px 0 8px; }
+  .badge { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; border:1px solid var(--warn); color:var(--warn); }
+  .spacer { flex:1; } .muted { color:var(--muted); } .small { font-size:12px; }
+  .tabs a { color:var(--muted); margin-right:12px; } .tabs a.on { color:var(--accent); font-weight:600; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; }
+  .tile { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px; display:block; color:var(--text); }
+  .tile:hover { border-color:var(--accent); }
+  .tile .t { font-weight:600; margin-bottom:6px; } .row { display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
+  .price { display:inline-block; min-width:64px; text-align:center; padding:6px 8px; border-radius:8px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .price.up { color:var(--up); background:var(--up-bg); } .price.down { color:var(--down); background:var(--down-bg); }
+  .bar { height:6px; border-radius:3px; background:var(--down-bg); overflow:hidden; margin:8px 0 4px; }
+  .bar > div { height:100%; background:var(--up); }
+  .chg.up { color:var(--up); } .chg.down { color:var(--down); }
+  .panel { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; }
+  table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+  th, td { padding:6px 8px; text-align:right; border-bottom:1px solid var(--border); white-space:nowrap; }
+  th { font-size:12px; color:var(--muted); } th.l, td.l { text-align:left; }
+  form.trade { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+  input, select, button { font:inherit; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--panel); color:var(--text); }
+  button { cursor:pointer; font-weight:600; } button.up { background:var(--up); color:#fff; border:none; } button.down { background:var(--down); color:#fff; border:none; }
+  .err { color:var(--down); } .ok { color:var(--up); }
+  .warn { background:var(--warn-bg); color:var(--warn); padding:8px 12px; border-radius:10px; margin-bottom:12px; font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1><a href="{% url 'markets:list' %}" style="color:inherit">Meta Market</a></h1>
+  <span class="badge">{{ clock.label }}</span>
+  <span class="muted small">{{ now|date:"M j, H:i:s" }} UTC</span>
+  <span class="spacer"></span>
+  <a href="{% url 'markets:portfolio' %}">Portfolio</a>
+  <strong>{{ account.balance_units|pts }} pts</strong>
+  <a href="{% url 'cr_prices' %}" class="small">Clash prices</a>
+</header>
+<p class="warn">Experimental simulation with <strong>virtual points only</strong>. They can't be bought, withdrawn or redeemed. Siege data is pro matches from Liquipedia (CC-BY-SA). Not affiliated with Ubisoft, Supercell, Liquipedia or Kalshi.</p>
+{% block content %}{% endblock %}
+</main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "markets/base.html" %}
+{% block title %}{{ card.m.subject }}{% endblock %}
+{% block content %}
+<p><a href="{% url 'markets:list' %}?game={{ card.m.game }}&window={{ card.m.window }}">← all {{ card.m.window }} markets</a></p>
+<h2 style="font-size:20px">{{ card.m.title }}</h2>
+<div hx-get="{% url 'markets:detail' card.m.pk %}" hx-trigger="every 3s" hx-swap="innerHTML">
+  {% include "markets/_detail_live.html" %}
+</div>
+{% if card.m.status == 'open' %}
+<div class="panel">
+  <form class="trade" hx-post="{% url 'markets:quote' card.m.pk %}" hx-target="#quote">
+    {% csrf_token %}
+    <select name="action" aria-label="Buy or sell"><option value="buy">Buy</option><option value="sell">Sell</option></select>
+    <input name="contracts" type="number" min="1" max="10000" value="10" aria-label="Contracts" style="width:100px">
+    <span class="muted">contracts of</span>
+    <button class="up" name="side" value="up">UP</button>
+    <button class="down" name="side" value="down">DOWN</button>
+  </form>
+  <div id="quote" style="margin-top:10px"></div>
+</div>
+{% endif %}
+<div class="panel small muted">
+  <strong>Rules (frozen at creation).</strong>
+  Stat: {{ card.m.stat_kind }} of <strong>{{ card.m.subject }}</strong> ({{ card.m.formula_version }}), scope <code>{{ card.m.scope }}</code>.
+  Window {{ card.m.opens_at|date:"M j H:i" }} to {{ card.m.closes_at|date:"M j H:i" }} UTC. Settles after {{ card.m.settles_after|date:"H:i:s" }}.
+  Start value {{ card.m.start_numerator }}/{{ card.m.start_denominator }} = {{ card.start_pct|floatformat:4 }}{{ card.unit }}.
+  The end value is the stat using only data observed by the window end. UP if end &gt; start, DOWN if end &lt; start, otherwise VOID (refund).
+  Liquidity b = {{ card.m.liquidity_b }}.
+</div>
+{% endblock %}
