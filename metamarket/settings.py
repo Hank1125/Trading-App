@@ -134,3 +134,24 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Clash Royale API (key is IP-whitelisted; never expose it to clients)
 CLASHROYALE_API_KEY = os.environ.get('CLASHROYALE_API_KEY', '')
 CLASHROYALE_API_BASE = 'https://api.clashroyale.com/v1'
+
+
+# --- Markets (Kalshi-style UP/DOWN windows; virtual points only) ---------------------------
+# Which Siege evidence markets read: a replayed past event, or the live Liquipedia namespace.
+SIEGE_SCOPES = {
+    'replay:blast-2026-may': ['BLAST Major/2026/May', 'BLAST Major/2026/May/Phase 2'],
+    'live': ['BLAST Major/2026/November', 'BLAST Major/2026/November/Phase 2'],
+}
+SIEGE_NAMESPACE = os.environ.get('SIEGE_NAMESPACE', 'replay:blast-2026-may')
+if SIEGE_NAMESPACE not in SIEGE_SCOPES:
+    raise RuntimeError(f'SIEGE_NAMESPACE must be one of {sorted(SIEGE_SCOPES)}')
+_SIEGE_SCOPE = {'namespace': SIEGE_NAMESPACE, 'pages': SIEGE_SCOPES[SIEGE_NAMESPACE]}
+
+MARKET_WINDOWS = [w for w in os.environ.get('MARKET_WINDOWS', 'hourly,daily,weekly').split(',') if w]
+MARKET_SETTLEMENT_GRACE_SECONDS = int(os.environ.get('MARKET_SETTLEMENT_GRACE_SECONDS', '60'))
+MARKET_FEEDS = [
+    {'game': 'siege', 'stat_kind': 'operator_ban_rate', 'scope': _SIEGE_SCOPE, 'top': 8, 'windows': MARKET_WINDOWS},
+    {'game': 'siege', 'stat_kind': 'map_play_rate', 'scope': _SIEGE_SCOPE, 'top': 5, 'windows': MARKET_WINDOWS},
+    {'game': 'clash_royale', 'stat_kind': 'card_price', 'scope': {'source': 'live'}, 'top': 8,
+     'windows': MARKET_WINDOWS},
+]

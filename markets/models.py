@@ -166,3 +166,15 @@ class LedgerEntry(models.Model):
         constraints = [
             models.UniqueConstraint(fields=['account', 'operation_id'], name='ledger_operation_once'),
         ]
+
+
+class ClockState(models.Model):
+    """Singleton (pk=1). Present = replay demo clock; absent = live wall clock. See markets/clock.py."""
+
+    demo_start = models.DateTimeField()
+    real_start = models.DateTimeField()
+    speed = models.DecimalField(max_digits=8, decimal_places=2)
+    label = models.CharField(max_length=100)
+
+    class Meta:
+        constraints = [models.CheckConstraint(condition=Q(pk=1), name='clock_singleton')]
