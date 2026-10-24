@@ -3,7 +3,6 @@
 {% block head %}
 <style>
   :root { --flat: #7a808c; }
-  @media (prefers-color-scheme: dark) { :root { --flat: #8b919c; } }
   .page-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 4px 0 14px; }
   .page-head h2 { font-size: 20px; margin: 0; }
   .badge.live { color: var(--up); border-color: var(--up); }
@@ -21,6 +20,8 @@
   th.sorted::after { content: " ▾"; } th.sorted.asc::after { content: " ▴"; }
   tr:last-child td { border-bottom: none; }
   tr.up td.price { color: var(--up); } tr.down td.price { color: var(--down); }
+  tbody tr[data-href] { cursor: pointer; } tbody tr[data-href]:hover td { background: var(--bg); }
+  .card a { color: var(--text); font-weight: 600; } .card a:hover { color: var(--accent); }
   .card { display: flex; align-items: center; gap: 8px; }
   .card img { width: 28px; height: 34px; object-fit: contain; }
   .rarity { font-size: 11px; color: var(--muted); text-transform: capitalize; }
@@ -65,7 +66,8 @@
       {% if not previous_window_end %}Changes appear after the next hourly snapshot.{% endif %}
     </p>
 
-    <div class="toolbar"><input id="q" type="search" placeholder="Filter cards…" autocomplete="off"></div>
+    <div class="toolbar"><input id="q" type="search" placeholder="Filter cards…" autocomplete="off" aria-label="Filter cards">
+      <span class="muted small">Click a card to see how its price has changed.</span></div>
 
     <div class="table-wrap">
       <table id="t">
@@ -84,12 +86,12 @@
         </thead>
         <tbody>
           {% for r in rows %}
-          <tr class="{{ r.direction }}" data-name="{{ r.snap.card.name|lower }}">
+          <tr class="{{ r.direction }}" data-name="{{ r.snap.card.name|lower }}" data-href="{% url 'cr_card' r.snap.card.api_id %}{% if source != 'live' %}?source={{ source }}{% endif %}">
             <td class="muted" data-v="{{ r.rank }}">{{ r.rank }}</td>
             <td class="l" data-v="{{ r.snap.card.name }}">
               <div class="card">
                 {% if r.snap.card.icon_url %}<img src="{{ r.snap.card.icon_url }}" alt="" loading="lazy">{% endif %}
-                <div>{{ r.snap.card.name }}<div class="rarity">{{ r.snap.card.rarity }}</div></div>
+                <div><a href="{% url 'cr_card' r.snap.card.api_id %}{% if source != 'live' %}?source={{ source }}{% endif %}">{{ r.snap.card.name }}</a><div class="rarity">{{ r.snap.card.rarity }}</div></div>
               </div>
             </td>
             <td data-v="{{ r.snap.card.elixir|default_if_none:'-1' }}">{{ r.snap.card.elixir|default_if_none:"—" }}</td>
@@ -140,6 +142,11 @@
       })
       .forEach(r => tbody.appendChild(r));
   }));
+  // Clicking anywhere on a row opens that card's price history (the name itself is a real link).
+  tbody.addEventListener('click', e => {
+    const row = e.target.closest('tr[data-href]');
+    if (row && !e.target.closest('a')) window.location.href = row.dataset.href;
+  });
   document.getElementById('q').addEventListener('input', e => {
     const q = e.target.value.trim().toLowerCase();
     [...tbody.rows].forEach(r => { r.hidden = q && !r.dataset.name.includes(q); });

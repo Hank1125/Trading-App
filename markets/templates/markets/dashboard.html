@@ -3,100 +3,42 @@
 {% block title %}Dashboard{% endblock %}
 {% block head %}
 <style>
-  .cols { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:12px; }
-  .game h2 { margin-top:0; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
-  .kv { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:10px 0 12px; }
-  .kv div { background:var(--bg); border-radius:8px; padding:8px 10px; }
-  .kv .k { font-size:11px; color:var(--muted); } .kv .v { font-weight:700; font-variant-numeric:tabular-nums; }
-  .movers { list-style:none; margin:0; padding:0; }
-  .movers li { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px solid var(--border); }
-  .movers li:last-child { border-bottom:none; }
-  .movers .name { flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-  .movers .num { font-variant-numeric:tabular-nums; text-align:right; }
-  .movers .icon { width:28px; height:34px; } .movers .initial { width:28px; height:28px; font-size:12px; }
-  .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  @media (max-width: 600px) { .two { grid-template-columns:1fr; } }
-  .badge.live { border-color:var(--up); color:var(--up); }
+  .hero { display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px 16px; margin:4px 0 12px; }
+  .hero h2 { font-size:20px; margin:0; }
+  .facts { display:flex; flex-wrap:wrap; gap:8px; }
+  .fact { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:6px 10px; font-size:12px; color:var(--muted); }
+  .fact strong { color:var(--text); font-variant-numeric:tabular-nums; }
+  .grid.cards { grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); }
+  .cardtile { display:flex; flex-direction:column; gap:8px; }
+  .cardtile .main { display:flex; gap:10px; color:var(--text); }
+  .cardtile .art { width:58px; height:70px; object-fit:contain; flex:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,.18)); }
+  .cardtile .name { font-weight:700; line-height:1.2; }
+  .cardtile .meta { font-size:11px; color:var(--muted); text-transform:capitalize; }
+  .cardtile .px { font-size:20px; font-weight:800; font-variant-numeric:tabular-nums; margin-top:4px; }
+  .cardtile .splitbox { display:flex; flex-direction:column; gap:5px; background:var(--bg); border-radius:10px; padding:8px; }
+  .cardtile .splitbox .row { font-size:11px; }
+  .cardtile .foot { display:flex; justify-content:space-between; align-items:center; gap:6px; font-size:12px; }
+  .cardtile .foot .btn-trade { flex:none; padding:6px 16px; }
+  .legend { display:flex; align-items:center; gap:8px; font-size:12px; color:var(--muted); margin:0 0 10px; }
+  .legend .swatch { width:26px; height:14px; border-radius:4px; border:2px solid #f5c542; box-shadow:0 0 6px rgba(245,197,66,.5); }
 </style>
 {% endblock %}
 {% block content %}
-<div class="cols">
-
-  <section class="panel game">
-    <h2>Clash Royale
-      <span class="badge {% if cr_clock.mode == 'live' %}live{% endif %}">{{ cr_clock.label }}</span>
-    </h2>
-    {% if not cr.rows %}
-      <p class="muted">No price snapshots yet. Run <code>manage.py cr_hourly</code> to ingest live data.</p>
-    {% else %}
-      {% if cr.is_stale %}<p class="warn">Stale: the latest prices are for {{ cr.window_end|date:"M j, H:i T" }}, more than 2 hours ago. Check that the hourly job is running.</p>{% endif %}
-      <div class="kv">
-        <div><div class="k">Prices as of</div><div class="v">{{ cr.window_end|date:"H:i T" }}</div></div>
-        <div><div class="k">Open markets</div><div class="v">{{ cr_open_count }}</div></div>
-        <div><div class="k">Up / down</div><div class="v"><span class="ok">▲{{ cr.gainers }}</span> <span class="err">▼{{ cr.losers }}</span></div></div>
-      </div>
-      {% if not cr.previous_window_end %}
-        <p class="muted small">Price changes appear after the next hourly snapshot.</p>
-      {% else %}
-      <div class="two">
-        <div>
-          <h3 class="small muted">Biggest risers since {{ cr.previous_window_end|date:"H:i" }}</h3>
-          <ul class="movers">
-          {% for r in cr_risers %}
-            <li>{% if r.snap.card.icon_url %}<img class="icon" src="{{ r.snap.card.icon_url }}" alt="" loading="lazy" width="28" height="34">{% endif %}
-              <span class="name">{% if r.market_pk %}<a href="{% url 'markets:detail' r.market_pk %}">{{ r.snap.card.name }}</a>{% else %}{{ r.snap.card.name }}{% endif %}</span>
-              <span class="num">{{ r.snap.price|floatformat:2 }}<br><span class="small ok">▲ +{{ r.change|floatformat:2 }}</span></span></li>
-          {% empty %}<li class="muted small">No card rose this hour.</li>{% endfor %}
-          </ul>
-        </div>
-        <div>
-          <h3 class="small muted">Biggest fallers since {{ cr.previous_window_end|date:"H:i" }}</h3>
-          <ul class="movers">
-          {% for r in cr_fallers %}
-            <li>{% if r.snap.card.icon_url %}<img class="icon" src="{{ r.snap.card.icon_url }}" alt="" loading="lazy" width="28" height="34">{% endif %}
-              <span class="name">{% if r.market_pk %}<a href="{% url 'markets:detail' r.market_pk %}">{{ r.snap.card.name }}</a>{% else %}{{ r.snap.card.name }}{% endif %}</span>
-              <span class="num">{{ r.snap.price|floatformat:2 }}<br><span class="small err">▼ {{ r.change|floatformat:2 }}</span></span></li>
-          {% empty %}<li class="muted small">No card fell this hour.</li>{% endfor %}
-          </ul>
-        </div>
-      </div>
-      {% endif %}
-    {% endif %}
-    <p class="small" style="margin-bottom:0"><a href="{% url 'markets:list' %}?game=clash_royale">Trade Clash markets →</a> · <a href="{% url 'cr_prices' %}">All card prices →</a></p>
-  </section>
-
-  <section class="panel game">
-    <h2>Rainbow Six Siege <span class="muted small">pro</span>
-      <span class="badge {% if siege_clock.mode == 'live' %}live{% endif %}">{{ siege_clock.label }}</span>
-    </h2>
-    <div class="kv">
-      <div><div class="k">{% if siege_clock.mode == 'replay' %}Replay time{% else %}Time{% endif %}</div><div class="v">{{ siege_now|date:"M j, H:i" }}</div></div>
-      <div><div class="k">Open markets</div><div class="v">{{ siege_open_count }}</div></div>
-      <div><div class="k">Speed</div><div class="v">{{ siege_clock.speed|floatformat:"0" }}×</div></div>
-    </div>
-    <h3 class="small muted">Biggest moves in open hourly markets</h3>
-    <ul class="movers">
-    {% for c in siege_movers %}
-      <li><span class="initial" aria-hidden="true">{{ c.m.subject|slice:":1" }}</span>
-        <span class="name"><a href="{% url 'markets:detail' c.m.pk %}">{{ c.m.subject }}</a> <span class="muted small">{{ c.m.get_stat_kind_display|default:c.m.stat_kind }}</span></span>
-        <span class="num">{{ c.cur_pct|floatformat:1 }}%<br><span class="small {% if c.change_pp > 0 %}ok{% else %}err{% endif %}">{% if c.change_pp > 0 %}▲{% else %}▼{% endif %} {{ c.change_pp|signed:1 }} pp</span></span></li>
-    {% empty %}
-      <li class="muted small">{% if siege_open_count %}No stat has moved yet this window. Siege stats only change when a map finishes.{% else %}No open markets. Start the worker (<code>manage.py markets_worker</code>){% if siege_clock.mode != 'replay' %} or the replay clock{% endif %}.{% endif %}</li>
-    {% endfor %}
-    </ul>
-    <p class="small" style="margin-bottom:0"><a href="{% url 'markets:list' %}?game=siege">Trade Siege markets →</a></p>
-  </section>
-
-  <section class="panel">
-    <h2 style="margin-top:0">Your portfolio</h2>
-    <div class="kv">
-      <div><div class="k">Available</div><div class="v">{{ account.balance_units|pts }} pts</div></div>
-      <div><div class="k">Open positions</div><div class="v">{{ positions_open }}</div></div>
-      <div><div class="k">Started with</div><div class="v">10,000.00</div></div>
-    </div>
-    <p class="small muted">Buy UP if you think a stat ends the window higher than it started, DOWN if lower. A winning contract pays 100 pts; an unchanged stat voids the market and refunds you.</p>
-    <p class="small" style="margin-bottom:0"><a href="{% url 'markets:portfolio' %}">Positions and ledger →</a></p>
-  </section>
-
+<div class="hero">
+  <div>
+    <h2>Clash Royale cards</h2>
+    <div class="muted small">Every card's price this hour. Press <strong>Trade</strong> to bet whether it ends the hour UP or DOWN; tap a card for its price history.</div>
+  </div>
+  <div class="facts">
+    {% if summary.window_end %}<span class="fact">Prices as of <strong>{{ summary.window_end|date:"H:i T" }}</strong></span>{% endif %}
+    {% if summary.previous_window_end %}<span class="fact">vs {{ summary.previous_window_end|date:"H:i" }}: <strong class="ok">▲{{ summary.gainers }}</strong> <strong class="err">▼{{ summary.losers }}</strong></span>{% endif %}
+    <span class="fact"><a href="{% url 'cr_prices' %}">All card prices →</a></span>
+  </div>
+</div>
+{% if summary.is_stale %}<p class="warn">Stale: the latest prices are for {{ summary.window_end|date:"M j, H:i T" }}, more than 2 hours ago. Check that the hourly job is running.</p>{% endif %}
+<p class="legend"><span class="swatch" aria-hidden="true"></span> Gold = the {{ hot_top }} most-traded cards in the last hour{% if not hot_count %} (none yet; trade a card to light it up){% endif %}.</p>
+{% include "markets/_tile_filters.html" with target="live" default_sort="hot" %}
+<div id="live" hx-get="{% url 'home' %}" hx-trigger="every 5s" hx-swap="innerHTML">
+  {% include "markets/_dashboard_grid.html" %}
 </div>
 {% endblock %}

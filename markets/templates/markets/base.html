@@ -6,12 +6,10 @@
 <title>Meta Market · {% block title %}Markets{% endblock %}</title>
 <script src="https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js" integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous"></script>
 <style>
-  :root { --bg:#f6f7f9; --panel:#fff; --text:#16181d; --muted:#646b78; --border:#e3e6eb;
+  /* Light theme only, regardless of the system setting. */
+  :root { color-scheme:light; --bg:#f6f7f9; --panel:#fff; --text:#16181d; --muted:#646b78; --border:#e3e6eb;
           --up:#13824a; --up-bg:#e3f5ea; --down:#c62f2f; --down-bg:#fbe6e6; --accent:#3b5bdb;
           --warn-bg:#fff4d6; --warn:#8a5a00; }
-  @media (prefers-color-scheme: dark) { :root { --bg:#101216; --panel:#181b21; --text:#e8eaee; --muted:#9aa1ad;
-          --border:#2a2e37; --up:#3ccf7f; --up-bg:#12301f; --down:#ff6b6b; --down-bg:#3a1717; --accent:#8ea6ff;
-          --warn-bg:#3a2e10; --warn:#f5c451; } }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--bg); color:var(--text); font:14px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
   main { max-width:1100px; margin:0 auto; padding:20px 16px 48px; }
@@ -46,7 +44,28 @@
   .err-banner { background:var(--down-bg); color:var(--down); }
   .nav { display:flex; flex-wrap:wrap; gap:4px; } .nav a { color:var(--muted); padding:4px 10px; border-radius:8px; }
   .nav a.on { color:var(--accent); background:var(--panel); border:1px solid var(--border); font-weight:600; }
-  .balance { font-variant-numeric:tabular-nums; }
+  .balance { font-variant-numeric:tabular-nums; font-weight:700; color:var(--text); }
+  /* Hot cards: a gold border that slowly shimmers around the tile. */
+  @property --angle { syntax:'<angle>'; inherits:false; initial-value:0deg; }
+  .tile.hot { border:2px solid transparent; padding:11px;
+              background:linear-gradient(var(--panel), var(--panel)) padding-box,
+                         conic-gradient(from var(--angle), #a0740b, #f5c542, #fff3b0, #f5c542, #a0740b, #f5c542, #a0740b) border-box;
+              box-shadow:0 0 0 1px rgba(245,197,66,.25), 0 4px 18px rgba(245,197,66,.28); animation:gold-spin 4s linear infinite; }
+  .tile.hot:hover { border-color:transparent; box-shadow:0 0 0 1px rgba(245,197,66,.45), 0 6px 22px rgba(245,197,66,.4); }
+  @keyframes gold-spin { to { --angle:360deg; } }
+  @media (prefers-reduced-motion: reduce) { .tile.hot { animation:none; } }
+  .hot-chip { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:700; color:#8a5a00;
+              background:linear-gradient(90deg,#ffe9a8,#f5c542); padding:2px 8px; border-radius:999px; white-space:nowrap; }
+  .chip { display:inline-block; font-size:11px; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid var(--border); color:var(--muted); }
+  /* Trade buttons and the UP/DOWN split (labelled bar), shared by the dashboard tiles and the Markets table. */
+  .btn-trade { display:inline-block; background:var(--accent); color:#fff; font-weight:700; padding:6px 14px; border-radius:8px; text-align:center; }
+  .btn-trade:hover { filter:brightness(1.08); }
+  .btn-trade.off { background:var(--border); color:var(--muted); font-weight:600; cursor:default; filter:none; }
+  .split { display:flex; align-items:center; gap:6px; font-size:12px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .split .u { color:var(--up); white-space:nowrap; } .split .d { color:var(--down); white-space:nowrap; }
+  .split .bar { flex:1; height:10px; margin:0; border-radius:5px; }
+  .split.closed { opacity:.6; }
+  .chip.up { color:var(--up); background:var(--up-bg); border-color:transparent; } .chip.down { color:var(--down); background:var(--down-bg); border-color:transparent; }
   .scroll { overflow-x:auto; }
   .htmx-indicator { display:none; } .htmx-request .htmx-indicator, .htmx-request.htmx-indicator { display:inline; }
   .toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin:0 0 10px; }
@@ -64,15 +83,15 @@
   <span class="spacer"></span>
   {% with here=request.resolver_match.url_name %}
   <nav class="nav">
-    <a href="{% url 'home' %}" class="{% if here == 'home' %}on{% endif %}">Dashboard</a>
+    <a href="{% url 'home' %}" class="{% if here == 'home' or here == 'cr_prices' or here == 'cr_card' %}on{% endif %}">Dashboard</a>
     <a href="{% url 'markets:list' %}" class="{% if here == 'list' or here == 'detail' %}on{% endif %}">Markets</a>
-    <a href="{% url 'cr_prices' %}" class="{% if here == 'cr_prices' %}on{% endif %}">Clash prices</a>
     <a href="{% url 'markets:portfolio' %}" class="{% if here == 'portfolio' %}on{% endif %}">Portfolio</a>
+    <a href="{% url 'markets:account' %}" class="{% if here == 'account' %}on{% endif %}">Account</a>
   </nav>
   {% endwith %}
-  <strong class="balance">{{ account.balance_units|pts }} pts</strong>
+  <a class="balance" href="{% url 'markets:account' %}">{{ account.balance_units|pts }} pts</a>
 </header>
-<p class="warn">Experimental simulation with <strong>virtual points only</strong>. They can't be bought, withdrawn or redeemed. Siege data is pro matches from Liquipedia (CC-BY-SA). Not affiliated with Ubisoft, Supercell, Liquipedia or Kalshi.</p>
+<p class="warn">Experimental simulation with <strong>virtual points only</strong>. They can't be bought, withdrawn or redeemed. Card data comes from the official Clash Royale API. Not affiliated with Supercell or Kalshi.</p>
 <p id="conn-lost" class="warn err-banner" hidden role="status">Connection to the server lost. Retrying…</p>
 {% block content %}{% endblock %}
 </main>

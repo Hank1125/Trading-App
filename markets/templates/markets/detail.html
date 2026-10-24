@@ -1,7 +1,8 @@
 {% extends "markets/base.html" %}
 {% block title %}{{ card.m.subject }}{% endblock %}
 {% block content %}
-<p><a href="{% url 'markets:list' %}?game={{ card.m.game }}&window={{ card.m.window }}">← all {{ card.m.window }} markets</a></p>
+<p class="row"><a href="{% url 'markets:list' %}?window={{ card.m.window }}">← all {{ card.m.window }} markets</a>
+  {% if card_api_id %}<a href="{% url 'cr_card' card_api_id %}">{{ card.m.subject }} price history →</a>{% endif %}</p>
 <h2 class="subject" style="font-size:20px">
   {% if card.icon %}<img class="icon lg" src="{{ card.icon }}" alt="" width="56" height="67">{% else %}<span class="initial lg" aria-hidden="true">{{ card.m.subject|slice:":1" }}</span>{% endif %}
   <span>{{ card.m.title }}</span>

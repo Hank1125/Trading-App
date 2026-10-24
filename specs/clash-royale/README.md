@@ -1,6 +1,6 @@
 # Clash Royale — Data & Metrics Specs
 
-Branch: `CLashRoyale`. This branch covers only Clash Royale data. Siege, trading, and predictions are out of scope here.
+Branch: `CLashRoyale`. These specs cover Clash Royale data and metrics; trading and predictions live in the `markets` app.
 
 ## Phase goal
 

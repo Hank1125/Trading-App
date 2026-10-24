@@ -1,15 +1,93 @@
 {% extends "markets/base.html" %}
 {% load markets_extras %}
 {% block title %}Portfolio{% endblock %}
+{% block head %}
+<style>
+  .summary { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:6px 0 14px; }
+  .sum { background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:14px 16px; }
+  .sum .k { font-size:12px; color:var(--muted); }
+  .sum .v { font-size:24px; font-weight:800; font-variant-numeric:tabular-nums; letter-spacing:-.01em; }
+  .sum .sub { font-size:12px; margin-top:2px; font-variant-numeric:tabular-nums; }
+  .sum.total { background:linear-gradient(135deg, var(--panel), var(--bg)); border-color:var(--accent); }
+  .wallet { display:flex; flex-wrap:wrap; align-items:center; gap:8px 12px; background:var(--panel); border:1px dashed var(--border);
+            border-radius:12px; padding:10px 14px; margin-bottom:14px; font-size:13px; }
+  .wallet .dot { width:8px; height:8px; border-radius:50%; background:var(--warn); }
+  .positions { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; }
+  .pos { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:8px; color:var(--text); }
+  .pos:hover { border-color:var(--accent); }
+  .pos .head { display:flex; gap:10px; align-items:center; }
+  .pos .head .t { font-weight:700; } .pos .head .w { font-size:11px; color:var(--muted); }
+  .pos .nums { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; }
+  .pos .nums div { background:var(--bg); border-radius:8px; padding:6px 8px; }
+  .pos .nums .k { font-size:10px; color:var(--muted); text-transform:uppercase; letter-spacing:.04em; }
+  .pos .nums .v { font-weight:700; font-variant-numeric:tabular-nums; }
+  .pnl.pos-v { color:var(--up); } .pnl.neg-v { color:var(--down); }
+  .kind { display:inline-block; font-size:11px; font-weight:700; padding:2px 8px; border-radius:999px; text-transform:capitalize; }
+  .kind.grant { background:#e7ecff; color:#3b5bdb; } .kind.trade { background:var(--bg); color:var(--muted); border:1px solid var(--border); }
+  .kind.payout { background:var(--up-bg); color:var(--up); } .kind.refund { background:var(--warn-bg); color:var(--warn); }
+  .empty { text-align:center; padding:28px 14px; }
+</style>
+{% endblock %}
 {% block content %}
-<h2>Portfolio: {{ account.name }}</h2>
-<div class="panel">Available: <strong>{{ account.balance_units|pts }} pts</strong> <span class="muted small">(started with 10,000.00 virtual points)</span></div>
-<h2>Positions</h2>
-<div class="panel scroll"><table><tr><th class="l">Market</th><th>UP</th><th>DOWN</th><th>Net cost</th><th class="l">Status</th></tr>
-{% for p in positions %}<tr><td class="l"><a href="{% url 'markets:detail' p.market.pk %}">{{ p.market.title }}</a></td><td>{{ p.up_contracts }}</td><td>{{ p.down_contracts }}</td><td>{{ p.net_cost_units|pts }}</td><td class="l">{{ p.market.status }}</td></tr>
-{% empty %}<tr><td class="l muted" colspan="5">No positions yet.</td></tr>{% endfor %}</table></div>
-<h2>Ledger</h2>
-<div class="panel scroll"><table><tr><th class="l">Time</th><th class="l">Kind</th><th>Change</th><th class="l">Market</th></tr>
-{% for e in ledger %}<tr><td class="l">{{ e.created_at|date:"M j H:i:s" }}</td><td class="l">{{ e.kind }}</td><td class="{% if e.delta_units > 0 %}ok{% else %}err{% endif %}">{{ e.delta_units|pts }}</td><td class="l">{{ e.market.subject|default:"" }}</td></tr>
-{% empty %}<tr><td class="l muted" colspan="4">No activity yet.</td></tr>{% endfor %}</table></div>
+<h2 style="font-size:20px;margin-top:4px">Your portfolio</h2>
+
+<div class="summary">
+  <div class="sum total"><div class="k">Total value</div><div class="v">{{ equity|pts }}</div><div class="sub muted">available + open positions at sell value</div></div>
+  <div class="sum"><div class="k">Available to trade</div><div class="v">{{ account.balance_units|pts }}</div><div class="sub muted">points</div></div>
+  <div class="sum"><div class="k">Open positions</div><div class="v">{{ open_value|pts }}</div>
+    <div class="sub {% if unrealized > 0 %}ok{% elif unrealized < 0 %}err{% else %}muted{% endif %}">{% if unrealized > 0 %}+{% endif %}{{ unrealized|pts }} unrealized</div></div>
+  <div class="sum"><div class="k">Realized P/L</div><div class="v {% if realized > 0 %}ok{% elif realized < 0 %}err{% endif %}">{% if realized > 0 %}+{% endif %}{{ realized|pts }}</div><div class="sub muted">settled, voided and sold markets</div></div>
+</div>
+
+<div class="wallet"><span class="dot" aria-hidden="true"></span><strong>Wallet:</strong> demo points (virtual, not redeemable).
+  <span class="muted">TrueMarket wallet integration is coming; balances here will then come from it.</span>
+  <span class="spacer"></span><a href="{% url 'markets:account' %}">Account →</a></div>
+
+<h2>Open positions {% if active %}<span class="muted small">({{ active|length }})</span>{% endif %}</h2>
+{% if active %}
+<div class="positions">
+  {% for r in active %}
+  <a class="pos" href="{% url 'markets:detail' r.m.pk %}">
+    <div class="head">
+      {% if r.icon %}<img class="icon" src="{{ r.icon }}" alt="" loading="lazy" width="36" height="43">{% endif %}
+      <div><div class="t">{{ r.m.subject }}</div><div class="w">{{ r.m.window|capfirst }} · closes {{ r.m.closes_at|date:"M j, H:i T" }}</div></div>
+    </div>
+    <div>
+      {% if r.p.up_contracts %}<span class="chip up">UP × {{ r.p.up_contracts }} @ {{ r.up_price }}</span>{% endif %}
+      {% if r.p.down_contracts %}<span class="chip down">DOWN × {{ r.p.down_contracts }} @ {{ r.down_price }}</span>{% endif %}
+    </div>
+    <div class="nums">
+      <div><div class="k">Cost</div><div class="v">{{ r.cost|pts }}</div></div>
+      <div><div class="k">Sell now</div><div class="v">{% if r.value is not None %}{{ r.value|pts }}{% else %}—{% endif %}</div></div>
+      <div><div class="k">P/L</div><div class="v pnl {% if r.pnl > 0 %}pos-v{% elif r.pnl < 0 %}neg-v{% endif %}">{% if r.pnl is None %}—{% else %}{% if r.pnl > 0 %}+{% endif %}{{ r.pnl|pts }}{% endif %}</div></div>
+    </div>
+  </a>
+  {% endfor %}
+</div>
+{% else %}
+<div class="panel empty muted">No open positions. <a href="{% url 'home' %}">Pick a card on the dashboard</a> and buy UP or DOWN.</div>
+{% endif %}
+
+{% if history %}
+<h2>Results</h2>
+<div class="panel scroll"><table>
+<tr><th class="l">Market</th><th class="l">Result</th><th>Cost</th><th>Returned</th><th>P/L</th></tr>
+{% for r in history %}
+<tr><td class="l"><a href="{% url 'markets:detail' r.m.pk %}">{{ r.m.title }}</a></td>
+  <td class="l">{% if r.settlement %}<span class="chip {% if r.settlement.outcome == 'up' %}up{% elif r.settlement.outcome == 'down' %}down{% endif %}">{{ r.settlement.outcome|upper }}</span>{% elif r.m.status == 'open' %}<span class="chip">sold</span>{% else %}<span class="chip">{{ r.m.status }}</span>{% endif %}</td>
+  <td>{{ r.cost|pts }}</td><td>{{ r.value|pts }}</td>
+  <td class="{% if r.pnl > 0 %}ok{% elif r.pnl < 0 %}err{% endif %}">{% if r.pnl > 0 %}+{% endif %}{{ r.pnl|pts }}</td></tr>
+{% endfor %}
+</table></div>
+{% endif %}
+
+<h2>Activity</h2>
+<div class="panel scroll"><table>
+<tr><th class="l">When</th><th class="l">Type</th><th class="l">Market</th><th>Change</th></tr>
+{% for e in ledger %}
+<tr><td class="l muted">{{ e.created_at|date:"M j, H:i:s" }}</td><td class="l"><span class="kind {{ e.kind }}">{{ e.kind }}</span></td>
+  <td class="l">{% if e.market %}<a href="{% url 'markets:detail' e.market.pk %}">{{ e.market.subject }}</a>{% else %}<span class="muted">Starting balance</span>{% endif %}</td>
+  <td class="{% if e.delta_units > 0 %}ok{% else %}err{% endif %}"><strong>{% if e.delta_units > 0 %}+{% endif %}{{ e.delta_units|pts }}</strong></td></tr>
+{% empty %}<tr><td class="l muted" colspan="4">No activity yet.</td></tr>{% endfor %}
+</table></div>
 {% endblock %}

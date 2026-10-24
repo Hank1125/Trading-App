@@ -27,8 +27,6 @@ WINDOW_LENGTH = {
 }
 
 STAT_LABELS = {
-    'operator_ban_rate': 'ban rate',
-    'map_play_rate': 'play rate',
     'card_price': 'price',
 }
 
@@ -126,6 +124,6 @@ def tick(now: datetime, game: str | None = None) -> dict:
 
 
 def tick_all() -> dict[str, dict]:
-    """One tick per game, each at its own clock (Siege may be replaying while Clash is live)."""
+    """One tick per game that has a feed, each at its own clock (live UTC unless a demo clock is set)."""
     games = sorted({feed['game'] for feed in settings.MARKET_FEEDS})
     return {game: tick(clock.now(game), game) for game in games}

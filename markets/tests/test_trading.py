@@ -17,11 +17,11 @@ MAX = 10**12  # "any price" limit for buys
 
 def make_market(**over) -> Market:
     fields = dict(
-        game='siege',
-        stat_kind='operator_ban_rate',
-        subject='Mira',
-        scope={'namespace': 'replay:test', 'pages': ['P']},
-        formula_version='pro-ban-rate-v1',
+        game='clash_royale',
+        stat_kind='card_price',
+        subject='Hog Rider',
+        scope={'source': 'live'},
+        formula_version='cr-price-v1',
         window='hourly',
         opens_at=T0,
         closes_at=T0 + timedelta(hours=1),
@@ -29,7 +29,7 @@ def make_market(**over) -> Market:
         liquidity_b=Decimal(100),
         start_numerator=72,
         start_denominator=100,
-        title='Mira ban rate, 2-3 PM: UP or DOWN?',
+        title='Hog Rider price, 2-3 PM: UP or DOWN?',
     )
     fields.update(over)
     return Market.objects.create(**fields)

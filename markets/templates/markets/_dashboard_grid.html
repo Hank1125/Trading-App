@@ -1,0 +1,46 @@
+{% load markets_extras %}
+{% if tiles %}
+<div class="grid cards">
+{% for t in tiles %}{% with card=t.snap.card m=t.market %}
+  <div class="tile cardtile{% if t.hot %} hot{% endif %}" data-name="{{ card.name|lower }}" data-value="{{ t.snap.price|floatformat:'4u' }}"
+       data-move="{{ t.change|default_if_none:0|floatformat:'4u' }}" data-up="{{ m.up_price|default:0 }}"
+       data-people="{% if m %}{{ m.sides.up_people|add:m.sides.down_people }}{% else %}0{% endif %}" data-hot="{{ t.hot.contracts|default:0 }}">
+    <a class="main" href="{% url 'cr_card' card.api_id %}" title="{{ card.name }} price history">
+      {% if card.icon_url %}<img class="art" src="{{ card.icon_url }}" alt="" loading="lazy" width="58" height="70">{% endif %}
+      <div>
+        <div class="name">{{ card.name }}</div>
+        <div class="meta">{{ card.rarity }}{% if card.elixir is not None %} · {{ card.elixir }} elixir{% endif %} · #{{ t.rank }}</div>
+        <div class="px">{{ t.snap.price|floatformat:2 }}</div>
+        {% if t.direction == 'up' %}<span class="chip up">▲ +{{ t.change|floatformat:2 }}</span>
+        {% elif t.direction == 'down' %}<span class="chip down">▼ {{ t.change|floatformat:2 }}</span>
+        {% elif t.direction == 'flat' %}<span class="chip">• unchanged</span>
+        {% else %}<span class="chip">new</span>{% endif %}
+      </div>
+    </a>
+    {% if m %}
+      <div class="splitbox{% if not t.is_open %} closed{% endif %}">
+        <div class="row small"><span class="muted">{% if t.is_open %}UP / DOWN split{% else %}Last market (closed {{ m.m.closes_at|date:"H:i" }}){% endif %}</span>
+          <span class="muted">{% if t.is_open %}⏱ <span class="cd" data-deadline="{{ m.deadline_ms }}">{{ m.real_seconds_left|countdown }}</span>{% elif m.m.settlement.outcome %}{{ m.m.settlement.outcome|upper }}{% else %}settling{% endif %}</span></div>
+        <div class="split{% if not t.is_open %} closed{% endif %}" title="UP {{ m.up_price }} · DOWN {{ m.down_price }}">
+          <span class="u">UP {{ m.up_price }}</span>
+          <div class="bar"><div style="width:{{ m.up_price }}%"></div></div>
+          <span class="d">{{ m.down_price }} DOWN</span>
+        </div>
+        <div class="row small muted"><span>▲ {{ m.sides.up_people }} {{ m.sides.up_people|pluralize:"person,people" }} · {{ m.sides.up_contracts }} ctr</span>
+          <span>{{ m.sides.down_contracts }} ctr · {{ m.sides.down_people }} {{ m.sides.down_people|pluralize:"person,people" }} ▼</span></div>
+      </div>
+    {% else %}
+      <div class="splitbox"><div class="muted small">No market for this card yet. Markets open for every card in each hourly price snapshot.</div></div>
+    {% endif %}
+    <div class="foot">
+      {% if t.is_open %}<a class="btn-trade" href="{% url 'markets:detail' m.m.pk %}">Trade</a>
+      {% else %}<span class="btn-trade off" title="This hour's market opens once its price snapshot is written">Opens ~{{ next_open|date:"H:i" }}</span>{% endif %}
+      {% if t.hot %}<span class="hot-chip" title="{{ t.hot.contracts }} contracts traded in the last hour">🔥 {{ t.hot.contracts }} traded</span>{% endif %}
+      <a href="{% url 'cr_card' card.api_id %}">History →</a>
+    </div>
+  </div>
+{% endwith %}{% endfor %}
+</div>
+{% else %}
+<div class="panel muted"><strong>No card prices yet.</strong> Run <code>manage.py cr_hourly</code> to ingest live data; cards appear once the first hourly snapshot is written.</div>
+{% endif %}

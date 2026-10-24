@@ -1,54 +1,83 @@
 {% extends "markets/base.html" %}
+{% block title %}Markets{% endblock %}
+{% block head %}
+<style>
+  .page-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px; margin:4px 0 8px; }
+  .page-head h2 { font-size:20px; margin:0; }
+  .table-wrap { overflow-x:auto; background:var(--panel); border:1px solid var(--border); border-radius:12px; }
+  .table-wrap th, .table-wrap td { padding:8px 10px; vertical-align:middle; }
+  .table-wrap th { font-weight:600; cursor:pointer; user-select:none; position:sticky; top:0; background:var(--panel); z-index:1; }
+  .table-wrap th:hover { color:var(--text); }
+  .table-wrap th.nosort { cursor:default; }
+  th.sorted::after { content:" ▾"; } th.sorted.asc::after { content:" ▴"; }
+  tbody tr:last-child td { border-bottom:none; }
+  tbody tr:hover td { background:var(--bg); }
+  .cardcell { display:flex; align-items:center; gap:8px; }
+  .cardcell img { width:30px; height:36px; object-fit:contain; }
+  .cardcell a { color:var(--text); font-weight:600; } .cardcell a:hover { color:var(--accent); }
+  .rarity { font-size:11px; color:var(--muted); text-transform:capitalize; }
+  .chg { display:inline-block; min-width:70px; padding:2px 8px; border-radius:6px; font-weight:600; }
+  .chg.up { color:var(--up); background:var(--up-bg); } .chg.down { color:var(--down); background:var(--down-bg); }
+  .chg.flat, .chg.none { color:var(--muted); }
+  .split { min-width:190px; }
+  .traders { font-size:12px; white-space:nowrap; }
+  tr.hot td { background:linear-gradient(90deg, rgba(245,197,66,.16), rgba(245,197,66,0) 60%); }
+  tr.hot td:first-child { box-shadow:inset 4px 0 0 #f5c542; }
+  .badge.low { color:var(--warn); background:var(--warn-bg); border:none; font-weight:500; }
+</style>
+{% endblock %}
 {% block content %}
-<div class="tabs">
-  <strong>Game:</strong>
-  <a href="?game=siege&window={{ window }}" class="{% if game == 'siege' %}on{% endif %}">Rainbow Six Siege (pro)</a>
-  <a href="?game=clash_royale&window={{ window }}" class="{% if game == 'clash_royale' %}on{% endif %}">Clash Royale</a>
-  &nbsp; <strong>Window:</strong>
-  <a href="?game={{ game }}&window=hourly" class="{% if window == 'hourly' %}on{% endif %}">Hourly</a>
-  <a href="?game={{ game }}&window=daily" class="{% if window == 'daily' %}on{% endif %}">Daily</a>
-  <a href="?game={{ game }}&window=weekly" class="{% if window == 'weekly' %}on{% endif %}">Weekly</a>
+<div class="page-head">
+  <h2>Markets</h2>
+  <div class="tabs">
+    <strong>Window:</strong>
+    <a href="?window=hourly" class="{% if window == 'hourly' %}on{% endif %}">Hourly</a>
+    <a href="?window=daily" class="{% if window == 'daily' %}on{% endif %}">Daily</a>
+    <a href="?window=weekly" class="{% if window == 'weekly' %}on{% endif %}">Weekly</a>
+  </div>
 </div>
-<p class="muted small">Will the stat end this window <strong>higher (UP)</strong> or <strong>lower (DOWN)</strong> than it started? A winning contract pays 100 pts. No change means the market is voided and refunded. Prices come from an automated market maker and move with every trade.</p>
+<p class="muted small">One row per card. Will the card's price end the {{ window }} window <strong>higher (UP)</strong> or <strong>lower (DOWN)</strong> than it started? The bar is the market's UP/DOWN split; a winning contract pays 100 pts, and an unchanged price voids the market with a refund. Gold rows are the most traded in the last hour. Full card stats: <a href="{% url 'cr_prices' %}">Clash prices</a>.</p>
 {% if cr_stale_since %}<p class="warn">Stale: the latest Clash prices are for {{ cr_stale_since|date:"M j, H:i T" }}, more than 2 hours ago, so no new markets will open until the hourly job runs again.</p>{% endif %}
 <div class="toolbar">
-  <input id="q" type="search" placeholder="Search {% if game == 'clash_royale' %}cards{% else %}operators and maps{% endif %}…" autocomplete="off" aria-label="Search markets">
-  <select id="sort" aria-label="Sort markets">
-    <option value="name">Name</option>
-    <option value="value">{% if game == 'clash_royale' %}Card price{% else %}Stat value{% endif %} (high → low)</option>
-    <option value="move">Biggest move this window</option>
-    <option value="up">UP price (high → low)</option>
-    <option value="people">Most traders</option>
-  </select>
+  <input id="q" type="search" placeholder="Filter cards…" autocomplete="off" aria-label="Filter cards">
   <span id="shown" class="muted small"></span>
 </div>
-<div id="live" hx-get="?game={{ game }}&window={{ window }}" hx-trigger="every 3s" hx-swap="innerHTML">
-  {% include "markets/_market_grid.html" %}
+<div id="live" hx-get="?window={{ window }}" hx-trigger="every 5s" hx-swap="innerHTML">
+  {% include "markets/_market_table.html" %}
 </div>
 <script>
-  // Search and sort tiles in the browser; re-applied after each 3 s htmx refresh so they stick.
+  // Click a header to sort, type to filter; both survive the 5 s live refresh of #live.
   (() => {
-    const q = document.getElementById('q'), sort = document.getElementById('sort'), shown = document.getElementById('shown');
-    const num = (el, k) => parseFloat(el.dataset[k]) || 0;
-    const keys = {
-      name: (a, b) => a.dataset.name.localeCompare(b.dataset.name),
-      value: (a, b) => num(b, 'value') - num(a, 'value'),
-      move: (a, b) => Math.abs(num(b, 'move')) - Math.abs(num(a, 'move')),
-      up: (a, b) => num(b, 'up') - num(a, 'up'),
-      people: (a, b) => num(b, 'people') - num(a, 'people'),
-    };
+    const live = document.getElementById('live'), q = document.getElementById('q'), shown = document.getElementById('shown');
+    let sortIdx = null, asc = false;
     function apply() {
-      const grid = document.querySelector('#live .grid');
-      if (!grid) { shown.textContent = ''; return; }
-      const tiles = [...grid.children], term = q.value.trim().toLowerCase();
-      tiles.sort(keys[sort.value]).forEach(t => grid.appendChild(t));
+      const table = live.querySelector('table.cards');
+      if (!table) { shown.textContent = ''; return; }
+      const tbody = table.tBodies[0], headers = [...table.tHead.rows[0].cells];
+      if (sortIdx !== null) {
+        const th = headers[sortIdx], num = th.dataset.type === 'num', key = r => r.cells[sortIdx].dataset.v || '';
+        headers.forEach(h => h.classList.remove('sorted', 'asc'));
+        th.classList.add('sorted'); if (asc) th.classList.add('asc');
+        [...tbody.rows].sort((a, b) => {
+          const d = num ? (parseFloat(key(a)) || 0) - (parseFloat(key(b)) || 0) : key(a).localeCompare(key(b));
+          return asc ? d : -d;
+        }).forEach(r => tbody.appendChild(r));
+      }
+      const term = q.value.trim().toLowerCase();
       let n = 0;
-      tiles.forEach(t => { t.hidden = !!term && !t.dataset.name.includes(term); n += !t.hidden; });
-      shown.textContent = term ? `${n} of ${tiles.length}` : `${tiles.length} markets`;
+      [...tbody.rows].forEach(r => { r.hidden = !!term && !r.dataset.name.includes(term); n += !r.hidden; });
+      shown.textContent = term ? `${n} of ${tbody.rows.length} cards` : `${tbody.rows.length} cards`;
     }
+    live.addEventListener('click', e => {
+      const th = e.target.closest('table.cards thead th');
+      if (!th || th.classList.contains('nosort')) return;
+      const idx = th.cellIndex;
+      asc = sortIdx === idx ? !asc : th.dataset.type === 'text';
+      sortIdx = idx;
+      apply();
+    });
     q.addEventListener('input', apply);
-    sort.addEventListener('change', apply);
-    document.body.addEventListener('htmx:afterSwap', e => { if (e.detail.target.id === 'live') apply(); });
+    document.body.addEventListener('htmx:afterSwap', e => { if (e.detail.target === live) apply(); });
     apply();
   })();
 </script>

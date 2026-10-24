@@ -1,0 +1,95 @@
+{% extends "markets/base.html" %}
+{% block title %}{{ card.name }} price history{% endblock %}
+{% block head %}
+<style>
+  :root { --flat: #7a808c; }
+  .crumbs { display:flex; flex-wrap:wrap; justify-content:space-between; gap:8px; margin:4px 0 10px; font-size:13px; }
+  .card-head { display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin-bottom:12px; }
+  .card-head img { width:72px; height:86px; object-fit:contain; filter:drop-shadow(0 2px 5px rgba(0,0,0,.2)); }
+  .card-head h2 { font-size:22px; margin:0; }
+  .card-head .meta { font-size:12px; color:var(--muted); text-transform:capitalize; }
+  .card-head .now { font-size:30px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1; }
+  .card-head .spacer { flex:1; }
+  .trade-btn { display:inline-block; background:var(--accent); color:#fff; font-weight:700; padding:9px 14px; border-radius:10px; }
+  .stats { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:10px; margin-bottom:12px; }
+  .stat { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
+  .stat .k { color:var(--muted); font-size:12px; } .stat .v { font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; }
+  .ranges a { color:var(--muted); padding:3px 10px; border-radius:8px; margin-left:2px; }
+  .ranges a.on { color:var(--accent); background:var(--panel); border:1px solid var(--border); font-weight:600; }
+  .chart-head { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:4px; }
+  svg .dot { opacity:0; } svg .hit:hover + .dot, svg .dot.last { opacity:1; }
+  .chg { font-weight:600; } .chg.up { color:var(--up); } .chg.down { color:var(--down); } .chg.flat, .chg.none { color:var(--flat); }
+  .badge.low { color:var(--warn); background:var(--warn-bg); border:none; font-weight:500; }
+</style>
+{% endblock %}
+{% block content %}
+<div class="crumbs">
+  <a href="{% url 'cr_prices' %}">← All card prices</a>
+  <span class="muted">{{ source|upper }} data · {{ formula_version }}</span>
+</div>
+
+<div class="card-head">
+  {% if card.icon_url %}<img src="{{ card.icon_url }}" alt="" width="72" height="86">{% endif %}
+  <div>
+    <h2>{{ card.name }}</h2>
+    <div class="meta">{{ card.rarity }}{% if card.elixir is not None %} · {{ card.elixir }} elixir{% endif %}{% if rank %} · #{{ rank }} of {{ ranked }} by price{% endif %}</div>
+    {% if latest %}<div class="now">{{ latest.price|floatformat:2 }}
+      {% if change_1h is not None %}<span class="chg {{ direction_1h }}" style="font-size:15px">{% if direction_1h == 'up' %}▲ +{% elif direction_1h == 'down' %}▼ {% else %}• {% endif %}{{ change_1h|floatformat:2 }} this hour</span>{% endif %}</div>{% endif %}
+  </div>
+  <span class="spacer"></span>
+  {% if market_pk %}<a class="trade-btn" href="{% url 'markets:detail' market_pk %}">Trade {{ card.name }} UP / DOWN →</a>{% endif %}
+</div>
+
+{% if not latest %}
+  <div class="panel muted">No {{ source }} price snapshots for this card yet. Prices appear after the hourly job (<code>cr_hourly</code>) runs.</div>
+{% else %}
+  {% if is_stale %}<p class="warn">Stale: the latest snapshot is for {{ latest.window_end|date:"M j, H:i T" }}, more than 2 hours ago.</p>{% endif %}
+
+  <div class="stats">
+    <div class="stat"><div class="k">Change ({{ range }})</div><div class="v chg {{ direction_range }}">{% if change_range is None %}—{% else %}{% if direction_range == 'up' %}+{% endif %}{{ change_range|floatformat:2 }}{% endif %}</div></div>
+    <div class="stat"><div class="k">High ({{ range }})</div><div class="v">{{ high|floatformat:2 }}</div></div>
+    <div class="stat"><div class="k">Low ({{ range }})</div><div class="v">{{ low|floatformat:2 }}</div></div>
+    <div class="stat"><div class="k">Usage</div><div class="v">{{ latest.usage_pct|floatformat:2 }}%</div></div>
+    <div class="stat"><div class="k">Win rate</div><div class="v">{% if latest.win_rate is None %}—{% else %}{{ latest.win_rate|floatformat:2 }}%{% endif %}</div></div>
+    <div class="stat"><div class="k">Decks (n)</div><div class="v">{{ latest.appearances }}{% if latest.is_low_sample %} <span class="badge low">low sample</span>{% endif %}</div></div>
+  </div>
+
+  <div class="panel">
+    <div class="chart-head">
+      <span class="small muted">Hourly price, {{ chart.start|date:"M j H:i" }} → {{ chart.end|date:"M j H:i T" }} · {{ rows|length }} snapshot{{ rows|length|pluralize }}</span>
+      <span class="ranges small">{% for r in ranges %}<a href="?range={{ r }}{% if source != 'live' %}&source={{ source }}{% endif %}" class="{% if r == range %}on{% endif %}">{{ r }}</a>{% endfor %}</span>
+    </div>
+    {% if rows|length < 2 %}<p class="small muted">Only one snapshot so far. The line appears after the next hourly update.</p>{% endif %}
+    <svg viewBox="0 0 {{ chart.w }} {{ chart.h }}" width="100%" role="img" aria-label="{{ card.name }} price over time, now {{ latest.price|floatformat:2 }}" style="display:block">
+      {% for g in chart.grid %}<line x1="{{ chart.x_left }}" x2="{{ chart.x_right }}" y1="{{ g.y }}" y2="{{ g.y }}" stroke="var(--border)"/>
+      <text x="{{ chart.x_left|add:'-6' }}" y="{{ g.y }}" dy="4" text-anchor="end" font-size="11" fill="var(--muted)">{{ g.label }}</text>{% endfor %}
+      {% with color=chart.direction %}
+      <path d="{{ chart.area }}" fill="{% if color == 'down' %}var(--down){% else %}var(--up){% endif %}" opacity="0.10"/>
+      <path d="{{ chart.path }}" fill="none" stroke="{% if color == 'down' %}var(--down){% else %}var(--up){% endif %}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+      {% for d in chart.dots %}
+        <circle class="hit" cx="{{ d.x }}" cy="{{ d.y }}" r="10" fill="transparent"><title>{{ d.t|date:"M j, H:i T" }}: {{ d.price|floatformat:2 }}</title></circle>
+        <circle class="dot{% if forloop.last %} last{% endif %}" cx="{{ d.x }}" cy="{{ d.y }}" r="4.5" fill="{% if color == 'down' %}var(--down){% else %}var(--up){% endif %}" pointer-events="none"/>
+      {% endfor %}
+      <text x="{{ chart.last.x }}" y="{{ chart.last.y }}" dx="-8" dy="-10" text-anchor="end" font-size="13" font-weight="700" fill="{% if color == 'down' %}var(--down){% else %}var(--up){% endif %}">{{ chart.last.price|floatformat:2 }}</text>
+      {% endwith %}
+      <text x="{{ chart.x_left }}" y="{{ chart.label_y }}" font-size="11" fill="var(--muted)">{{ chart.start|date:"M j H:i" }}</text>
+      <text x="{{ chart.x_right }}" y="{{ chart.label_y }}" font-size="11" fill="var(--muted)" text-anchor="end">{{ chart.end|date:"M j H:i T" }}</text>
+    </svg>
+  </div>
+
+  <h2>Every snapshot</h2>
+  <div class="panel scroll"><table>
+    <tr><th class="l">Window end</th><th>Price</th><th>Change</th><th>Usage %</th><th>Win rate %</th><th>Adj. WR %</th><th>Decks (n)</th></tr>
+    {% for r in rows %}
+    <tr><td class="l">{{ r.snap.window_end|date:"M j, H:i T" }}</td>
+      <td><strong>{{ r.snap.price|floatformat:2 }}</strong></td>
+      <td class="chg {{ r.direction }}">{% if r.change is None %}—{% elif r.direction == 'up' %}▲ +{{ r.change|floatformat:2 }}{% elif r.direction == 'down' %}▼ {{ r.change|floatformat:2 }}{% else %}• {{ r.change|floatformat:2 }}{% endif %}</td>
+      <td>{{ r.snap.usage_pct|floatformat:2 }}</td>
+      <td>{% if r.snap.win_rate is None %}—{% else %}{{ r.snap.win_rate|floatformat:2 }}{% endif %}</td>
+      <td>{{ r.snap.adj_win_rate|floatformat:2 }}</td>
+      <td>{{ r.snap.appearances }}</td></tr>
+    {% endfor %}
+  </table></div>
+  <p class="small muted">Price = usage% × (adjusted win rate ÷ 50), from Path of Legends 1v1 battles involving a top-1000 player over the 7 days before each window end.</p>
+{% endif %}
+{% endblock %}

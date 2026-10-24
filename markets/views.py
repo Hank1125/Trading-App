@@ -1,15 +1,16 @@
 import uuid
+from datetime import timedelta
 from fractions import Fraction
 
-from django.db.models import Count, Q
+from django.db.models import Count, Q, Sum
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
 from clashroyale.models import Card, CardMetricSnapshot, Source
 from clashroyale.views import price_summary, stale_since
-from markets import chart, clock, lmsr, providers, services
-from markets.models import Account, Market, Position, Trade
+from markets import chart, clock, lmsr, providers, scheduler, services
+from markets.models import Account, LedgerEntry, Market, Position, Trade
 
 
 def _account(request) -> Account:
@@ -31,10 +32,12 @@ def _card(m: Market, now, mode=None, cur=_UNSET, sides=None) -> dict:
     speed = (mode or clock.mode(m.game))['speed']
     demo_left = max(int((m.closes_at - now).total_seconds()), 0)
     real_left = demo_left / speed
-    start_pct = 100 * m.start_numerator / m.start_denominator
+    # Rates (e.g. ban rate) display as %, prices as the value itself: a 17.49 card price is not "1749%".
+    scale = 1 if m.stat_kind == 'card_price' else 100
+    start_pct = scale * m.start_numerator / m.start_denominator
     if cur is _UNSET:
         cur = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, min(now, m.closes_at))
-    cur_pct = cur.percent if cur else None
+    cur_pct = scale * float(cur.fraction) if cur else None
     return {
         'm': m,
         'up_price': lmsr.display_price(state, 'up'),
@@ -53,18 +56,24 @@ def _card(m: Market, now, mode=None, cur=_UNSET, sides=None) -> dict:
     }
 
 
-def _clash_prices_by(markets: list[Market], now) -> dict:
-    """providers.value_at for many open Clash card-price markets in one query per source.
+def _as_of(m: Market, now):
+    return min(now, m.closes_at)  # the time _card reads a market's value at
 
-    Same rule as the provider: the card's latest snapshot with window_end <= as_of (here `now`, since every
-    market passed is still open). Keyed by (source, card name).
+
+def _clash_prices_by(markets: list[Market], now) -> dict:
+    """providers.value_at for many Clash card-price markets: one query per (source, read time).
+
+    Same rule as the provider: the card's latest snapshot with window_end <= as_of, where as_of is `now` for
+    open markets and the close time for closed ones. Keyed by (source, card name, as_of).
     """
-    wanted = [m for m in markets if m.game == 'clash_royale' and m.stat_kind == 'card_price' and m.closes_at > now]
+    groups: dict = {}
+    for m in markets:
+        if m.game == 'clash_royale' and m.stat_kind == 'card_price':
+            groups.setdefault((m.scope.get('source', 'live'), _as_of(m, now)), []).append(m.subject)
     out = {}
-    for source in {m.scope.get('source', 'live') for m in wanted}:
-        names = [m.subject for m in wanted if m.scope.get('source', 'live') == source]
+    for (source, as_of), names in groups.items():
         snaps = (
-            CardMetricSnapshot.objects.filter(card__name__in=names, source=source, window_end__lte=now)
+            CardMetricSnapshot.objects.filter(card__name__in=names, source=source, window_end__lte=as_of)
             .order_by('card__name', '-window_end', '-id')
             .distinct('card__name')
             .select_related('card')
@@ -72,7 +81,7 @@ def _clash_prices_by(markets: list[Market], now) -> dict:
         for snap in snaps:
             f = Fraction(snap.price)
             evidence = {'card_metric_snapshot_id': snap.pk, 'price': str(snap.price), 'as_of': snap.window_end.isoformat()}
-            out[(source, snap.card.name)] = providers.StatPoint(f.numerator, f.denominator, evidence)
+            out[(source, snap.card.name, as_of)] = providers.StatPoint(f.numerator, f.denominator, evidence)
     return out
 
 
@@ -94,14 +103,14 @@ def _cards(markets, now) -> list[dict]:
         p = people.get(m.pk, {})
         sides = {'up_people': p.get('up', 0), 'down_people': p.get('down', 0),
                  'up_contracts': int(m.q_up), 'down_contracts': int(m.q_down)}  # fmt: skip
-        key = (m.scope.get('source', 'live'), m.subject)
-        batched = m.game == 'clash_royale' and m.stat_kind == 'card_price' and m.closes_at > now
+        key = (m.scope.get('source', 'live'), m.subject, _as_of(m, now))
+        batched = m.game == 'clash_royale' and m.stat_kind == 'card_price'
         cards.append(_card(m, now, mode=modes[m.game], sides=sides, cur=prices.get(key) if batched else _UNSET))
     return _with_icons(cards)
 
 
 def _with_icons(cards: list[dict]) -> list[dict]:
-    """Attach each Clash card's icon URL (a market's subject is the card name); Siege has no images."""
+    """Attach each Clash card's icon URL (a market's subject is the card name)."""
     names = [c['m'].subject for c in cards if c['m'].game == 'clash_royale']
     icons = dict(Card.objects.filter(name__in=names).values_list('name', 'icon_url')) if names else {}
     for c in cards:
@@ -109,81 +118,114 @@ def _with_icons(cards: list[dict]) -> list[dict]:
     return cards
 
 
-def _header(request, game: str) -> dict:
-    account = _account(request)
-    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
+GAME = Market.Game.CLASH_ROYALE  # the only game the app trades
+HOT_WINDOW = timedelta(hours=1)
+HOT_TOP = 5
 
 
-def _open_markets(game: str, now):
-    return Market.objects.filter(game=game, opens_at__lte=now, closes_at__gt=now)
+def _header(request) -> dict:
+    return {'account': _account(request), 'clock': clock.mode(GAME), 'now': clock.now(GAME)}
+
+
+def _clash_market(pk: int) -> Market:
+    return get_object_or_404(Market, pk=pk, game=GAME)
+
+
+def _hot(now) -> dict:
+    """The HOT_TOP cards with the most contracts traded in the last hour (any window), each with >= 1 trade."""
+    rows = (
+        Trade.objects.filter(market__game=GAME, created_at__gt=now - HOT_WINDOW, created_at__lte=now)
+        .values('market__subject')
+        .annotate(contracts=Sum('contracts'), trades=Count('id'))
+        .order_by('-contracts', 'market__subject')[:HOT_TOP]
+    )
+    return {r['market__subject']: r for r in rows}
+
+
+def _market_per_card(window: str, now) -> dict:
+    """{card name: _card dict} for `window`: the card's open market, else its most recent one.
+
+    Between :00 and ~:05 the new hourly markets wait for that hour's price snapshot; showing the market that
+    just closed keeps each card's UP/DOWN split visible (marked closed) instead of an empty slot.
+    """
+    open_now = list(Market.objects.filter(game=GAME, window=window, opens_at__lte=now, closes_at__gt=now))
+    latest = (
+        Market.objects.filter(game=GAME, window=window, opens_at__lte=now)
+        .exclude(subject__in=[m.subject for m in open_now])
+        .select_related('settlement')
+        .order_by('subject', '-opens_at')
+        .distinct('subject')
+    )
+    return {c['m'].subject: c for c in _cards([*open_now, *latest], now)}
+
+
+def _card_rows(window: str, now) -> tuple[dict, list[dict]]:
+    """Price summary plus, for every card in the latest snapshot, its market for `window` and hot status."""
+    summary = price_summary(Source.LIVE)
+    markets = _market_per_card(window, now)
+    hot = _hot(now)
+    rows = []
+    for r in summary['rows']:
+        name = r['snap'].card.name
+        m = markets.get(name)
+        rows.append({**r, 'market': m, 'is_open': bool(m) and m['m'].status == Market.Status.OPEN and m['m'].closes_at > now,
+                     'hot': hot.get(name)})  # fmt: skip
+    return summary, rows
+
+
+def _next_open(window: str, now):
+    """When the current window's markets should appear: ~5 min after the window starts (cron writes prices at :05)."""
+    return scheduler.window_start(window, now) + timedelta(minutes=5)
 
 
 def dashboard(request):
-    """Both games at a glance: data mode and freshness, open markets, biggest movers, and the portfolio."""
-    account = _account(request)
-
-    cr_now = clock.now('clash_royale')
-    cr_open = _open_markets('clash_royale', cr_now)
-    cr_hourly = dict(cr_open.filter(window='hourly').values_list('subject', 'pk'))
-    cr = price_summary(Source.LIVE)
-    moved = [r for r in cr['rows'] if r['direction'] in ('up', 'down')]
-    for r in moved:
-        r['market_pk'] = cr_hourly.get(r['snap'].card.name)
-    # By price change, not percent: % has no value from a 0 price and exaggerates low-priced cards.
-    risers = sorted((r for r in moved if r['direction'] == 'up'), key=lambda r: r['change'], reverse=True)
-    fallers = sorted((r for r in moved if r['direction'] == 'down'), key=lambda r: r['change'])
-
-    siege_now = clock.now('siege')
-    siege_open = _open_markets('siege', siege_now)
-    siege_cards = _cards(siege_open.filter(window='hourly'), siege_now)
-    siege_movers = sorted(
-        (c for c in siege_cards if c['change_pp']), key=lambda c: abs(c['change_pp']), reverse=True
-    )[:5]
-
-    return render(request, 'markets/dashboard.html', {
-        'account': account,
-        'positions_open': Position.objects.filter(account=account, market__status='open').count(),
-        'cr': cr,
-        'cr_clock': clock.mode('clash_royale'),
-        'cr_now': cr_now,
-        'cr_open_count': cr_open.count(),
-        'cr_risers': risers[:5],
-        'cr_fallers': fallers[:5],
-        'siege_clock': clock.mode('siege'),
-        'siege_now': siege_now,
-        'siege_open_count': siege_open.count(),
-        'siege_movers': siege_movers,
-    })
+    """Home: every Clash card with its price, hourly change and hourly market. The most-traded cards glow gold."""
+    ctx = _header(request)
+    now = ctx['now']
+    summary, tiles = _card_rows('hourly', now)
+    ctx.update(summary=summary, tiles=tiles, hot_count=sum(1 for t in tiles if t['hot']), hot_top=HOT_TOP,
+               next_open=_next_open('hourly', now))  # fmt: skip
+    template = 'markets/_dashboard_grid.html' if request.headers.get('HX-Request') else 'markets/dashboard.html'
+    return render(request, template, ctx)
 
 
 def market_list(request):
     window = request.GET.get('window', 'hourly')
-    game = request.GET.get('game', 'siege')
-    if window not in Market.Window.values or game not in Market.Game.values:
-        return HttpResponseBadRequest('unknown window or game')
-    ctx = _header(request, game)
+    if window not in Market.Window.values:
+        return HttpResponseBadRequest('unknown window')
+    ctx = _header(request)
     now = ctx['now']
-    markets = Market.objects.filter(window=window, game=game, opens_at__lte=now, closes_at__gt=now)
+    summary, rows = _card_rows(window, now)
+    recent = list(
+        Market.objects.filter(game=GAME, window=window, status__in=['settled', 'void'])
+        .select_related('settlement')
+        .order_by('-closes_at')[:8]
+    )
+    for m in recent:
+        s = getattr(m, 'settlement', None)
+        m.start_value = m.start_numerator / m.start_denominator
+        m.end_value = s.end_numerator / s.end_denominator if s and s.end_denominator else None
     ctx.update(
         window=window,
-        game=game,
-        cards=_cards(markets.order_by('stat_kind', 'subject'), now),
-        recent=Market.objects.filter(game=game, window=window, status__in=['settled', 'void'])
-        .select_related('settlement')
-        .order_by('-closes_at')[:8],
-        cr_stale_since=stale_since(Source.LIVE) if game == 'clash_royale' else None,
+        summary=summary,
+        rows=rows,
+        open_count=sum(1 for r in rows if r['is_open']),
+        next_open=_next_open(window, now),
+        recent=recent,
+        cr_stale_since=stale_since(Source.LIVE),
     )
-    template = 'markets/_market_grid.html' if request.headers.get('HX-Request') else 'markets/list.html'
+    template = 'markets/_market_table.html' if request.headers.get('HX-Request') else 'markets/list.html'
     return render(request, template, ctx)
 
 
 def market_detail(request, pk: int):
-    market = get_object_or_404(Market, pk=pk)
-    ctx = _header(request, market.game)
+    market = _clash_market(pk)
+    ctx = _header(request)
     card = _with_icons([_card(market, ctx['now'])])[0]
     points = list(market.trades.order_by('created_at', 'id').values_list('created_at', 'up_price_after'))
     ctx.update(
         card=card,
+        card_api_id=Card.objects.filter(name=market.subject).values_list('api_id', flat=True).first(),
         chart=chart.price_chart(market.opens_at, market.closes_at, ctx['now'], points, card['up_price']),
         position=Position.objects.filter(account=ctx['account'], market=market).first(),
         trades=Trade.objects.filter(market=market)[:15],
@@ -204,7 +246,7 @@ def _trade_args(request):
 @require_POST
 def quote(request, pk: int):
     """Step 1: show the exact cost/proceeds and lock it in as the trade's limit."""
-    market = get_object_or_404(Market, pk=pk)
+    market = _clash_market(pk)
     side, action, contracts = _trade_args(request)
     ctx = {'market': market, 'side': side, 'action': action, 'contracts': contracts}
     try:
@@ -218,6 +260,7 @@ def quote(request, pk: int):
 @require_POST
 def trade(request, pk: int):
     """Step 2: execute at the quoted limit (rejected with a fresh quote if the price moved)."""
+    market = _clash_market(pk)
     account = _account(request)
     side, action, contracts = _trade_args(request)
     ctx = {'market_id': pk}
@@ -230,28 +273,81 @@ def trade(request, pk: int):
             contracts=contracts,
             limit_units=int(request.POST.get('limit', '-1')),
             idempotency_key=request.POST.get('key', ''),
-            now=clock.now(Market.objects.get(pk=pk).game),
+            now=clock.now(market.game),
         )
         ctx['trade'] = result.trade
     except services.TradeError as e:
         ctx['error'] = str(e)
         ctx['fresh_units'] = e.quote_units
-    except Market.DoesNotExist:
-        raise Http404 from None
     return render(request, 'markets/_trade_result.html', ctx)
 
 
+def _sell_value_units(market: Market, position: Position) -> int | None:
+    """What selling the whole position would return right now (exact LMSR proceeds), or None if not quotable."""
+    try:
+        return sum(
+            services.quote_units(market, side, 'sell', n)
+            for side, n in (('up', position.up_contracts), ('down', position.down_contracts))
+            if n
+        )
+    except (services.TradeError, lmsr.LmsrError):
+        return None
+
+
 def portfolio(request):
-    ctx = _header(request, request.GET.get('game', 'siege') if request.GET.get('game') in Market.Game.values else 'siege')
+    ctx = _header(request)
     account = ctx['account']
-    positions = (
-        Position.objects.filter(account=account)
-        .select_related('market')
-        .order_by('-market__closes_at')
+    positions = list(
+        Position.objects.filter(account=account, market__game=GAME)
+        .select_related('market', 'market__settlement')
+        .order_by('-market__closes_at', '-id')
     )
+    returned = dict(
+        account.ledger.filter(kind__in=[LedgerEntry.Kind.PAYOUT, LedgerEntry.Kind.REFUND], market__isnull=False)
+        .values('market_id')
+        .annotate(total=Sum('delta_units'))
+        .values_list('market_id', 'total')
+    )
+    icons = dict(Card.objects.filter(name__in={p.market.subject for p in positions}).values_list('name', 'icon_url'))
+    active, history = [], []
+    for p in positions:
+        m = p.market
+        row = {'p': p, 'm': m, 'icon': icons.get(m.subject, ''), 'cost': p.net_cost_units}
+        if m.status == Market.Status.OPEN and (p.up_contracts or p.down_contracts):
+            state = services.state_of(m)
+            value = _sell_value_units(m, p)
+            row.update(value=value, pnl=None if value is None else value - p.net_cost_units,
+                       up_price=lmsr.display_price(state, 'up'), down_price=lmsr.display_price(state, 'down'))  # fmt: skip
+            active.append(row)
+        else:
+            got = returned.get(m.pk, 0)
+            row.update(value=got, pnl=got - p.net_cost_units, settlement=getattr(m, 'settlement', None))
+            history.append(row)
+
+    open_value = sum(r['value'] or 0 for r in active)
+    open_cost = sum(r['cost'] for r in active)
     ctx.update(
-        positions=positions,
-        trades=Trade.objects.filter(account=account).select_related('market')[:30],
-        ledger=account.ledger.order_by('-created_at', '-id')[:30],
+        active=active,
+        history=history,
+        open_cost=open_cost,
+        open_value=open_value,
+        unrealized=open_value - open_cost,
+        realized=sum(r['pnl'] for r in history),
+        equity=account.balance_units + open_value,
+        ledger=account.ledger.select_related('market').order_by('-created_at', '-id')[:30],
     )
     return render(request, 'markets/portfolio.html', ctx)
+
+
+def account_page(request):
+    """Who you are and what you hold. Name, budget and balance will come from the TrueMarket wallet."""
+    ctx = _header(request)
+    account = ctx['account']
+    ctx.update(
+        starting_units=account.ledger.filter(kind=LedgerEntry.Kind.GRANT).aggregate(t=Sum('delta_units'))['t'] or 0,
+        trades_count=Trade.objects.filter(account=account).count(),
+        open_positions=Position.objects.filter(account=account, market__game=GAME, market__status='open')
+        .exclude(up_contracts=0, down_contracts=0)
+        .count(),
+    )
+    return render(request, 'markets/account.html', ctx)

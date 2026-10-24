@@ -8,13 +8,13 @@ from markets.models import ClockState
 
 
 class Command(BaseCommand):
-    help = 'Start (or stop) the accelerated replay clock shared by the web app and the worker.'
+    help = 'Start (or stop) an accelerated demo clock for a game, shared by the web app and the worker.'
 
     def add_arguments(self, parser):
-        parser.add_argument('--start', default='2026-05-10T15:00:00+00:00', help='demo time to start at (ISO)')
+        parser.add_argument('--start', help='demo time to start at (ISO, with timezone); required unless --stop')
         parser.add_argument('--speed', default='60', help='demo seconds per real second (60 = 1 demo hour/min)')
-        parser.add_argument('--label', default='BLAST Major Salt Lake City 2026, real results')
-        parser.add_argument('--game', default='siege', choices=['siege', 'clash_royale'])
+        parser.add_argument('--label', default='Demo clock')
+        parser.add_argument('--game', default='clash_royale', choices=['clash_royale'])
         parser.add_argument('--stop', action='store_true', help='remove the demo clock (back to live time)')
 
     def handle(self, *args, start, speed, label, game, stop, **options):
@@ -22,6 +22,8 @@ class Command(BaseCommand):
             ClockState.objects.filter(game=game).delete()
             self.stdout.write(f'{game} demo clock removed; {game} markets use live UTC time')
             return
+        if not start:
+            raise CommandError('--start is required (e.g. 2026-11-06T14:00:00+00:00)')
         try:
             demo_start = datetime.fromisoformat(start)
             speed_value = Decimal(speed)

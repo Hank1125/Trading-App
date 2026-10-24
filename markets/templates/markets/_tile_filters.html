@@ -1,0 +1,42 @@
+{# Search + sort for a live-refreshing tile grid. Include with target="<id of the htmx container>" and default_sort. #}
+<div class="toolbar">
+  <input id="q" type="search" placeholder="Search cards…" autocomplete="off" aria-label="Search cards">
+  <select id="sort" aria-label="Sort cards">
+    <option value="hot"{% if default_sort == 'hot' %} selected{% endif %}>Hottest first</option>
+    <option value="value"{% if default_sort == 'value' %} selected{% endif %}>Card price (high → low)</option>
+    <option value="move"{% if default_sort == 'move' %} selected{% endif %}>Biggest move</option>
+    <option value="up"{% if default_sort == 'up' %} selected{% endif %}>UP price (high → low)</option>
+    <option value="people"{% if default_sort == 'people' %} selected{% endif %}>Most traders</option>
+    <option value="name"{% if default_sort == 'name' %} selected{% endif %}>Name</option>
+  </select>
+  <span id="shown" class="muted small"></span>
+</div>
+<script>
+  // Search and sort tiles in the browser; re-applied after each htmx refresh of #{{ target }} so they stick.
+  (() => {
+    const q = document.getElementById('q'), sort = document.getElementById('sort'), shown = document.getElementById('shown');
+    const num = (el, k) => parseFloat(el.dataset[k]) || 0;
+    const keys = {
+      hot: (a, b) => num(b, 'hot') - num(a, 'hot') || num(b, 'value') - num(a, 'value'),
+      value: (a, b) => num(b, 'value') - num(a, 'value'),
+      move: (a, b) => Math.abs(num(b, 'move')) - Math.abs(num(a, 'move')),
+      up: (a, b) => num(b, 'up') - num(a, 'up'),
+      people: (a, b) => num(b, 'people') - num(a, 'people'),
+      name: (a, b) => a.dataset.name.localeCompare(b.dataset.name),
+    };
+    function apply() {
+      const grid = document.querySelector('#{{ target }} .grid');
+      if (!grid) { shown.textContent = ''; return; }
+      const tiles = [...grid.children], term = q.value.trim().toLowerCase();
+      tiles.sort(keys[sort.value]).forEach(t => grid.appendChild(t));
+      let n = 0;
+      tiles.forEach(t => { t.hidden = !!term && !t.dataset.name.includes(term); n += !t.hidden; });
+      shown.textContent = term ? `${n} of ${tiles.length}` : `${tiles.length} cards`;
+    }
+    q.addEventListener('input', apply);
+    sort.addEventListener('change', apply);
+    document.body.addEventListener('htmx:afterSwap', e => { if (e.detail.target.id === '{{ target }}') apply(); });
+    document.addEventListener('DOMContentLoaded', apply);
+    apply();
+  })();
+</script>

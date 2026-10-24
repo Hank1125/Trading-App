@@ -1,11 +1,12 @@
 from datetime import timedelta
 from decimal import Decimal
 
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.utils import timezone
 
+from .history import price_chart
 from .metrics import FORMULA_VERSION
-from .models import Battle, CardMetricSnapshot, IngestionRun, Source
+from .models import Battle, Card, CardMetricSnapshot, IngestionRun, Source
 
 STALE_AFTER = timedelta(hours=2)
 # Prices are shown to 2 dp, so a smaller move is "flat" rather than a "+0.00" rise.
@@ -85,6 +86,65 @@ def price_summary(source=Source.LIVE):
         losers=sum(r['direction'] == 'down' for r in rows),
     )
     return summary
+
+
+HISTORY_RANGES = {'24h': timedelta(hours=24), '7d': timedelta(days=7), 'all': None}
+HISTORY_MAX_POINTS = 24 * 30
+
+
+def card_history(request, api_id):
+    """One card's hourly price over time, with the usage and win-rate behind each point."""
+    card = get_object_or_404(Card, api_id=api_id, is_support=False)
+    source = request.GET.get('source', Source.LIVE)
+    if source not in Source.values:
+        source = Source.LIVE
+    rng = request.GET.get('range', '7d')
+    if rng not in HISTORY_RANGES:
+        rng = '7d'
+
+    snaps = CardMetricSnapshot.objects.filter(card=card, source=source, formula_version=FORMULA_VERSION)
+    latest = snaps.order_by('-window_end').first()
+    context = {'card': card, 'source': source, 'range': rng, 'ranges': list(HISTORY_RANGES),
+               'formula_version': FORMULA_VERSION, 'latest': latest}  # fmt: skip
+    if latest is None:
+        return render(request, 'clashroyale/card_history.html', context)
+
+    in_range = snaps
+    if HISTORY_RANGES[rng]:
+        in_range = in_range.filter(window_end__gte=latest.window_end - HISTORY_RANGES[rng])
+    points = list(in_range.order_by('-window_end')[:HISTORY_MAX_POINTS])[::-1]  # oldest first
+
+    rows = []
+    for prev, snap in zip([None, *points], points, strict=False):
+        change = snap.price - prev.price if prev is not None else None
+        rows.append({'snap': snap, 'change': change, 'direction': _direction(change)})
+    rows.reverse()  # newest first for the table
+
+    first = points[0]
+    prev_hour = rows[1]['snap'] if len(rows) > 1 else None
+    from markets.models import Market  # lazy: markets depends on this app, not the other way round
+
+    context.update(
+        rows=rows,
+        chart=price_chart([(s.window_end, s.price) for s in points]),
+        change_1h=latest.price - prev_hour.price if prev_hour else None,
+        change_range=latest.price - first.price if len(points) > 1 else None,
+        direction_1h=_direction(latest.price - prev_hour.price) if prev_hour else 'none',
+        direction_range=_direction(latest.price - first.price) if len(points) > 1 else 'none',
+        high=max(s.price for s in points),
+        low=min(s.price for s in points),
+        rank=CardMetricSnapshot.objects.filter(
+            source=source, formula_version=FORMULA_VERSION, window_end=latest.window_end, price__gt=latest.price
+        ).count() + 1,
+        ranked=CardMetricSnapshot.objects.filter(
+            source=source, formula_version=FORMULA_VERSION, window_end=latest.window_end
+        ).count(),
+        is_stale=timezone.now() - latest.window_end > STALE_AFTER,
+        market_pk=Market.objects.filter(
+            game='clash_royale', subject=card.name, window='hourly', status='open'
+        ).order_by('-opens_at').values_list('pk', flat=True).first(),
+    )
+    return render(request, 'clashroyale/card_history.html', context)
 
 
 def prices(request):

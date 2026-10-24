@@ -32,7 +32,6 @@ class Account(models.Model):
 
 class Market(models.Model):
     class Game(models.TextChoices):
-        SIEGE = 'siege'
         CLASH_ROYALE = 'clash_royale'
 
     class Window(models.TextChoices):
@@ -48,9 +47,9 @@ class Market(models.Model):
 
     # Frozen rules (never edited after creation).
     game = models.CharField(max_length=20, choices=Game.choices)
-    stat_kind = models.CharField(max_length=40)  # e.g. operator_ban_rate, map_play_rate, card_price
-    subject = models.CharField(max_length=100)  # operator / map / card name
-    scope = models.JSONField()  # e.g. {"namespace": ..., "pages": [...]} or {"source": "live"}
+    stat_kind = models.CharField(max_length=40)  # card_price
+    subject = models.CharField(max_length=100)  # card name
+    scope = models.JSONField()  # e.g. {"source": "live"}
     formula_version = models.CharField(max_length=40)
     window = models.CharField(max_length=6, choices=Window.choices)
     opens_at = models.DateTimeField()
@@ -171,10 +170,10 @@ class LedgerEntry(models.Model):
 class ClockState(models.Model):
     """Replay clock for one game. A game with a row uses its demo clock; without one, live UTC.
 
-    Per game so a Siege replay (May 2026) never hides live Clash Royale data. See markets/clock.py.
+    Per game, so a demo clock for one game never moves another game's time. See markets/clock.py.
     """
 
-    game = models.CharField(max_length=20, unique=True, default='siege')  # existing row = Siege replay
+    game = models.CharField(max_length=20, unique=True, default='clash_royale')
     demo_start = models.DateTimeField()
     real_start = models.DateTimeField()
     speed = models.DecimalField(max_digits=8, decimal_places=2)

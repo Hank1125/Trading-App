@@ -1,0 +1,81 @@
+{% load markets_extras %}
+{% if rows %}
+<div class="table-wrap">
+  <table class="cards">
+    <thead>
+      <tr>
+        <th data-type="num">#</th>
+        <th class="l" data-type="text">Card</th>
+        <th data-type="num">Price</th>
+        <th data-type="num">Change</th>
+        <th class="l" data-type="num">UP / DOWN split</th>
+        <th data-type="num">Traders</th>
+        <th data-type="num">Closes in</th>
+        <th class="nosort"></th>
+        <th data-type="num">Usage %</th>
+        <th data-type="num">Win rate %</th>
+        <th data-type="num">Decks (n)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in rows %}{% with card=r.snap.card m=r.market %}
+      <tr class="{{ r.direction }}{% if r.hot %} hot{% endif %}" data-name="{{ card.name|lower }}">
+        <td class="muted" data-v="{{ r.rank }}">{{ r.rank }}</td>
+        <td class="l" data-v="{{ card.name }}">
+          <div class="cardcell">
+            {% if card.icon_url %}<img src="{{ card.icon_url }}" alt="" loading="lazy" width="30" height="36">{% endif %}
+            <div><a href="{% url 'cr_card' card.api_id %}">{{ card.name }}</a>{% if r.hot %} <span class="hot-chip" title="{{ r.hot.contracts }} contracts traded in the last hour">🔥 Hot</span>{% endif %}
+              <div class="rarity">{{ card.rarity }}{% if card.elixir is not None %} · {{ card.elixir }} elixir{% endif %}</div></div>
+          </div>
+        </td>
+        <td data-v="{{ r.snap.price|floatformat:'4u' }}"><strong>{{ r.snap.price|floatformat:2 }}</strong></td>
+        <td data-v="{{ r.change|default_if_none:0|floatformat:'4u' }}">
+          {% if r.change is None %}<span class="chg none">new</span>
+          {% else %}<span class="chg {{ r.direction }}">{% if r.direction == 'up' %}▲ +{% elif r.direction == 'down' %}▼ {% else %}• {% endif %}{{ r.change|floatformat:2 }}</span>{% endif %}
+        </td>
+        <td class="l" data-v="{{ m.up_price|default:0 }}">
+          {% if m %}
+            <div class="split{% if not r.is_open %} closed{% endif %}" title="UP {{ m.up_price }} · DOWN {{ m.down_price }}{% if not r.is_open %} (closed market){% endif %}">
+              <span class="u">UP {{ m.up_price }}</span>
+              <div class="bar"><div style="width:{{ m.up_price }}%"></div></div>
+              <span class="d">{{ m.down_price }} DOWN</span>
+            </div>
+          {% else %}<span class="muted small">No market yet</span>{% endif %}
+        </td>
+        <td data-v="{% if m %}{{ m.sides.up_people|add:m.sides.down_people }}{% else %}0{% endif %}">
+          {% if m %}<span class="traders"><span class="ok">▲ {{ m.sides.up_people }}</span> · <span class="err">▼ {{ m.sides.down_people }}</span></span>
+            <div class="muted small">{{ m.sides.up_contracts }} / {{ m.sides.down_contracts }} ctr</div>{% else %}—{% endif %}
+        </td>
+        <td data-v="{% if r.is_open %}{{ m.real_seconds_left|floatformat:'0u' }}{% else %}-1{% endif %}">
+          {% if r.is_open %}<span class="cd" data-deadline="{{ m.deadline_ms }}">{{ m.real_seconds_left|countdown }}</span>
+          {% elif m %}<span class="muted small">Closed {{ m.m.closes_at|date:"H:i" }}{% if m.m.settlement.outcome %} · {{ m.m.settlement.outcome|upper }}{% else %} · settling{% endif %}</span>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          {% if r.is_open %}<a class="btn-trade" href="{% url 'markets:detail' m.m.pk %}">Trade</a>
+          {% elif window == 'hourly' %}<span class="btn-trade off" title="This hour's market opens once its price snapshot is written">Opens ~{{ next_open|date:"H:i" }}</span>
+          {% else %}<span class="btn-trade off" title="Opens once the {{ window }} window's start price exists">Not open</span>{% endif %}
+        </td>
+        <td data-v="{{ r.snap.usage_pct|floatformat:'4u' }}">{{ r.snap.usage_pct|floatformat:2 }}</td>
+        <td data-v="{{ r.snap.win_rate|default_if_none:'-1'|floatformat:'4u' }}">{% if r.snap.win_rate is None %}<span class="muted">—</span>{% else %}{{ r.snap.win_rate|floatformat:2 }}{% endif %}</td>
+        <td data-v="{{ r.snap.appearances }}">{{ r.snap.appearances }}{% if r.snap.is_low_sample %} <span class="badge low">low sample</span>{% endif %}</td>
+      </tr>
+      {% endwith %}{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="panel muted"><strong>No card prices yet.</strong> Markets open a few minutes past each hour, once that hour's price snapshot is written (<code>cr_hourly</code>, run by cron at :05).</div>
+{% endif %}
+{% if recent %}
+<h2>Recently settled</h2>
+<div class="panel scroll"><table>
+<tr><th class="l">Market</th><th>Start</th><th>End</th><th>Result</th></tr>
+{% for m in recent %}
+<tr><td class="l"><a href="{% url 'markets:detail' m.pk %}">{{ m.title }}</a></td>
+<td>{{ m.start_value|floatformat:2 }}</td>
+<td>{% if m.end_value is not None %}{{ m.end_value|floatformat:2 }}{% else %}—{% endif %}</td>
+<td class="{% if m.settlement.outcome == 'up' %}ok{% elif m.settlement.outcome == 'down' %}err{% endif %}"><strong>{{ m.settlement.outcome|upper }}</strong> <span class="muted small">{{ m.settlement.reason }}</span></td></tr>
+{% endfor %}
+</table></div>
+{% endif %}

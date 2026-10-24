@@ -82,3 +82,67 @@ class PriceSummaryTests(TestCase):
     def test_cent_move_counts(self):
         snap(self.card, self.t0, '24.0400'); snap(self.card, self.t1, '24.0500')
         self.assertEqual(price_summary()['rows'][0]['direction'], 'up')
+
+
+class CardHistoryTests(TestCase):
+    def setUp(self):
+        self.card = Card.objects.create(api_id=26000021, name='Hog Rider', rarity='rare', max_level=14, elixir=4,
+                                        icon_url='https://x/hog.png')  # fmt: skip
+        self.t = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
+
+    def url(self, **q):
+        return reverse('cr_card', args=[self.card.api_id]) + (('?' + '&'.join(f'{k}={v}' for k, v in q.items())) if q else '')
+
+    def test_unknown_and_support_cards_are_404(self):
+        self.assertEqual(self.client.get(reverse('cr_card', args=[1])).status_code, 404)
+        Card.objects.create(api_id=159000000, name='Tower Princess', rarity='common', max_level=16, is_support=True)
+        self.assertEqual(self.client.get(reverse('cr_card', args=[159000000])).status_code, 404)
+
+    def test_no_snapshots_yet(self):
+        resp = self.client.get(self.url())
+        self.assertContains(resp, 'No live price snapshots for this card yet')
+
+    def test_history_rows_newest_first_with_changes_and_a_chart(self):
+        for h, price in ((3, '20'), (2, '21.5'), (1, '21.5'), (0, '19')):
+            snap(self.card, self.t - timedelta(hours=h), price)
+        resp = self.client.get(self.url())
+        rows = resp.context['rows']
+        self.assertEqual([r['snap'].price for r in rows], [Decimal('19'), Decimal('21.5'), Decimal('21.5'), Decimal('20')])
+        self.assertEqual([r['direction'] for r in rows], ['down', 'flat', 'up', 'none'])
+        self.assertEqual(resp.context['change_1h'], Decimal('-2.5'))
+        self.assertEqual(resp.context['change_range'], Decimal('-1'))
+        self.assertEqual((resp.context['high'], resp.context['low']), (Decimal('21.5'), Decimal('19')))
+        self.assertEqual(len(resp.context['chart']['dots']), 4)
+        self.assertContains(resp, '<svg')
+        self.assertContains(resp, '▼ -2.50 this hour')
+
+    def test_range_filter(self):
+        for h in (0, 1, 30, 200):
+            snap(self.card, self.t - timedelta(hours=h), '10')
+        counts = {r: len(self.client.get(self.url(range=r)).context['rows']) for r in ('24h', '7d', 'all')}
+        self.assertEqual(counts, {'24h': 2, '7d': 3, 'all': 4})
+        self.assertEqual(self.client.get(self.url(range='bogus')).context['range'], '7d')
+
+    def test_rank_among_cards_in_the_latest_window(self):
+        other = Card.objects.create(api_id=2, name='Zap', rarity='common', max_level=16)
+        snap(self.card, self.t, '10'); snap(other, self.t, '12')
+        resp = self.client.get(self.url())
+        self.assertEqual((resp.context['rank'], resp.context['ranked']), (2, 2))
+
+    def test_links_to_the_cards_open_hourly_market(self):
+        from markets.models import Market
+
+        snap(self.card, self.t, '10')
+        m = Market.objects.create(
+            game='clash_royale', stat_kind='card_price', subject='Hog Rider', scope={'source': 'live'},
+            formula_version='cr-price-v1', window='hourly', opens_at=self.t, closes_at=self.t + timedelta(hours=1),
+            settles_after=self.t + timedelta(hours=1, minutes=20), liquidity_b=Decimal(100),
+            start_numerator=10, start_denominator=1, title='Hog Rider price: UP or DOWN?',
+        )  # fmt: skip
+        self.assertContains(self.client.get(self.url()), f'href="/markets/{m.pk}/"')
+
+    def test_price_table_rows_link_to_each_cards_history(self):
+        snap(self.card, self.t, '10')
+        html = self.client.get(reverse('cr_prices')).content.decode()
+        self.assertIn(f'data-href="/clash/cards/{self.card.api_id}/"', html)
+        self.assertIn(f'<a href="/clash/cards/{self.card.api_id}/">Hog Rider</a>', html)

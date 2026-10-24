@@ -7,7 +7,7 @@
       <div><strong>{{ card.start_pct|floatformat:2 }}{{ card.unit }}</strong> →
         <strong>{% if card.cur_pct is not None %}{{ card.cur_pct|floatformat:2 }}{{ card.unit }}{% else %}—{% endif %}</strong>
         <span class="chg {% if card.change_pp > 0 %}up{% elif card.change_pp < 0 %}down{% endif %}">({{ card.change_pp|signed:2 }})</span></div>
-      <div class="muted small">{% if card.cur_sample %}{{ card.cur_sample }} maps so far · {% endif %}{% if card.m.status == 'open' %}closes in <span class="cd" data-deadline="{{ card.deadline_ms }}">{{ card.real_seconds_left|countdown }}</span>{% if card.speed > 1 %} <span class="muted">(replay: {{ card.seconds_left|countdown }} of event time)</span>{% endif %}{% else %}{{ card.m.status|upper }}{% endif %}</div>
+      <div class="muted small">{% if card.m.status == 'open' %}closes in <span class="cd" data-deadline="{{ card.deadline_ms }}">{{ card.real_seconds_left|countdown }}</span>{% if card.speed > 1 %} <span class="muted">(replay: {{ card.seconds_left|countdown }} of event time)</span>{% endif %}{% else %}{{ card.m.status|upper }}{% endif %}</div>
     </div>
     <span class="price down" style="font-size:20px">DOWN {{ card.down_price }}</span>
   </div>
