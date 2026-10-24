@@ -4,6 +4,7 @@ from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
+from clashroyale.models import Card
 from markets import chart, clock, lmsr, providers, services
 from markets.models import Account, Market, Position, Trade
 
@@ -42,6 +43,15 @@ def _card(m: Market, now) -> dict:
     }
 
 
+def _with_icons(cards: list[dict]) -> list[dict]:
+    """Attach each Clash card's icon URL (a market's subject is the card name); Siege has no images."""
+    names = [c['m'].subject for c in cards if c['m'].game == 'clash_royale']
+    icons = dict(Card.objects.filter(name__in=names).values_list('name', 'icon_url')) if names else {}
+    for c in cards:
+        c['icon'] = icons.get(c['m'].subject, '')
+    return cards
+
+
 def _header(request, game: str) -> dict:
     account = _account(request)
     return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
@@ -58,7 +68,7 @@ def market_list(request):
     ctx.update(
         window=window,
         game=game,
-        cards=[_card(m, now) for m in markets.order_by('stat_kind', 'subject')],
+        cards=_with_icons([_card(m, now) for m in markets.order_by('stat_kind', 'subject')]),
         recent=Market.objects.filter(game=game, window=window, status__in=['settled', 'void'])
         .select_related('settlement')
         .order_by('-closes_at')[:8],
@@ -70,7 +80,7 @@ def market_list(request):
 def market_detail(request, pk: int):
     market = get_object_or_404(Market, pk=pk)
     ctx = _header(request, market.game)
-    card = _card(market, ctx['now'])
+    card = _with_icons([_card(market, ctx['now'])])[0]
     points = list(market.trades.order_by('created_at', 'id').values_list('created_at', 'up_price_after'))
     ctx.update(
         card=card,

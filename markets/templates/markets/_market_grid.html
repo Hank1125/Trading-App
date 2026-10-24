@@ -3,7 +3,10 @@
 <div class="grid">
 {% for c in cards %}
   <a class="tile" href="{% url 'markets:detail' c.m.pk %}">
-    <div class="t">{{ c.m.subject }} <span class="muted small">{{ c.m.get_stat_kind_display|default:c.m.stat_kind }}</span></div>
+    <div class="t subject">
+      {% if c.icon %}<img class="icon" src="{{ c.icon }}" alt="" loading="lazy" width="36" height="43">{% else %}<span class="initial" aria-hidden="true">{{ c.m.subject|slice:":1" }}</span>{% endif %}
+      <span>{{ c.m.subject }} <span class="muted small">{{ c.m.get_stat_kind_display|default:c.m.stat_kind }}</span></span>
+    </div>
     <div class="row small muted">
       <span>start {{ c.start_pct|floatformat:2 }}{{ c.unit }}</span>
       <span>now {% if c.cur_pct is not None %}{{ c.cur_pct|floatformat:2 }}{{ c.unit }}

@@ -2,7 +2,10 @@
 {% block title %}{{ card.m.subject }}{% endblock %}
 {% block content %}
 <p><a href="{% url 'markets:list' %}?game={{ card.m.game }}&window={{ card.m.window }}">← all {{ card.m.window }} markets</a></p>
-<h2 style="font-size:20px">{{ card.m.title }}</h2>
+<h2 class="subject" style="font-size:20px">
+  {% if card.icon %}<img class="icon lg" src="{{ card.icon }}" alt="" width="56" height="67">{% else %}<span class="initial lg" aria-hidden="true">{{ card.m.subject|slice:":1" }}</span>{% endif %}
+  <span>{{ card.m.title }}</span>
+</h2>
 <div hx-get="{% url 'markets:detail' card.m.pk %}" hx-trigger="every 3s" hx-swap="innerHTML">
   {% include "markets/_detail_live.html" %}
 </div>

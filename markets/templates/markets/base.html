@@ -24,6 +24,10 @@
   .grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:10px; }
   .tile { background:var(--panel); border:1px solid var(--border); border-radius:12px; padding:12px; display:block; color:var(--text); }
   .tile:hover { border-color:var(--accent); }
+  .subject { display:flex; align-items:center; gap:10px; }
+  .icon { width:36px; height:43px; object-fit:contain; flex:none; } .icon.lg { width:56px; height:67px; }
+  .initial { width:36px; height:36px; flex:none; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+             background:var(--border); color:var(--muted); font-weight:700; } .initial.lg { width:52px; height:52px; font-size:20px; }
   .tile .t { font-weight:600; margin-bottom:6px; } .row { display:flex; justify-content:space-between; gap:8px; align-items:baseline; }
   .price { display:inline-block; min-width:64px; text-align:center; padding:6px 8px; border-radius:8px; font-weight:700; font-variant-numeric:tabular-nums; }
   .price.up { color:var(--up); background:var(--up-bg); } .price.down { color:var(--down); background:var(--down-bg); }

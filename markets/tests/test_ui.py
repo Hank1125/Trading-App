@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.test import TestCase
 
+from clashroyale.models import Card
 from markets import chart, clock
 from markets.models import ClockState, Market
 from markets.tests.test_trading import make_market
@@ -43,6 +44,21 @@ class CountdownTests(TestCase):
         self.assertIn('<svg', html)
         self.assertIn('UP chance', html)
         self.assertEqual(Market.objects.count(), 1)
+
+    def test_clash_tiles_show_card_icons_and_siege_tiles_an_initial(self):
+        Card.objects.create(api_id=1, name='Hog Rider', rarity='rare', max_level=14,
+                            icon_url='https://api-assets.clashroyale.com/cards/300/hog.png')  # fmt: skip
+        now = clock.real_now()
+        window = dict(opens_at=now - timedelta(minutes=5), closes_at=now + timedelta(minutes=55),
+                      settles_after=now + timedelta(minutes=56))  # fmt: skip
+        hog = make_market(game='clash_royale', stat_kind='card_price', subject='Hog Rider', scope={'source': 'live'},
+                          formula_version='cr-price-v1', start_numerator=20, start_denominator=1, **window)  # fmt: skip
+        make_market(**window)  # Siege: Mira
+        for url in ('/markets/?game=clash_royale', f'/markets/{hog.pk}/'):
+            self.assertIn('src="https://api-assets.clashroyale.com/cards/300/hog.png"',
+                          self.client.get(url).content.decode())  # fmt: skip
+        self.assertIn('<span class="initial" aria-hidden="true">M</span>',
+                      self.client.get('/markets/?game=siege').content.decode())  # fmt: skip
 
     def test_times_are_labelled_with_the_display_zone_not_utc(self):
         m = make_market(opens_at=clock.real_now() - timedelta(minutes=5),
