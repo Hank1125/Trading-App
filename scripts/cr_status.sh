@@ -1,7 +1,7 @@
 #!/bin/sh
 # Print the latest live card prices and recent ingestion runs from Postgres.
 cd "$(dirname "$0")/.."
-docker compose exec -T db psql -U metamarket -d metamarket -c "
+docker compose exec -T -e PGTZ=America/New_York db psql -U metamarket -d metamarket -c "
 SELECT c.name, s.usage_pct AS usage, s.win_rate AS wr, s.adj_win_rate AS adj_wr,
        s.price, s.appearances AS n, s.is_low_sample AS low, s.window_end
 FROM clashroyale_cardmetricsnapshot s JOIN clashroyale_card c ON c.id = s.card_id

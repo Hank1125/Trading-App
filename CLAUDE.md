@@ -56,8 +56,9 @@ Connect both games into a clear dashboard and portfolio. Add useful loading, emp
 ## Current status
 
 - **Stack:** Django 5.1 + Postgres 16 (Docker). Project `metamarket/`; Clash Royale app `clashroyale/`.
-- **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Done: models and migration, `metrics.py` (pure `cr-price-v1` math), `api.py` (client with 429/503 backoff), `ingest.py` (dedup ingestion and snapshots), management commands, tests. Live ingestion verified against the real API. Next: `cr_load_mock` and mock fixtures, then a UI.
-- **Cadence:** `cr_hourly` polls the top 1000 battlelogs and writes metric snapshots every hour; the leaderboard refreshes daily. Schedule it with cron (`5 * * * * <repo>/scripts/cr_hourly.sh`). On macOS, cron needs Full Disk Access to run from `~/Documents`.
+- **Clash Royale (branch `CLashRoyale`):** specs in `specs/clash-royale/`. Done: models and migration, `metrics.py` (pure `cr-price-v1` math), `api.py` (client with 429/503 backoff), `ingest.py` (dedup ingestion and snapshots), management commands, tests. Live ingestion verified against the real API. Price page at `/` (`clashroyale/views.py`) shows the latest snapshot with change vs the previous hour. Next: `cr_load_mock` and mock fixtures.
+- **Cadence:** `cr_hourly` polls the top 1000 battlelogs and writes metric snapshots every hour; the leaderboard refreshes daily. Schedule it with cron (`5 * * * * <repo>/scripts/cr_hourly.sh`). On macOS, with the repo in `~/Documents`, Full Disk Access is needed for both `/usr/sbin/cron` and the venv's Python (python.org: `/Library/Frameworks/Python.framework/Versions/3.11/Resources/Python.app`).
+- **Time:** stored in UTC; displayed in `America/New_York` (`TIME_ZONE`).
 - **Not started:** Siege, trading, predictions, UI.
 
 ## Local commands
@@ -70,6 +71,7 @@ python -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python manage.py test clashroyale
 .venv/bin/python manage.py makemigrations --check --dry-run   # model/migration drift
 .venv/bin/python manage.py cr_hourly                          # one live ingest + metrics pass (~1-2 min)
+.venv/bin/python manage.py runserver                          # price page at http://127.0.0.1:8000/
 scripts/cr_status.sh [N]                                      # top N card prices, recent runs, battle counts
 docker compose exec db psql -U metamarket -d metamarket       # inspect DB (\dt clashroyale_*)
 ```

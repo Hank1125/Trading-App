@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
     def _run(self, workers):
         started = timezone.now()
-        self.stdout.write(f'cr_hourly started {started:%Y-%m-%d %H:%M:%S}Z')
+        self.stdout.write(f'cr_hourly started {timezone.localtime(started):%Y-%m-%d %H:%M:%S %Z}')
         client = make_client()
 
         self.stdout.write(describe(sync_cards(client)))
