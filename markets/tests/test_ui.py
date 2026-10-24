@@ -61,9 +61,12 @@ class ClashDisplayTests(TestCase):
 
 @override_settings(ALLOWED_HOSTS=['127.0.0.1', 'localhost'])
 class WalletTabTests(TestCase):
-    def test_wallet_tab_embeds_wallet_on_same_hostname_with_real_funds_warning(self):
-        html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
-        self.assertIn('<iframe src="http://127.0.0.1:5173/"', html)
-        self.assertIn('real funds on Solana mainnet', html)
+    def test_wallet_tab_embeds_wallet_with_real_funds_warning(self):
         html = self.client.get('/markets/wallet/', HTTP_HOST='localhost:8000').content.decode()
         self.assertIn('<iframe src="http://localhost:5173/"', html)
+        self.assertIn('real funds on Solana mainnet', html)
+        self.assertNotIn('only loads when', html)
+
+    def test_wallet_tab_points_127_users_to_localhost(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
+        self.assertIn('http://localhost:8000/markets/wallet/', html)

@@ -57,10 +57,9 @@ def _header(request, game: str) -> dict:
 
 
 def _wallet_url(request) -> str:
-    """Wallet app URL on the same hostname the user is browsing, so its SameSite=Lax login cookie works
-    inside our page (localhost vs 127.0.0.1 count as different sites)."""
-    host = request.get_host().split(':')[0]
-    return settings.WALLET_URL.replace('localhost', host) if host in ('localhost', '127.0.0.1') else settings.WALLET_URL
+    """The wallet app's URL. Its dev server only answers on `localhost`, so browse this site via localhost too:
+    then both share a site and the wallet's SameSite=Lax login cookie works inside our page."""
+    return settings.WALLET_URL
 
 
 def market_list(request):
@@ -166,4 +165,7 @@ def portfolio(request):
 def wallet(request):
     """The separate True Markets wallet app, embedded as a tab. Real funds; never linked to market stakes."""
     ctx = _header(request, 'siege')
+    host, _, port = request.get_host().partition(':')
+    ctx['wrong_host'] = host != 'localhost'
+    ctx['localhost_url'] = f"http://localhost{':' + port if port else ''}{request.get_full_path()}"
     return render(request, 'markets/wallet.html', ctx)
