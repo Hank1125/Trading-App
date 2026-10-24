@@ -1,0 +1,36 @@
+{% load markets_extras %}
+{% if cards %}
+<div class="grid">
+{% for c in cards %}
+  <a class="tile" href="{% url 'markets:detail' c.m.pk %}">
+    <div class="t">{{ c.m.subject }} <span class="muted small">{{ c.m.get_stat_kind_display|default:c.m.stat_kind }}</span></div>
+    <div class="row small muted">
+      <span>start {{ c.start_pct|floatformat:2 }}{{ c.unit }}</span>
+      <span>now {% if c.cur_pct is not None %}{{ c.cur_pct|floatformat:2 }}{{ c.unit }}
+        <span class="chg {% if c.change_pp > 0 %}up{% elif c.change_pp < 0 %}down{% endif %}">({{ c.change_pp|signed:2 }})</span>{% else %}—{% endif %}</span>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span class="price up">UP {{ c.up_price }}</span>
+      <span class="muted small">⏱ {{ c.seconds_left|countdown }}</span>
+      <span class="price down">DOWN {{ c.down_price }}</span>
+    </div>
+    <div class="bar"><div style="width:{{ c.up_price }}%"></div></div>
+    <div class="row small muted"><span>{{ c.sides.up_people }} people · {{ c.sides.up_contracts }} ctr</span><span>{{ c.sides.down_people }} people · {{ c.sides.down_contracts }} ctr</span></div>
+  </a>
+{% endfor %}
+</div>
+{% else %}
+<p class="panel muted">No open {{ window }} markets right now. Markets open when the worker runs (<code>manage.py markets_worker</code>) and the stat has data.</p>
+{% endif %}
+{% if recent %}
+<h2>Recently settled</h2>
+<div class="panel"><table>
+<tr><th class="l">Market</th><th>Start</th><th>End</th><th>Result</th></tr>
+{% for m in recent %}
+<tr><td class="l"><a href="{% url 'markets:detail' m.pk %}">{{ m.title }}</a></td>
+<td>{% widthratio m.start_numerator m.start_denominator 100 %}</td>
+<td>{% if m.settlement.end_denominator %}{% widthratio m.settlement.end_numerator m.settlement.end_denominator 100 %}{% else %}—{% endif %}</td>
+<td class="{% if m.settlement.outcome == 'up' %}ok{% elif m.settlement.outcome == 'down' %}err{% endif %}"><strong>{{ m.settlement.outcome|upper }}</strong> <span class="muted small">{{ m.settlement.reason }}</span></td></tr>
+{% endfor %}
+</table></div>
+{% endif %}

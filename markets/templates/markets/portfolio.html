@@ -1,0 +1,14 @@
+{% extends "markets/base.html" %}
+{% load markets_extras %}
+{% block title %}Portfolio{% endblock %}
+{% block content %}
+<h2>Portfolio: {{ account.name }}</h2>
+<div class="panel">Available: <strong>{{ account.balance_units|pts }} pts</strong> <span class="muted small">(started with 10,000.00 virtual points)</span></div>
+<h2>Positions</h2>
+<div class="panel"><table><tr><th class="l">Market</th><th>UP</th><th>DOWN</th><th>Net cost</th><th class="l">Status</th></tr>
+{% for p in positions %}<tr><td class="l"><a href="{% url 'markets:detail' p.market.pk %}">{{ p.market.title }}</a></td><td>{{ p.up_contracts }}</td><td>{{ p.down_contracts }}</td><td>{{ p.net_cost_units|pts }}</td><td class="l">{{ p.market.status }}</td></tr>
+{% empty %}<tr><td class="l muted" colspan="5">No positions yet.</td></tr>{% endfor %}</table></div>
+<h2>Ledger</h2>
+<div class="panel"><table><tr><th class="l">Time</th><th class="l">Kind</th><th>Change</th><th class="l">Market</th></tr>
+{% for e in ledger %}<tr><td class="l">{{ e.created_at|date:"M j H:i:s" }}</td><td class="l">{{ e.kind }}</td><td class="{% if e.delta_units > 0 %}ok{% else %}err{% endif %}">{{ e.delta_units|pts }}</td><td class="l">{{ e.market.subject|default:"" }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

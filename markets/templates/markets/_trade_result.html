@@ -1,0 +1,3 @@
+{% load markets_extras %}
+{% if trade %}<span class="ok">✓ {{ trade.action|capfirst }} {{ trade.contracts }} {{ trade.side|upper }} for {{ trade.units|pts }} pts. UP price is now {{ trade.up_price_after }}.</span>
+{% else %}<span class="err">✗ {{ error }}</span>{% if fresh_units %} <span class="muted">(new quote: {{ fresh_units|pts }} pts; press UP/DOWN again)</span>{% endif %}{% endif %}
