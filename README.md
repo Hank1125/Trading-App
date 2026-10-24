@@ -35,16 +35,32 @@ Hourly updates: `5 * * * * <repo>/scripts/cr_hourly.sh` in crontab (see CLAUDE.m
 
 ## Siege backend setup
 
-Requires Python 3.13 and PostgreSQL. Locally, Postgres 16 runs on port 5433.
+Requires Python 3.13 and PostgreSQL 16. Both games share one database: the Docker Postgres from `docker-compose.yml` (`metamarket`/`metamarket` on localhost:5433), or an identical local Postgres with the same role and database.
 
 ```sh
 python3 -m venv .venv
 .venv/bin/pip install -r backend/requirements-dev.txt
 cp backend/.env.example backend/.env   # then set your email and a random ADMIN_TOKEN
-createdb -p 5433 meta_market && createdb -p 5433 meta_market_test
+# Without Docker, create the same role/databases in a local Postgres on 5433:
+#   CREATE ROLE metamarket LOGIN PASSWORD 'metamarket' CREATEDB;
+#   CREATE DATABASE metamarket OWNER metamarket;
+#   CREATE DATABASE metamarket_siege_test OWNER metamarket;   -- disposable, wiped by tests
 
 cd backend
-../.venv/bin/uvicorn app.main:app --reload     # http://localhost:8000/api/health
+../.venv/bin/alembic upgrade head                        # create tables
+../.venv/bin/python -m scripts.seed_catalog              # 78 operators + 28 maps (safe to re-run)
+../.venv/bin/python -m scripts.ingest_fixture blast-2026-may   # load the May 2026 Major (safe to re-run)
+../.venv/bin/uvicorn app.main:app --reload               # http://localhost:8000/api/health
+```
+
+### Name matching
+Liquipedia match pages spell names inconsistently, so every name goes through `name_key` before matching: accents, case and punctuation are ignored (`Capitao` = `Capitão`, `FURIA` = `Furia`). On top of that there are two short, explicit alias tables in `app/siege/catalog.py`: `Valk` → Valkyrie, and `Ninjas In Pyjamas` → NIP. A match containing a name that still doesn't resolve is **quarantined whole** (`siege_quarantine`) and never counted. Liquipedia edits to a map that was already finished are applied, and the before/after is logged in `siege_correction`.
+
+## Replay demo data
+`DATA_MODE=replay` replays the real **BLAST Major Salt Lake City 2026 (May)** on an accelerated demo clock. The wikitext is saved, unmodified, in `backend/fixtures/siege/blast-2026-may/`, together with revision IDs and checksums. Content © Liquipedia contributors, CC-BY-SA 3.0. To refresh it, run this from `backend/`:
+
+```sh
+../.venv/bin/python -m scripts.fetch_fixture blast-2026-may "BLAST Major/2026/May" "BLAST Major/2026/May/Phase 2"
 ```
 
 ## Checks (run before every commit)
@@ -65,8 +81,9 @@ cd backend
 ../.venv/bin/mypy
 ```
 
-## Known overlaps to resolve
+## How the two halves fit together
 
-- Both setups use a repo-root `.venv` (Siege needs Python 3.13). Use a separate venv for one of them, e.g. `backend/.venv`.
-- Both dev servers default to port 8000, and both expect Postgres on 5433 (Docker for Clash Royale, Homebrew for Siege). Run them on different ports locally.
-- Trading and predictions should be shared across both games; the stack for that is not decided yet.
+- **One venv:** a repo-root `.venv` on Python 3.13 holds both `requirements.txt` (Django/Clash) and `backend/requirements-dev.txt` (Siege). Both suites pass in it.
+- **One database:** both use the `metamarket` Postgres on localhost:5433 (Docker per `docker-compose.yml`, or a local Postgres with the same role/db). Clash tables are `clashroyale_*` (Django migrations) and Siege tables are `siege_*` (Alembic, `backend/migrations`).
+- **Trading and predictions** are shared across both games and live in the Django `markets` app.
+- **Dev servers:** Django on 8000. Run the Siege FastAPI health server on another port if needed (`uvicorn app.main:app --port 8100`).

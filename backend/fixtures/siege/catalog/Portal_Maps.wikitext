@@ -1,0 +1,176 @@
+{{DISPLAYTITLE:Portal: Rainbow Six Siege Maps}}
+{{Tabs static
+|name1=Siege
+|link1=Portal:Maps
+}}
+
+==Map Pool==
+<gallery mode="packed-overlay" heights="150px" perrow=fluid>
+File:R6S map bank.jpg|link=Bank/siege|<span style="font-size:150%">Bank{{Crystal Guard}}</span>
+File:R6S map bartlett.jpg|link=Bartlett University/siege|<span style="font-size:150%">Bartlett University{{red crow}}</span>
+File:R6S map border.jpg|link=Border/siege|<span style="font-size:150%">Border{{Crimson Heist}}</span>
+File:R6S map chalet.jpg|link=Chalet/siege|<span style="font-size:150%">Chalet{{Shadow Legacy}}</span>
+File:R6S map Close Quarter.jpg|link=Close Quarter/siege|<span style="font-size:150%">Close Quarter{{Vector Glare}}</span>
+File:R6S map clubhouse.jpg|link=Clubhouse/siege|<span style="font-size:150%">Clubhouse{{Crystal Guard}}</span>
+File:R6S map coastline.jpg|link=Coastline/siege|<span style="font-size:150%">Coastline{{Crystal Guard}}</span>
+File:R6S map consulate.jpg|link=Consulate/siege|<span style="font-size:150%">Consulate{{Dread Factor}}</span>
+File:R6S Map Emerald Plains.jpg|link=Emerald Plains/siege|<span style="font-size:150%">Emerald Plains{{Demon Veil}}</span>
+File:R6S map favela.jpg|link=Favela/siege|<span style="font-size:150%">Favela{{North Star}}</span>
+File:R6S map Fort Truth.jpg|link=Fort Truth/siege|<span style="font-size:150%">Fort Truth {{showdown}}</span>
+File:R6S map fortress.jpg|link=Fortress/siege|<span style="font-size:150%">Fortress{{wind bastion}}</span>
+File:Hereford Base.jpg|link=Hereford Base/siege|<span style="font-size:150%">Hereford Base{{grim sky}}</span>
+File:R6S map house.jpg|link=House/siege|<span style="font-size:150%">House{{steel Wave}}</span>
+File:R6S map kafe.jpg|link=Kafe Dostoyevsky/siege|<span style="font-size:150%">Kafe{{Phantom sight}}</span>
+File:R6S map kanal.jpg|link=Kanal/siege|<span style="font-size:150%">Kanal{{Ember Rise}}</span>
+File:R6s map lair.png|link=Lair/siege|<span style="font-size:150%">Lair{{Deep Freeze}}</span>
+File:R6S map Neighborhood.png|link=Neighborhood/siege|<span style="font-size:150%">Neighborhood {{sugar fright}}</span>
+File:R6S map Nighthaven Labs.jpg|link=Nighthaven Labs/siege|<span style="font-size:150%">Nighthaven Labs{{Solar Raid}}</span>
+File:R6S map oregon.jpg|link=Oregon/siege|<span style="font-size:150%">Oregon{{Void Edge}}</span>
+File:R6S map outback.jpg|link=Outback/siege|<span style="font-size:150%">Outback{{High Calibre }}</span>
+File:R6S map plane.jpg|link=Presidential Plane/siege|<span style="font-size:150%">Presidential Plane</span>
+File:R6S map skyscraper.jpg|link=Skyscraper/siege|<span style="font-size:150%">Skyscraper{{Neon Dawn}}</span>
+File:R6S map Stadium.jpg|link=Stadium/siege|<span style="font-size:150%">Stadium {{LeagueIconSmall/six invitational}}</span>
+File:R6S map theme park.jpg|link=Theme Park/siege|<span style="font-size:150%">Theme Park{{shifting Tides}}</span>
+File:R6S operation white noise.jpg|link=Tower/siege|<span style="font-size:150%">Tower{{white noise}}</span>
+File:R6S map villa.jpg|link=Villa/siege|<span style="font-size:150%">Villa{{para bellum}}</span>
+File:R6S map yacht.jpg|link=Yacht/siege|<span style="font-size:150%">Yacht{{black ice}}</span>
+</gallery>
+
+==Seasonal Map Pools==
+===Competitive===
+{{MapPoolTimeline|height=800
+	|startYear=2016
+	<!--|endYear=-->
+	|map1=Clubhouse
+	|map1start=2015-12-01
+	|map1end=
+	<!-- --->
+	|map2=Villa
+	|map2start=2018-06-07
+	|map2end=2023-08-29
+	|map2start2=2026-09-02
+	<!-- --->
+	|map3=Kafe Dostoyevsky
+	|map3start=2015-12-01
+	|map3end=2016-08-02
+	|map3start2=2016-11-17
+	|map3end2=2018-06-07
+	|map3start3=2019-06-11
+	|map3end3=
+	<!-- --->
+	|map4=Oregon
+	|map4start=2015-12-01
+	|map4end=2019-06-11
+	|map4start2=2020-06-16
+	|map4end2=2024-09-02
+	<!-- --->
+	|map5=Chalet
+	|map5start=2015-12-01
+	|map5end=2018-06-07
+	|map5start2=2021-03-16
+	|map5end2=
+	<!-- --->
+	|map6=Bank
+	|map6start=2015-12-01
+	|map6end=2020-03-10
+	|map6start2=2021-09-07
+	|map6end2=
+	<!-- --->
+	|map7=Theme Park
+	|map7start=2020-03-10
+	|map7end=2021-03-16
+	|map7start2=2022-03-15
+	|map7end2=2023-08-29
+	<!-- --->
+	|map8=Border
+	|map8start=2016-05-10
+	|map8end=2020-06-16
+	|map8start2=2022-03-15
+	|map8end2=
+	<!-- --->
+	|map9=Skyscraper
+	|map9start=2016-11-17
+	|map9end=2018-06-07
+	|map9start2=2022-03-15
+	|map9end2=2026-03-03
+	<!-- --->
+	|map10=Coastline
+	|map10start=2017-02-07
+	|map10end=2022-03-15
+	<!-- --->
+	|map11=Consulate
+	|map11start=2015-12-01
+	|map11end=2021-09-07
+	|map11start2=2023-08-29
+	|map11end2=2026-09-02
+	<!-- --->
+	|map12=Kanal
+	|map12start=2015-12-01
+	|map12end=2016-11-17
+	|map12start2=2016-12-03
+	|map12end2=2017-02-05
+	<!-- --->
+	|map13=Hereford Base
+	|map13start=2015-12-01
+	|map13end=2016-11-17
+	<!-- --->
+	|map14=Favela
+	|map14start=2016-08-02
+	|map14end=2016-11-17
+	<!-- --->
+	|map15=House
+	|map15start=2015-12-01
+	|map15end=2016-08-02
+	<!-- --->
+	|map16=Presidential Plane
+	|map16start=2015-12-01
+	|map16end=2016-08-02
+	<!-- --->
+	|map17=Yacht
+	|map17start=2016-02-02
+	|map17end=2016-05-10
+	<!-- --->
+	|map18=Nighthaven Labs
+	|map18start=2023-08-29
+	|map18end=
+	<!-- --->
+	|map19=Lair
+	|map19start=2024-09-02
+	|map19end=
+	<!-- --->
+	|map20=Fortress
+	|map20start=2026-03-03
+	|map20end=
+}}
+
+==Esports Round Win Rate Statistics==
+{{Round Win Stats OC|O}}
+{{Round Win Stats|map=Bank}}
+{{Round Win Stats|map=Border}}
+{{Round Win Stats|map=Chalet}}
+{{Round Win Stats|map=Clubhouse}}
+{{Round Win Stats|map=Coastline}}
+{{Round Win Stats|map=Consulate}}
+{{Round Win Stats|map=Favela}}
+{{Round Win Stats|map=Fortress}}
+{{Round Win Stats|map=Hereford Base}}
+{{Round Win Stats|map=House}}
+{{Round Win Stats|map=Kafe Dostoyevsky}}
+{{Round Win Stats|map=Kanal}}
+{{Round Win Stats|map=Lair}}
+{{Round Win Stats|map=Nighthaven Labs}}
+{{Round Win Stats|map=Oregon}}
+{{Round Win Stats|map=Outback}}
+{{Round Win Stats|map=Presidential Plane}}
+{{Round Win Stats|map=Skyscraper}}
+{{Round Win Stats|map=Stadium}}
+{{Round Win Stats|map=Theme Park}}
+{{Round Win Stats|map=Villa}}
+{{Round Win Stats OC|C}}
+
+{{#queryformlink:form=MapWLOverview|link text=Filter win rates by date, team, or tournament|query string=_run|new window}}
+
+==Useful links==
+*[https://purechaose.github.io/r6maps/ r6maps.com Map Overlays]
+
+<br />{{Maps Navbox}}

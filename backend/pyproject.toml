@@ -18,4 +18,4 @@ select = ["E", "F", "I", "B", "UP"]
 python_version = "3.13"
 strict = true
 plugins = ["pydantic.mypy"]
-files = ["app"]
+files = ["app", "scripts"]

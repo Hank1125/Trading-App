@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     database_url: str
     database_url_test: str | None = None
 
-    # mock = labeled fixture data; live = Liquipedia API.
-    data_mode: Literal["mock", "live"]
+    # replay = real past event replayed on a demo clock; live = Liquipedia API.
+    data_mode: Literal["replay", "live"]
 
     # Liquipedia API terms: identify the app with contact info, and keep to <= 1 request / 2 s.
     liquipedia_api_url: str = "https://liquipedia.net/rainbowsix/api.php"

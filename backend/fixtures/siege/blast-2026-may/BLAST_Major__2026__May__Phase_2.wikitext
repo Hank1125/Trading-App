@@ -1,0 +1,1138 @@
+{{DISPLAYTITLE:BLAST R6 Major Salt Lake City 2026}}
+{{Blast R6 2026 Kickoff Navbox}}
+{{Major Navbox}}
+{{Tabs static
+|name1=Overview
+|link1=BLAST Major/2026/May
+|name2=Swiss Phase
+|link2=BLAST Major/2026/May/Phase_2
+|name3=Showmatch
+|link3=BLAST Major/2026/May/Showmatch
+|name4=Additional Content
+|link4=BLAST_Major/2026/May/Additional_Content
+}}
+{{HiddenDataBox}}
+
+:This page is part of the [[BLAST Major/2026/May|BLAST Major 2026 May]] article.
+
+==Results==
+===Standings===
+{{SwissStandings|placements=1-2;3-5;6-8;9-11;12-14;15-16
+|tiebreakers={{Json|matchdiff|buchholz|manual}}
+|title=Swiss Stage
+|bg=1-2=seedup,3-5=up, 6-8=stayup, 9-16=down
+<!-- Rounds -->
+|round1={{Round|title=Round 1|started=true|finished=true|matchgroups=bAJxCmFOkq}}
+|round2={{Round|title=Round 2|started=true|finished=true|matchgroups=Sx0WNNmuIk,tToIiETm3v}}
+|round3={{Round|title=Round 3|started=true|finished=true|matchgroups=FsmdYH5qhO,1fbky7TAdp,uuaIcSF1FP}}
+|round4={{Round|title=Round 4|started=true|finished=true|matchgroups=h2kPkzw4kI,TqZWBpKOgj}}
+|round5={{Round|title=Round 5|started=true|finished=true|matchgroups=9lwB2S13bi}}
+
+<!-- Seeds -->
+|{{TeamOpponent|G2 Esports|tiebreaker=-3}}
+|{{TeamOpponent|Virtus.pro|tiebreaker=-8}}
+|{{TeamOpponent|Twisted Minds|tiebreaker=-12}}
+
+|{{TeamOpponent|Five Fears|tiebreaker=-2}}
+|{{TeamOpponent|Wildcard|tiebreaker=-5}}
+|{{TeamOpponent|DarkZero|tiebreaker=-11}}
+
+|{{TeamOpponent|FURIA|tiebreaker=-4}}
+|{{TeamOpponent|Ninjas In Pyjamas|tiebreaker=-6}}
+|{{TeamOpponent|Faze Clan|tiebreaker=-10}}
+
+|{{TeamOpponent|CAG Osaka|tiebreaker=-7}}
+|{{TeamOpponent|Weibo Gaming|tiebreaker=-1}}
+|{{TeamOpponent|All Gamers|tiebreaker=-9}}
+<!-- Qualifiers -->
+|{{TeamOpponent|ENTERPRISE Esports|tiebreaker=-14}}
+|{{TeamOpponent|Team Falcons|tiebreaker=-13}}
+|{{TeamOpponent|Shopify Rebellion|tiebreaker=-16}}
+|{{TeamOpponent|LOS|tiebreaker=-15}}
+}}
+
+===Detailed Results===
+{{Toggle bracket start}}
+{{box|padding=0.5em|start}}
+===={{HiddenSort|Round 1}}====
+{{Matchlist|id=bAJxCmFOkq|title=Round 1|matchsection=Round 1
+|M1={{Match|dateheader=true
+    |date=2026-05-10 - 10:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8408|siegegg=3508
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Shaiiko
+    |opponent1={{TeamOpponent|DarkZero}}
+    |opponent2={{TeamOpponent|G2 Esports}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Nighthaven Labs
+        |t1map2=Fortress|t2map2=Chalet
+        |t1map3=Lair|t2map3=Consulate
+        |t1map4=Clubhouse|t2map4=Kafe Dostoyevsky
+        |decider=Bank
+    }}
+    |map1={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Bandit|t1ban3=Azami|t1ban4=Montagne|t1ban5=Grim|t1ban6=Dokkaebi
+        |t2ban1=Grim|t2ban2=Montagne|t2ban3=Ying|t2ban4=Mira|t2ban5=Echo|t2ban6=Tachanka
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=2|t1def=2|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-10 - 10:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8411|siegegg=3509
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Brendo
+    |opponent1={{TeamOpponent|ENTERPRISE Esports}}
+    |opponent2={{TeamOpponent|NIP}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Kafe Dostoyevsky
+        |t1map2=Consulate|t2map2=Chalet
+        |t1map3=Lair|t2map3=Fortress
+        |t1map4=Clubhouse|t2map4=Nighthaven Labs
+        |decider=Bank
+    }}
+    |map1={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Mute|t1ban3=Valkyrie|t1ban4=Hibana|t1ban5=Blitz|t1ban6=Ace
+        |t2ban1=Ace|t2ban2=Montagne|t2ban3=Grim|t2ban4=Castle|t2ban5=Kaid|t2ban6=Mira
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=1|t2def=2|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-10 - 11:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8410|siegegg=3510
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Bae94
+    |opponent1={{TeamOpponent|Team Falcons}}
+    |opponent2={{TeamOpponent|Wildcard}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Fortress|t2map1=Lair
+        |t1map2=Consulate|t2map2=Bank
+        |t1map3=Kafe Dostoyevsky|t2map3=Clubhouse
+        |t1map4=Nighthaven Labs|t2map4=Border
+        |decider=Chalet
+    }}
+    |map1={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Azami|t1ban2=Ela|t1ban3=Tubarao|t1ban4=Dokkaebi|t1ban5=Solid Snake|t1ban6=
+        |t2ban1=Dokkaebi|t2ban2=Solid Snake|t2ban3=Ying|t2ban4=Mira|t2ban5=Kaid|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=0|t1def=1|t1otatk=|t1otdef=
+        |t2atk=1|t2def=6|t2otatk=|t2otdef=
+    }}
+    }}
+|M4={{Match
+    |date=2026-05-10 - 11:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8406|siegegg=3511
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Hovenherst
+    |opponent1={{TeamOpponent|All Gamers}}
+    |opponent2={{TeamOpponent|Weibo Gaming}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Bank
+        |t1map2=Chalet|t2map2=Clubhouse
+        |t1map3=Nighthaven Labs|t2map3=Border
+        |t1map4=Consulate|t2map4=Fortress
+        |decider=Lair
+    }}
+    |map1={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Ying|t1ban2=Solid Snake|t1ban3=Blackbeard|t1ban4=Bandit|t1ban5=Kaid|t1ban6=Tachanka
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mira|t2ban4=Grim|t2ban5=Sens|t2ban6=Ying
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M5={{Match
+    |date=2026-05-10 - 12:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8407|siegegg=3512
+    |caster1=Crow|caster2=Fellow
+    |mvp=Cyber
+    |opponent1={{TeamOpponent|FaZe Clan}}
+    |opponent2={{TeamOpponent|Five Fears}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Consulate
+        |t1map2=Border|t2map2=Bank
+        |t1map3=Chalet|t2map3=Clubhouse
+        |t1map4=Fortress|t2map4=Lair
+        |decider=Nighthaven Labs
+    }}
+    |map1={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Bandit|t1ban2=Mute|t1ban3=Mira|t1ban4=Grim|t1ban5=Blitz|t1ban6=Blackbeard
+        |t2ban1=Montagne|t2ban2=Solid Snake|t2ban3=Dokkaebi|t2ban4=Kaid|t2ban5=Mira|t2ban6=Bandit
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=2|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M6={{Match
+    |date=2026-05-10 - 12:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8413|siegegg=3513
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=Spoit
+    |opponent1={{TeamOpponent|Shopify Rebellion}}
+    |opponent2={{TeamOpponent|Virtus.pro}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Consulate|t2map1=Nighthaven Labs
+        |t1map2=Kafe Dostoyevsky|t2map2=Border
+        |t1map3=Bank|t2map3=Lair
+        |t1map4=Chalet|t2map4=Clubhouse
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Azami|t1ban2=Smoke|t1ban3=Goyo|t1ban4=Glaz|t1ban5=Blitz|t1ban6=Solid Snake
+        |t2ban1=Montagne|t2ban2=Ying|t2ban3=Glaz|t2ban4=Clash|t2ban5=Mute|t2ban6=Goyo
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=2|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M7={{Match
+    |date=2026-05-10 - 13:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8412|siegegg=3514
+    |caster1=Crow|caster2=Fellow
+    |mvp=Nuxxga
+    |opponent1={{TeamOpponent|CAG Osaka}}
+    |opponent2={{TeamOpponent|LOS}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Lair
+        |t1map2=Chalet|t2map2=Clubhouse
+        |t1map3=Nighthaven Labs|t2map3=Fortress
+        |t1map4=Consulate|t2map4=Bank
+        |decider=Border
+    }}
+    |map1={{Map|map=Border|finished=true
+        |bantype=siegeX
+        |t1ban1=Ying|t1ban2=Blitz|t1ban3=Solid Snake|t1ban4=Mira|t1ban5=Goyo|t1ban6=
+        |t2ban1=Azami|t2ban2=Mira|t2ban3=Ela|t2ban4=Grim|t2ban5=Ying|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=1|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M8={{Match
+    |date=2026-05-10 - 13:30 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8409|siegegg=3515
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=Guardz
+    |opponent1={{TeamOpponent|Furia}}
+    |opponent2={{TeamOpponent|Twisted Minds}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Nighthaven Labs|t2map1=Bank
+        |t1map2=Clubhouse|t2map2=Lair
+        |t1map3=Kafe Dostoyevsky|t2map3=Chalet
+        |t1map4=Consulate|t2map4=Border
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Bandit|t1ban3=Azami|t1ban4=Deimos|t1ban5=Montagne|t1ban6=Dokkaebi
+        |t2ban1=Montagne|t2ban2=Solid Snake|t2ban3=Blitz|t2ban4=Kaid|t2ban5=Mira|t2ban6=Goyo
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=2|t1def=1|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+{{box|padding=0.5em|break}}
+
+===={{HiddenSort|Round 2 - High}}====
+{{Matchlist|id=Sx0WNNmuIk|title=Round 2|matchsection=Round 2
+|M1={{Match|dateheader=true
+    |date=2026-05-10 - 15:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8415|siegegg=3525
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Stompn
+    |opponent1={{TeamOpponent|ENTERPRISE Esports}}
+    |opponent2={{TeamOpponent|G2 Esports}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Lair|t2map1=Chalet
+        |t1map2=Border|t2map2=Fortress
+        |t1map3=Consulate|t2map3=Nighthaven Labs
+        |t1map4=Kafe Dostoyevsky|t2map4=Bank
+        |decider=Clubhouse
+    }}
+    |map1={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Bandit|t1ban3=Azami|t1ban4=Thermite|t1ban5=Ace|t1ban6=Solid Snake
+        |t2ban1=Grim|t2ban2=Thermite|t2ban3=Capitao|t2ban4=Bandit|t2ban5=Kaid|t2ban6=Mira
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=1|t1def=2|t1otatk=|t1otdef=
+        |t2atk=2|t2def=5|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-10 - 16:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8417|siegegg=3527
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Cyber
+    |opponent1={{TeamOpponent|FaZe Clan}}
+    |opponent2={{TeamOpponent|Shopify Rebellion}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Consulate
+        |t1map2=Kafe Dostoyevsky|t2map2=Chalet
+        |t1map3=Fortress|t2map3=Clubhouse
+        |t1map4=Nighthaven Labs|t2map4=Bank
+        |decider=Lair
+    }}
+    |map1={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Deimos|t1ban2=Ace|t1ban3=Blitz|t1ban4=Kaid|t1ban5=Clash|t1ban6=Azami
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mute|t2ban4=Capitao|t2ban5=Deimos|t2ban6=Ace
+        |t1firstside=def|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=2|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-10 - 16:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8414|siegegg=3524
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Hashom
+    |opponent1={{TeamOpponent|Twisted Minds}}
+    |opponent2={{TeamOpponent|Weibo Gaming}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Consulate|t2map1=Fortress
+        |t1map2=Chalet|t2map2=Clubhouse
+        |t1map3=Kafe Dostoyevsky|t2map3=Border
+        |t1map4=Lair|t2map4=Bank
+        |decider=Nighthaven Labs
+    }}
+    |map1={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Mira|t1ban3=Thorn|t1ban4=Montagne|t1ban5=Grim|t1ban6=Blackbeard
+        |t2ban1=Thermite|t2ban2=Ace|t2ban3=Grim|t2ban4=Kaid|t2ban5=Bandit|t2ban6=Warden
+        |t1firstside=atk|t1firstsideot=def
+        |t1atk=2|t1def=4|t1otatk=0|t1otdef=2
+        |t2atk=2|t2def=4|t2otatk=0|t2otdef=1
+    }}
+    }}
+|M4={{Match
+    |date=2026-05-10 - 18:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8416|siegegg=3526
+    |caster1=Crow|caster2=Fellow
+    |mvp=bbySharKK
+    |opponent1={{TeamOpponent|LOS}}
+    |opponent2={{TeamOpponent|Wildcard}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Fortress|t2map1=Border
+        |t1map2=Clubhouse|t2map2=Nighthaven Labs
+        |t1map3=Chalet|t2map3=Kafe Dostoyevsky
+        |t1map4=Consulate|t2map4=Lair
+        |decider=Bank
+    }}
+    |map1={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Valkyrie|t1ban3=Azami|t1ban4=Ace|t1ban5=Capitao|t1ban6=
+        |t2ban1=Dokkaebi|t2ban2=Montagne|t2ban3=Glaz|t2ban4=Kaid|t2ban5=Goyo|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=2|t1def=0|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+
+===={{HiddenSort|Round 2 - Low}}====
+{{Matchlist|id=tToIiETm3v|title=Round 2|matchsection=Round 2
+|M1={{Match|dateheader=true
+    |date=2026-05-10 - 15:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8420|siegegg=3530
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Nuers
+    |opponent1={{TeamOpponent|DarkZero}}
+    |opponent2={{TeamOpponent|NIP}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Fortress|t2map1=Chalet
+        |t1map2=Lair|t2map2=Nighthaven Labs
+        |t1map3=Border|t2map3=Clubhouse
+        |t1map4=Kafe Dostoyevsky|t2map4=Consulate
+        |decider=Bank
+    }}
+    |map1={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Ace|t1ban3=Ying|t1ban4=Kaid|t1ban5=Valkyrie|t1ban6=Warden
+        |t2ban1=Kaid|t2ban2=Mira|t2ban3=Warden|t2ban4=Ace|t2ban5=Hibana|t2ban6=Ying
+        |t1firstside=def|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=0|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-10 - 17:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8418|siegegg=3528
+    |caster1=Crow|caster2=Fellow
+    |mvp=Dan
+    |opponent1={{TeamOpponent|Five Fears}}
+    |opponent2={{TeamOpponent|Virtus.pro}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Consulate|t2map1=Fortress
+        |t1map2=Clubhouse|t2map2=Border
+        |t1map3=Kafe Dostoyevsky|t2map3=Chalet
+        |t1map4=Bank|t2map4=Nighthaven Labs
+        |decider=Lair
+    }}
+    |map1={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Mira|t1ban3=Tachanka|t1ban4=Montagne|t1ban5=Glaz|t1ban6=Ace
+        |t2ban1=Montagne|t2ban2=Grim|t2ban3=Ying|t2ban4=Bandit|t2ban5=Kaid|t2ban6=Azami
+        |t1firstside=atk|t1firstsideot=atk
+        |t1atk=3|t1def=3|t1otatk=0|t1otdef=0
+        |t2atk=3|t2def=3|t2otatk=1|t2otdef=1
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-10 - 17:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8421|siegegg=3531
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=LikEfac
+    |opponent1={{TeamOpponent|CAG Osaka}}
+    |opponent2={{TeamOpponent|Team Falcons}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Chalet|t2map1=Fortress
+        |t1map2=Lair|t2map2=Bank
+        |t1map3=Border|t2map3=Consulate
+        |t1map4=Kafe Dostoyevsky|t2map4=Nighthaven Labs
+        |decider=Clubhouse
+    }}
+    |map1={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Mira|t1ban3=Goyo|t1ban4=Montagne|t1ban5=Grim|t1ban6=Capitao
+        |t2ban1=Ying|t2ban2=Capitao|t2ban3=Montagne|t2ban4=Kaid|t2ban5=Mira|t2ban6=Bandit
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=3|t1def=1|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M4={{Match
+    |date=2026-05-10 - 18:15 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8419|siegegg=3529
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=YaZ
+    |opponent1={{TeamOpponent|All Gamers}}
+    |opponent2={{TeamOpponent|FURIA}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Lair
+        |t1map2=Border|t2map2=Nighthaven Labs
+        |t1map3=Chalet|t2map3=Consulate
+        |t1map4=Bank|t2map4=Clubhouse
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Blitz|t1ban3=Blackbeard|t1ban4=Goyo|t1ban5=Smoke|t1ban6=Ela
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Warden|t2ban4=Montagne|t2ban5=Grim|t2ban6=Ying
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=5|t1otatk=|t1otdef=
+        |t2atk=1|t2def=2|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+
+
+{{box|padding=0.5em|break}}
+
+===={{HiddenSort|Round 3 - High}}====
+{{Matchlist|id=FsmdYH5qhO|title=Round 3|matchsection=Round 3
+|M1={{Match|dateheader=true
+    |date=2026-05-11 - 13:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8422|siegegg=3536
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Hashom
+    |opponent1={{TeamOpponent|G2 Esports}}
+    |opponent2={{TeamOpponent|Twisted Minds}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Nighthaven Labs|t2map1=Bank
+        |t1map2=Border|t2map2=Lair
+        |t1map3=Chalet|t2map3=Clubhouse
+        |t1map4=Fortress|t2map4=Consulate
+        |decider=Kafe Dostoyevsky
+    }}
+    |map1={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Capitao|t1ban2=Blackbeard|t1ban3=Montagne|t1ban4=Bandit|t1ban5=Kaid|t1ban6=
+        |t2ban1=Kaid|t2ban2=Mira|t2ban3=Azami|t2ban4=Montagne|t2ban5=Capitao|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Blitz|t1ban3=Blackbeard|t1ban4=Azami|t1ban5=Solis|t1ban6=Kaid
+        |t2ban1=Azami|t2ban2=Mira|t2ban3=Warden|t2ban4=Montagne|t2ban5=Grim|t2ban6=Deimos
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=5|t1otatk=|t1otdef=
+        |t2atk=1|t2def=2|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Kafe Dostoyevsky|finished=true
+        |bantype=siegeX
+        |t1ban1=Azami|t1ban2=Solis|t1ban3=Aruni|t1ban4=Montagne|t1ban5=Blackbeard|t1ban6=Blitz
+        |t2ban1=Montagne|t2ban2=Grim|t2ban3=Deimos|t2ban4=Mira|t2ban5=Solis|t2ban6=Thorn
+        |t1firstside=atk|t1firstsideot=def
+        |t1atk=3|t1def=3|t1otatk=0|t1otdef=1
+        |t2atk=3|t2def=3|t2otatk=1|t2otdef=1
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-11 - 16:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8423|siegegg=3537
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=vitaking
+    |opponent1={{TeamOpponent|FaZe Clan}}
+    |opponent2={{TeamOpponent|Wildcard}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Lair
+        |t1map2=Border|t2map2=Clubhouse
+        |t1map3=Chalet|t2map3=Consulate
+        |t1map4=Nighthaven Labs|t2map4=Bank
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Mira|t1ban2=Kaid|t1ban3=Azami|t1ban4=Montagne|t1ban5=Blitz|t1ban6=
+        |t2ban1=Montagne|t2ban2=Solid Snake|t2ban3=Blackbeard|t2ban4=Azami|t2ban5=Smoke|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=5|t1def=2|t1otatk=|t1otdef=
+        |t2atk=0|t2def=1|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Consulate|finished=true
+        |bantype=siegeX
+        |t1ban1=Grim|t1ban2=Montagne|t1ban3=Deimos|t1ban4=Kaid|t1ban5=Azami|t1ban6=Ela
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mira|t2ban4=Montagne|t2ban5=Solid Snake|t2ban6=Grim
+        |t1firstside=def|t1firstsideot=atk
+        |t1atk=2|t1def=4|t1otatk=1|t1otdef=1
+        |t2atk=2|t2def=4|t2otatk=0|t2otdef=1
+    }}
+    |map3={{Map|map=Fortress|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+
+===={{HiddenSort|Round 3 - Mid}}====
+{{Matchlist|id=1fbky7TAdp|title=Round 3|matchsection=Round 3
+|M1={{Match|dateheader=true
+    |date=2026-05-11 - 11:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8427|siegegg=3532
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Jigsaw
+    |opponent1={{TeamOpponent|ENTERPRISE Esports}}
+    |opponent2={{TeamOpponent|Team Falcons}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Fortress
+        |t1map2=Lair|t2map2=Chalet
+        |t1map3=Clubhouse|t2map3=Bank
+        |t1map4=Consulate|t2map4=Kafe Dostoyevsky
+        |decider=Nighthaven Labs
+    }}
+    |map1={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Grim|t1ban2=Ying|t1ban3=Blitz|t1ban4=Kaid|t1ban5=Bandit|t1ban6=Mira
+        |t2ban1=Bandit|t2ban2=Kaid|t2ban3=Azami|t2ban4=Grim|t2ban5=Ace|t2ban6=Thermite
+        |t1firstside=def|t1firstsideot=atk
+        |t1atk=1|t1def=5|t1otatk=1|t1otdef=1
+        |t2atk=1|t2def=5|t2otatk=0|t2otdef=0
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-11 - 11:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8425|siegegg=3533
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=p4sh4
+    |opponent1={{TeamOpponent|Virtus.pro}}
+    |opponent2={{TeamOpponent|Weibo Gaming}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Consulate
+        |t1map2=Chalet|t2map2=Clubhouse
+        |t1map3=Nighthaven Labs|t2map3=Bank
+        |t1map4=Lair|t2map4=Fortress
+        |decider=Kafe Dostoyevsky
+    }}
+    |map1={{Map|map=Kafe Dostoyevsky|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Grim|t1ban3=Ying|t1ban4=Mira|t1ban5=Clash|t1ban6=Mute
+        |t2ban1=Mira|t2ban2=Azami|t2ban3=Castle|t2ban4=Ying|t2ban5=Grim|t2ban6=Dokkaebi
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=5|t1otatk=|t1otdef=
+        |t2atk=1|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-11 - 12:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8426|siegegg=3534
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Ambi
+    |opponent1={{TeamOpponent|All Gamers}}
+    |opponent2={{TeamOpponent|Shopify Rebellion}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Consulate
+        |t1map2=Bank|t2map2=Clubhouse
+        |t1map3=Nighthaven Labs|t2map3=Lair
+        |t1map4=Chalet|t2map4=Border
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Solid Snake|t1ban3=Glaz|t1ban4=Goyo|t1ban5=Smoke|t1ban6=Tachanka
+        |t2ban1=Azami|t2ban2=Smoke|t2ban3=Goyo|t2ban4=Montagne|t2ban5=Deimos|t2ban6=Glaz
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    }}
+|M4={{Match
+    |date=2026-05-11 - 12:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8424|siegegg=3535
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=njr
+    |opponent1={{TeamOpponent|DarkZero}}
+    |opponent2={{TeamOpponent|LOS}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,ban,ban,decider
+        |t1map1=Border|t2map1=Lair
+        |t1map2=Nighthaven Labs|t2map2=Bank
+        |t1map3=Consulate|t2map3=Chalet
+        |t1map4=Fortress|t2map4=Clubhouse
+        |decider=Kafe Dostoyevsky
+    }}
+    |map1={{Map|map=Kafe Dostoyevsky|finished=true
+        |bantype=siegeX
+        |t1ban1=Castle|t1ban2=Valk|t1ban3=Aruni|t1ban4=Ying|t1ban5=Blitz|t1ban6=Montagne
+        |t2ban1=Grim|t2ban2=Ying|t2ban3=Deimos|t2ban4=Castle|t2ban5=Mira|t2ban6=Azami
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=2|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+
+===={{HiddenSort|Round 3 - Low}}====
+{{Matchlist|id=uuaIcSF1FP|title=Round 3|matchsection=Round 3
+|M1={{Match|dateheader=true
+    |date=2026-05-11 - 13:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8428|siegegg=3538
+    |caster1=Crow|caster2=Fellow
+    |mvp=Forrest
+    |opponent1={{TeamOpponent|CAG Osaka}}
+    |opponent2={{TeamOpponent|Five Fears}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Chalet|t2map1=Consulate
+        |t1map2=Kafe Dostoyevsky|t2map2=Clubhouse
+        |t1map3=Lair|t2map3=Fortress
+        |t1map4=Border|t2map4=Bank
+        |decider=Nighthaven Labs
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Blitz|t1ban2=Blackbeard|t1ban3=Solid Snake|t1ban4=Kaid|t1ban5=Clash|t1ban6=Mira
+        |t2ban1=Kaid|t2ban2=Clash|t2ban3=Azami|t2ban4=Glaz|t2ban5=Montagne|t2ban6=Ace
+        |t1firstside=def|t1firstsideot=def
+        |t1atk=3|t1def=3|t1otatk=0|t1otdef=0
+        |t2atk=3|t2def=3|t2otatk=1|t2otdef=1
+    }}
+    |map2={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Blitz|t1ban3=Deimos|t1ban4=Bandit|t1ban5=Mira|t1ban6=
+        |t2ban1=Kaid|t2ban2=Mira|t2ban3=Bandit|t2ban4=Glaz|t2ban5=Montagne|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Nighthaven Labs|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-11 - 16:00 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8429|siegegg=3539
+    |caster1=Crow|caster2=Fellow
+    |mvp=Fntzy
+    |opponent1={{TeamOpponent|FURIA}}
+    |opponent2={{TeamOpponent|NIP}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Consulate|t2map1=Chalet
+        |t1map2=Fortress|t2map2=Nighthaven Labs
+        |t1map3=Bank|t2map3=Border
+        |t1map4=Lair|t2map4=Clubhouse
+        |decider=Kafe Dostoyevsky
+    }}
+    |map1={{Map|map=Border|finished=true
+        |bantype=siegeX
+        |t1ban1=Goyo|t1ban2=Castle|t1ban3=Clash|t1ban4=Grim|t1ban5=Deimos|t1ban6=
+        |t2ban1=Ying|t2ban2=Solid Snake|t2ban3=Blitz|t2ban4=Thorn|t2ban5=Warden|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=1|t1def=0|t1otatk=|t1otdef=
+        |t2atk=2|t2def=5|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Grim|t1ban2=Montagne|t1ban3=Blackbeard|t1ban4=Kaid|t1ban5=Mira|t1ban6=Castle
+        |t2ban1=Castle|t2ban2=Mira|t2ban3=Azami|t2ban4=Ying|t2ban5=Grim|t2ban6=Ace
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Kafe Dostoyevsky|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+{{box|padding=0.5em|break}}
+
+===={{HiddenSort|Round 4 - High}}====
+{{Matchlist|id=h2kPkzw4kI|title=Round 4|matchsection=Round 4
+|M1={{Match|dateheader=true
+    |date=2026-05-12 - 11:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8430|siegegg=3540
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Doki
+    |opponent1={{TeamOpponent|G2 Esports}}
+    |opponent2={{TeamOpponent|Virtus.pro}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Consulate|t2map1=Nighthaven Labs
+        |t1map2=Kafe Dostoyevsky|t2map2=Lair
+        |t1map3=Chalet|t2map3=Bank
+        |t1map4=Clubhouse|t2map4=Fortress
+        |decider=Border
+    }}
+    |map1={{Map|map=Bank|finished=true
+        |bantype=siegeX
+        |t1ban1=Mira|t1ban2=Kaid|t1ban3=Mute|t1ban4=Grim|t1ban5=Montagne|t1ban6=Ying
+        |t2ban1=Montagne|t2ban2=Ace|t2ban3=Hibana|t2ban4=Clash|t2ban5=Mira|t2ban6=Echo
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=2|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Azami|t1ban2=Thorn|t1ban3=Clash|t1ban4=Montagne|t1ban5=Blackbeard|t1ban6=Blitz
+        |t2ban1=Grim|t2ban2=Solid Snake|t2ban3=Deimos|t2ban4=Azami|t2ban5=Mira|t2ban6=Clash
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=2|t2def=2|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Border|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Glaz|t1ban3=Blitz|t1ban4=Azami|t1ban5=Mira|t1ban6=Castle
+        |t2ban1=Azami|t2ban2=Mute|t2ban3=Mira|t2ban4=Glaz|t2ban5=Solid Snake|t2ban6=Montagne
+        |t1firstside=def|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=2|t2def=1|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-12 - 14:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8432|siegegg=3541
+    |caster1=Interro|caster2=Jesse Chick
+    |mvp=Rexen
+    |opponent1={{TeamOpponent|ENTERPRISE Esports}}
+    |opponent2={{TeamOpponent|Shopify Rebellion}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Lair|t2map1=Consulate
+        |t1map2=Border|t2map2=Chalet
+        |t1map3=Kafe Dostoyevsky|t2map3=Nighthaven Labs
+        |t1map4=Clubhouse|t2map4=Bank
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Kafe Dostoyevsky|finished=true
+        |bantype=siegeX
+        |t1ban1=Ying|t1ban2=Blitz|t1ban3=Solid Snake|t1ban4=Mira|t1ban5=Kaid|t1ban6=Aruni
+        |t2ban1=Azami|t2ban2=Castle|t2ban3=Mira|t2ban4=Montagne|t2ban5=Solid Snake|t2ban6=Dokkaebi
+        |t1firstside=def|t1firstsideot=
+        |t1atk=1|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Ying|t1ban2=Ace|t1ban3=Thermite|t1ban4=Kaid|t1ban5=Bandit|t1ban6=Mira
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mira|t2ban4=Capitao|t2ban5=Nomad|t2ban6=Ace
+        |t1firstside=def|t1firstsideot=atk
+        |t1atk=3|t1def=3|t1otatk=0|t1otdef=0
+        |t2atk=3|t2def=3|t2otatk=1|t2otdef=1
+    }}
+    |map3={{Map|map=Fortress|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-12 - 17:00 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8431|siegegg=3542
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=njr
+    |opponent1={{TeamOpponent|DarkZero}}
+    |opponent2={{TeamOpponent|Wildcard}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Fortress|t2map1=Lair
+        |t1map2=Consulate|t2map2=Bank
+        |t1map3=Clubhouse|t2map3=Nighthaven Labs
+        |t1map4=Border|t2map4=Chalet
+        |decider=Kafe Dostoyevsky
+    }}
+    |map1={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Grim|t1ban2=Ace|t1ban3=Thermite|t1ban4=Bandit|t1ban5=Kaid|t1ban6=Mira
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mira|t2ban4=Blitz|t2ban5=Solid Snake|t2ban6=Thermite
+        |t1firstside=def|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=1|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Bandit|t1ban2=Kaid|t1ban3=Mira|t1ban4=Capitao|t1ban5=Ace|t1ban6=Thermite
+        |t2ban1=Ace|t2ban2=Thermite|t2ban3=Capitao|t2ban4=Kaid|t2ban5=Bandit|t2ban6=Mira
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=0|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Kafe Dostoyevsky|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+
+===={{HiddenSort|Round 4 - Low}}====
+{{Matchlist|id=TqZWBpKOgj|title=Round 4|matchsection=Round 4
+|M1={{Match|dateheader=true
+    |date=2026-05-12 - 11:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8435|siegegg=3543
+    |caster1=AceOfPyrite|caster2=Dezachu
+    |mvp=Hovenherst
+    |opponent1={{TeamOpponent|LOS}}
+    |opponent2={{TeamOpponent|Weibo Gaming}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Lair|t2map1=Border
+        |t1map2=Chalet|t2map2=Bank
+        |t1map3=Consulate|t2map3=Nighthaven Labs
+        |t1map4=Clubhouse|t2map4=Kafe Dostoyevsky
+        |decider=Fortress
+    }}
+    |map1={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Grim|t1ban2=Capitao|t1ban3=Montagne|t1ban4=Kaid|t1ban5=Bandit|t1ban6=Mira
+        |t2ban1=Kaid|t2ban2=Mira|t2ban3=Azami|t2ban4=Montagne|t2ban5=Ace|t2ban6=Thermite
+        |t1firstside=def|t1firstsideot=atk
+        |t1atk=4|t1def=2|t1otatk=0|t1otdef=1
+        |t2atk=4|t2def=2|t2otatk=0|t2otdef=2
+    }}
+    |map2={{Map|map=Consulate|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Valkyrie|t1ban3=Thorn|t1ban4=Grim|t1ban5=Solid Snake|t1ban6=Deimos
+        |t2ban1=Ying|t2ban2=Solid Snake|t2ban3=Grim|t2ban4=Denari|t2ban5=Thorn|t2ban6=Azami
+        |t1firstside=atk|t1firstsideot=def
+        |t1atk=1|t1def=5|t1otatk=1|t1otdef=1
+        |t2atk=1|t2def=5|t2otatk=0|t2otdef=0
+    }}
+    |map3={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Ace|t1ban2=Grim|t1ban3=Solid Snake|t1ban4=Mira|t1ban5=Clash|t1ban6=
+        |t2ban1=Kaid|t2ban2=Clash|t2ban3=Bandit|t2ban4=Solid Snake|t2ban5=Ying|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=1|t1otatk=|t1otdef=
+        |t2atk=5|t2def=2|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-12 - 14:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8434|siegegg=3544
+    |caster1=Crow|caster2=Fellow
+    |mvp=Jume
+    |opponent1={{TeamOpponent|Team Falcons}}
+    |opponent2={{TeamOpponent|NIP}}
+    |mapveto={{MapVeto
+        |firstpick=2
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Border|t2map1=Chalet
+        |t1map2=Lair|t2map2=Nighthaven Labs
+        |t1map3=Clubhouse|t2map3=Consulate
+        |t1map4=Kafe Dostoyevsky|t2map4=Fortress
+        |decider=Bank
+    }}
+    |map1={{Map|map=Consulate|finished=true
+        |bantype=siegeX
+        |t1ban1=Dokkaebi|t1ban2=Solid Snake|t1ban3=Glaz|t1ban4=Valkyrie|t1ban5=Pulse|t1ban6=
+        |t2ban1=Azami|t2ban2=Goyo|t2ban3=Warden|t2ban4=Dokkaebi|t2ban5=Montagne|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=3|t1def=4|t1otatk=|t1otdef=
+        |t2atk=2|t2def=0|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Bandit|t1ban3=Mira|t1ban4=Thermite|t1ban5=Grim|t1ban6=
+        |t2ban1=Capitao|t2ban2=Ace|t2ban3=Thermite|t2ban4=Kaid|t2ban5=Bandit|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=0|t2def=2|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Bank|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-12 - 17:00 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6Bravo|youtube=Rainbow Six Esports|vod=|r6esports=8433|siegegg=3545
+    |caster1=Crow|caster2=Fellow
+    |mvp=Forrest
+    |opponent1={{TeamOpponent|All Gamers}}
+    |opponent2={{TeamOpponent|Five Fears}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Consulate
+        |t1map2=Fortress|t2map2=Clubhouse
+        |t1map3=Lair|t2map3=Chalet
+        |t1map4=Border|t2map4=Bank
+        |decider=Nighthaven Labs
+    }}
+    |map1={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Grim|t1ban3=Blackbeard|t1ban4=Bandit|t1ban5=Kaid|t1ban6=Solis
+        |t2ban1=Kaid|t2ban2=Mira|t2ban3=Bandit|t2ban4=Glaz|t2ban5=Ying|t2ban6=Montagne
+        |t1firstside=def|t1firstsideot=def
+        |t1atk=4|t1def=2|t1otatk=1|t1otdef=0
+        |t2atk=4|t2def=2|t2otatk=2|t2otdef=0
+    }}
+    |map2={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Grim|t1ban3=Solid Snake|t1ban4=Denari|t1ban5=Ela|t1ban6=Thorn
+        |t2ban1=Denari|t2ban2=Thorn|t2ban3=Kaid|t2ban4=Montagne|t2ban5=Glaz|t2ban6=Sens
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Nighthaven Labs|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+{{box|padding=0.5em|break}}
+
+===={{HiddenSort|Round 5}}====
+{{Matchlist|id=9lwB2S13bi|title=Round 5|matchsection=Round 5
+|M1={{Match|dateheader=true
+    |date=2026-05-13 - 11:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8437|siegegg=3546
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=Jume
+    |opponent1={{TeamOpponent|Team Falcons}}
+    |opponent2={{TeamOpponent|Virtus.pro}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Kafe Dostoyevsky|t2map1=Nighthaven Labs
+        |t1map2=Consulate|t2map2=Border
+        |t1map3=Chalet|t2map3=Fortress
+        |t1map4=Bank|t2map4=Clubhouse
+        |decider=Lair
+    }}
+    |map1={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Azami|t1ban2=Castle|t1ban3=Solis|t1ban4=Grim|t1ban5=Dokkaebi|t1ban6=
+        |t2ban1=Grim|t2ban2=Deimos|t2ban3=Montagne|t2ban4=Azami|t2ban5=Mira|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=0|t2def=2|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Dokkaebi|t1ban2=Glaz|t1ban3=Montagne|t1ban4=Kaid|t1ban5=Bandit|t1ban6=Warden
+        |t2ban1=Clash|t2ban2=Tachanka|t2ban3=Goyo|t2ban4=Solid Snake|t2ban5=Montagne|t2ban6=Glaz
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=4|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Lair|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Deimos|t1ban3=Blackbeard|t1ban4=Bandit|t1ban5=Kaid|t1ban6=Goyo
+        |t2ban1=Bandit|t2ban2=Kaid|t2ban3=Tachanka|t2ban4=Montagne|t2ban5=Deimos|t2ban6=Grim
+        |t1firstside=def|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=3|t2def=1|t2otatk=|t2otdef=
+    }}
+    }}
+|M2={{Match
+    |date=2026-05-13 - 14:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8438|siegegg=3547
+    |caster1=Lynnx|caster2=XRTROIKA
+    |mvp=Bapn
+    |opponent1={{TeamOpponent|ENTERPRISE Esports}}
+    |opponent2={{TeamOpponent|Weibo Gaming}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Border|t2map1=Bank
+        |t1map2=Lair|t2map2=Clubhouse
+        |t1map3=Fortress|t2map3=Nighthaven Labs
+        |t1map4=Kafe Dostoyevsky|t2map4=Consulate
+        |decider=Chalet
+    }}
+    |map1={{Map|map=Fortress|finished=true
+        |bantype=siegeX
+        |t1ban1=Clash|t1ban2=Goyo|t1ban3=Tachanka|t1ban4=Montagne|t1ban5=Solid Snake|t1ban6=
+        |t2ban1=Solid Snake|t2ban2=Montagne|t2ban3=Blitz|t2ban4=Kaid|t2ban5=Clash|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=4|t1def=3|t1otatk=|t1otdef=
+        |t2atk=0|t2def=2|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Nighthaven Labs|finished=true
+        |bantype=siegeX
+        |t1ban1=Montagne|t1ban2=Solid Snake|t1ban3=Thermite|t1ban4=Mira|t1ban5=Azami|t1ban6=Clash
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Azami|t2ban4=Thermite|t2ban5=Hibana|t2ban6=Deimos
+        |t1firstside=def|t1firstsideot=
+        |t1atk=2|t1def=5|t1otatk=|t1otdef=
+        |t2atk=1|t2def=3|t2otatk=|t2otdef=
+    }}
+    |map3={{Map|map=Chalet|finished=skip
+        |bantype=siegeX
+        |t1ban1=|t1ban2=|t1ban3=|t1ban4=|t1ban5=|t1ban6=
+        |t2ban1=|t2ban2=|t2ban3=|t2ban4=|t2ban5=|t2ban6=
+        |t1firstside=|t1firstsideot=
+        |t1atk=|t1def=|t1otatk=|t1otdef=
+        |t2atk=|t2def=|t2otatk=|t2otdef=
+    }}
+    }}
+|M3={{Match
+    |date=2026-05-13 - 17:45 {{Abbr/MDT}}|finished=true
+    |twitch=Rainbow6|youtube=Rainbow Six Esports|vod=|r6esports=8436|siegegg=3548
+    |caster1=Crow|caster2=Fellow
+    |mvp=Hotancold
+	|opponent1={{TeamOpponent|Five Fears}}
+    |opponent2={{TeamOpponent|Wildcard}}
+    |mapveto={{MapVeto
+        |firstpick=1
+        |types=ban,ban,pick,ban,decider
+        |t1map1=Consulate|t2map1=Lair
+        |t1map2=Bank|t2map2=Fortress
+        |t1map3=Chalet|t2map3=Kafe Dostoyevsky
+        |t1map4=Border|t2map4=Nighthaven Labs
+        |decider=Clubhouse
+    }}
+    |map1={{Map|map=Chalet|finished=true
+        |bantype=siegeX
+        |t1ban1=Kaid|t1ban2=Azami|t1ban3=Bandit|t1ban4=Glaz|t1ban5=Grim|t1ban6=
+        |t2ban1=Blackbeard|t2ban2=Montagne|t2ban3=Solid Snake|t2ban4=Thorn|t2ban5=Denari|t2ban6=
+        |t1firstside=atk|t1firstsideot=
+        |t1atk=5|t1def=2|t1otatk=|t1otdef=
+        |t2atk=1|t2def=1|t2otatk=|t2otdef=
+    }}
+    |map2={{Map|map=Kafe Dostoyevsky|finished=true
+        |bantype=siegeX
+        |t1ban1=Castle|t1ban2=Azami|t1ban3=Mozzie|t1ban4=Glaz|t1ban5=Dokkaebi|t1ban6=Nomad
+        |t2ban1=Blackbeard|t2ban2=Blitz|t2ban3=Ying|t2ban4=Azami|t2ban5=Castle|t2ban6=Solis
+        |t1firstside=atk|t1firstsideot=atk
+        |t1atk=2|t1def=4|t1otatk=0|t1otdef=1
+        |t2atk=2|t2def=4|t2otatk=0|t2otdef=2
+    }}
+    |map3={{Map|map=Clubhouse|finished=true
+        |bantype=siegeX
+        |t1ban1=Capitao|t1ban2=Nomad|t1ban3=Ace|t1ban4=Kaid|t1ban5=Mira|t1ban6=
+        |t2ban1=Kaid|t2ban2=Bandit|t2ban3=Mira|t2ban4=Montagne|t2ban5=Blackbeard|t2ban6=
+        |t1firstside=def|t1firstsideot=
+        |t1atk=0|t1def=2|t1otatk=|t1otdef=
+        |t2atk=4|t2def=3|t2otatk=|t2otdef=
+    }}
+    }}
+}}
+{{box|padding=0.5em|end}}
+{{Toggle bracket end}}
+
+==Statistics==
+{{TournamentStats}}
+
+==References==
+{{Reflist}}
