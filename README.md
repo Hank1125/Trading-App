@@ -87,3 +87,35 @@ cd backend
 - **One database:** both use the `metamarket` Postgres on localhost:5433 (Docker per `docker-compose.yml`, or a local Postgres with the same role/db). Clash tables are `clashroyale_*` (Django migrations) and Siege tables are `siege_*` (Alembic, `backend/migrations`).
 - **Trading and predictions** are shared across both games and live in the Django `markets` app.
 - **Dev servers:** Django on 8000. Run the Siege FastAPI health server on another port if needed (`uvicorn app.main:app --port 8100`).
+
+## Demo runbook (Kalshi-style UP/DOWN markets, virtual points)
+
+One-time setup, from the repo root:
+```sh
+.venv/bin/python manage.py migrate                                    # Django: clashroyale + markets tables
+(cd backend && ../.venv/bin/alembic upgrade head \
+   && ../.venv/bin/python -m scripts.seed_catalog \
+   && ../.venv/bin/python -m scripts.ingest_replay_history blast-2026-may)   # Siege: real May Major, map by map
+```
+
+**Clash Royale (live):** put `CLASHROYALE_API_KEY=...` in `.env`. The key must allow this machine's public IP. Then:
+```sh
+.venv/bin/python manage.py cr_hourly            # ingest top-player battles + write this hour's prices (~1-2 min)
+# keep prices moving: run it again every hour (cron: 5 * * * * <repo>/scripts/cr_hourly.sh)
+```
+
+Run the demo in three terminals:
+```sh
+.venv/bin/python manage.py markets_demo_clock --game siege --start 2026-05-10T15:00:00+00:00 --speed 60
+.venv/bin/python manage.py markets_worker       # terminal 1: opens / closes / settles windows
+.venv/bin/python manage.py runserver            # terminal 2: http://127.0.0.1:8000/markets/
+```
+
+**What to show (3 min):**
+1. `/markets/?game=siege`: the **REPLAY** badge (real May 2026 Major results at 60×, so one hourly window ≈ one real minute). Each tile shows the stat at window start vs now, UP and DOWN prices, a countdown, and **how many people are on each side**.
+2. Open **Mira ban rate**. Buy 10 UP, see the exact quote, confirm, and watch the UP price move. Retrying the same confirm doesn't charge twice.
+3. When a map lands during the window, the stat moves. At close the market settles: UP if it rose, DOWN if it fell, VOID with a refund if unchanged. The evidence is on the market page.
+4. `/markets/?game=clash_royale`: **LIVE** card-price markets. Each one opens once the hour's price snapshot is written (~:05) and settles on the next hour's snapshot.
+5. `/markets/portfolio/`: balance, positions, and the full ledger (grant, trades, payouts and refunds).
+
+Stop the replay with `markets_demo_clock --game siege --stop`. Known limits: pro Siege stats only move when maps finish, so many hourly windows void. Clash markets move hourly in real time.
