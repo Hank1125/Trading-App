@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meta Market · Clash Royale</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --panel: #ffffff; --text: #16181d; --muted: #646b78; --border: #e3e6eb;
+    --up: #13824a; --up-bg: #e3f5ea; --down: #c62f2f; --down-bg: #fbe6e6; --flat: #7a808c;
+    --accent: #3b5bdb; --warn-bg: #fff4d6; --warn: #8a5a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #101216; --panel: #181b21; --text: #e8eaee; --muted: #9aa1ad; --border: #2a2e37;
+      --up: #3ccf7f; --up-bg: #12301f; --down: #ff6b6b; --down-bg: #3a1717; --flat: #8b919c;
+      --accent: #8ea6ff; --warn-bg: #3a2e10; --warn: #f5c451;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+         font: 14px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 48px; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px; margin-bottom: 16px; }
+  h1 { font-size: 22px; margin: 0; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 12px; font-weight: 600;
+           border: 1px solid var(--border); background: var(--panel); }
+  .badge.live { color: var(--up); border-color: var(--up); }
+  .badge.mock { color: var(--warn); border-color: var(--warn); }
+  .badge.low { color: var(--warn); background: var(--warn-bg); border: none; font-weight: 500; }
+  .tabs a { color: var(--muted); margin-right: 10px; text-decoration: none; }
+  .tabs a.on { color: var(--accent); font-weight: 600; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; }
+  .stat .k { color: var(--muted); font-size: 12px; }
+  .stat .v { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .stat .v.up { color: var(--up); } .stat .v.down { color: var(--down); }
+  .warn { background: var(--warn-bg); color: var(--warn); padding: 10px 12px; border-radius: 10px; margin-bottom: 14px; }
+  .note { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+  .toolbar { margin-bottom: 10px; }
+  .toolbar input { width: 100%; max-width: 320px; padding: 8px 10px; border-radius: 8px;
+                   border: 1px solid var(--border); background: var(--panel); color: var(--text); font: inherit; }
+  .table-wrap { overflow-x: auto; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding: 8px 10px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
+  th { font-size: 12px; color: var(--muted); font-weight: 600; cursor: pointer; user-select: none;
+       position: sticky; top: 0; background: var(--panel); }
+  th:hover { color: var(--text); }
+  th.sorted::after { content: " ▾"; } th.sorted.asc::after { content: " ▴"; }
+  th.l, td.l { text-align: left; }
+  tr:last-child td { border-bottom: none; }
+  tr.up td.price { color: var(--up); } tr.down td.price { color: var(--down); }
+  .card { display: flex; align-items: center; gap: 8px; }
+  .card img { width: 28px; height: 34px; object-fit: contain; }
+  .rarity { font-size: 11px; color: var(--muted); text-transform: capitalize; }
+  .chg { display: inline-block; min-width: 92px; padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+  .chg.up { color: var(--up); background: var(--up-bg); }
+  .chg.down { color: var(--down); background: var(--down-bg); }
+  .chg.flat, .chg.none { color: var(--flat); }
+  .muted { color: var(--muted); }
+  footer { margin-top: 18px; color: var(--muted); font-size: 12px; }
+  code { font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Clash Royale card prices</h1>
+    <span class="badge {{ source }}">{{ source|upper }} data</span>
+    <span class="badge">{{ formula_version }}</span>
+    <nav class="tabs">
+      <a href="?source=live" class="{% if source == 'live' %}on{% endif %}">Live</a>
+      <a href="?source=mock" class="{% if source == 'mock' %}on{% endif %}">Mock</a>
+    </nav>
+  </header>
+
+  {% if not rows %}
+    <div class="warn">No {{ source }} snapshots yet. {% if source == "mock" %}Mock mode (synthetic demo data, for running without the live API) is not built yet.{% else %}Run <code>.venv/bin/python manage.py cr_hourly</code> to ingest live data.{% endif %}</div>
+  {% else %}
+    {% if is_stale %}
+      <div class="warn">Stale data: the latest snapshot is for {{ window_end|date:"Y-m-d H:i T" }}, more than 2 hours ago. Check that the hourly cron job is running.</div>
+    {% endif %}
+
+    <section class="stats">
+      <div class="stat"><div class="k">Snapshot (window end, {{ window_end|date:"T" }})</div><div class="v">{{ window_end|date:"M j, H:i" }}</div></div>
+      <div class="stat"><div class="k">Window</div><div class="v">{{ window_start|date:"M j H:i" }} → {{ window_end|date:"M j H:i" }}</div></div>
+      <div class="stat"><div class="k">Deck appearances (N)</div><div class="v">{{ total_appearances }}</div></div>
+      <div class="stat"><div class="k">Up / down vs {% if previous_window_end %}{{ previous_window_end|date:"H:i" }}{% else %}previous{% endif %}</div>
+        <div class="v"><span class="up" style="color:var(--up)">▲ {{ gainers }}</span> &nbsp; <span style="color:var(--down)">▼ {{ losers }}</span></div></div>
+      <div class="stat"><div class="k">Last battle poll</div><div class="v">{% if last_battles %}{{ last_battles.finished_at|date:"M j, H:i" }} · {{ last_battles.status }}{% else %}—{% endif %}</div></div>
+    </section>
+
+    <p class="note">
+      Price = usage% × (adjusted win rate ÷ 50). Usage = share of decks containing the card (sums to ~800%, since decks have 8 cards).
+      Win rate = wins ÷ (wins + losses); draws are excluded. Adjusted win rate adds 100 imaginary games at 50%, so small samples don't swing the price.
+      Population: both players in Path of Legends 1v1 battles involving a top-1000 player, rolling 7 days.
+      {% if not previous_window_end %}Changes appear after the next hourly snapshot.{% endif %}
+    </p>
+
+    <div class="toolbar"><input id="q" type="search" placeholder="Filter cards…" autocomplete="off"></div>
+
+    <div class="table-wrap">
+      <table id="t">
+        <thead>
+          <tr>
+            <th data-type="num">#</th>
+            <th class="l" data-type="text">Card</th>
+            <th data-type="num">Elixir</th>
+            <th data-type="num" class="sorted">Price</th>
+            <th data-type="num">Change</th>
+            <th data-type="num">Usage %</th>
+            <th data-type="num">Win rate %</th>
+            <th data-type="num">Adj. WR %</th>
+            <th data-type="num">Decks (n)</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in rows %}
+          <tr class="{{ r.direction }}" data-name="{{ r.snap.card.name|lower }}">
+            <td class="muted" data-v="{{ r.rank }}">{{ r.rank }}</td>
+            <td class="l" data-v="{{ r.snap.card.name }}">
+              <div class="card">
+                {% if r.snap.card.icon_url %}<img src="{{ r.snap.card.icon_url }}" alt="" loading="lazy">{% endif %}
+                <div>{{ r.snap.card.name }}<div class="rarity">{{ r.snap.card.rarity }}</div></div>
+              </div>
+            </td>
+            <td data-v="{{ r.snap.card.elixir|default_if_none:'-1' }}">{{ r.snap.card.elixir|default_if_none:"—" }}</td>
+            <td class="price" data-v="{{ r.snap.price }}"><strong>{{ r.snap.price|floatformat:2 }}</strong></td>
+            <td data-v="{{ r.change_pct|default_if_none:'0' }}">
+              {% if r.change is None %}
+                <span class="chg none">new</span>
+              {% else %}
+                <span class="chg {{ r.direction }}">
+                  {% if r.direction == 'up' %}▲ +{% elif r.direction == 'down' %}▼ {% else %}• {% endif %}{{ r.change|floatformat:2 }}
+                  {% if r.change_pct is not None %}<span style="font-weight:500">({{ r.change_pct|floatformat:2 }}%)</span>{% endif %}
+                </span>
+              {% endif %}
+            </td>
+            <td data-v="{{ r.snap.usage_pct }}">{{ r.snap.usage_pct|floatformat:2 }}</td>
+            <td data-v="{{ r.snap.win_rate|default_if_none:'-1' }}">{% if r.snap.win_rate is None %}<span class="muted">—</span>{% else %}{{ r.snap.win_rate|floatformat:2 }}{% endif %}</td>
+            <td data-v="{{ r.snap.adj_win_rate }}">{{ r.snap.adj_win_rate|floatformat:2 }}</td>
+            <td data-v="{{ r.snap.appearances }}">{{ r.snap.appearances }}{% if r.snap.is_low_sample %} <span class="badge low">low sample</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      Source: official Clash Royale API ({{ source }}). Snapshot computed {{ computed_at|date:"Y-m-d H:i T" }}.
+      {% if newest_battle %}Newest stored battle {{ newest_battle|date:"Y-m-d H:i T" }}.{% endif %}
+      Known biases: opponents may be outside the top 1000; more active players contribute more battles.
+    </footer>
+  {% endif %}
+</main>
+<script>
+(() => {
+  const table = document.getElementById('t');
+  if (!table) return;
+  const tbody = table.tBodies[0];
+  const headers = [...table.tHead.rows[0].cells];
+  headers.forEach((th, i) => th.addEventListener('click', () => {
+    const asc = th.classList.contains('sorted') ? !th.classList.contains('asc') : th.dataset.type === 'text';
+    headers.forEach(h => h.classList.remove('sorted', 'asc'));
+    th.classList.add('sorted');
+    if (asc) th.classList.add('asc');
+    const num = th.dataset.type === 'num';
+    const key = r => r.cells[i].dataset.v;
+    [...tbody.rows]
+      .sort((a, b) => {
+        const d = num ? parseFloat(key(a)) - parseFloat(key(b)) : key(a).localeCompare(key(b));
+        return asc ? d : -d;
+      })
+      .forEach(r => tbody.appendChild(r));
+  }));
+  document.getElementById('q').addEventListener('input', e => {
+    const q = e.target.value.trim().toLowerCase();
+    [...tbody.rows].forEach(r => { r.hidden = q && !r.dataset.name.includes(q); });
+  });
+})();
+</script>
+</body>
+</html>
