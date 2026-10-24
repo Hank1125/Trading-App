@@ -55,5 +55,14 @@
 <p class="warn">Experimental simulation with <strong>virtual points only</strong>. They can't be bought, withdrawn or redeemed. Siege data is pro matches from Liquipedia (CC-BY-SA). Not affiliated with Ubisoft, Supercell, Liquipedia or Kalshi.</p>
 {% block content %}{% endblock %}
 </main>
+<script>
+  // Tick every countdown once a second from its real-time deadline (survives htmx refreshes).
+  function fmt(s) { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60;
+    return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); }
+  setInterval(() => document.querySelectorAll('.cd[data-deadline]').forEach(el => {
+    const left = (Number(el.dataset.deadline) - Date.now()) / 1000;
+    el.textContent = left > 0 ? fmt(left) : 'closing…';
+  }), 1000);
+</script>
 </body>
 </html>

@@ -4,7 +4,7 @@ from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
-from markets import clock, lmsr, providers, services
+from markets import chart, clock, lmsr, providers, services
 from markets.models import Account, Market, Position, Trade
 
 
@@ -18,6 +18,9 @@ def _account(request) -> Account:
 def _card(m: Market, now) -> dict:
     """Everything a market tile shows: prices, live stat vs start, countdown, people on each side."""
     state = services.state_of(m)
+    speed = clock.mode(m.game)['speed']
+    demo_left = max(int((m.closes_at - now).total_seconds()), 0)
+    real_left = demo_left / speed
     start_pct = 100 * m.start_numerator / m.start_denominator
     cur = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, min(now, m.closes_at))
     cur_pct = cur.percent if cur else None
@@ -29,7 +32,11 @@ def _card(m: Market, now) -> dict:
         'cur_pct': cur_pct,
         'cur_sample': cur.denominator if cur else None,
         'change_pp': None if cur_pct is None else cur_pct - start_pct,
-        'seconds_left': max(int((m.closes_at - now).total_seconds()), 0),
+        'seconds_left': demo_left,
+        # Countdown in REAL seconds (replay clocks run faster than real time); the page ticks it every second.
+        'real_seconds_left': real_left,
+        'deadline_ms': int((clock.real_now().timestamp() + real_left) * 1000),
+        'speed': speed,
         'sides': services.sides_summary(m),
         'unit': '' if m.stat_kind == 'card_price' else '%',
     }
@@ -63,8 +70,11 @@ def market_list(request):
 def market_detail(request, pk: int):
     market = get_object_or_404(Market, pk=pk)
     ctx = _header(request, market.game)
+    card = _card(market, ctx['now'])
+    points = list(market.trades.order_by('created_at', 'id').values_list('created_at', 'up_price_after'))
     ctx.update(
-        card=_card(market, ctx['now']),
+        card=card,
+        chart=chart.price_chart(market.opens_at, market.closes_at, ctx['now'], points, card['up_price']),
         position=Position.objects.filter(account=ctx['account'], market=market).first(),
         trades=Trade.objects.filter(market=market)[:15],
         settlement=getattr(market, 'settlement', None),

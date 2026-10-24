@@ -11,7 +11,7 @@
     </div>
     <div class="row" style="margin-top:8px">
       <span class="price up">UP {{ c.up_price }}</span>
-      <span class="muted small">⏱ {{ c.seconds_left|countdown }}</span>
+      <span class="muted small">⏱ <span class="cd" data-deadline="{{ c.deadline_ms }}">{{ c.real_seconds_left|countdown }}</span></span>
       <span class="price down">DOWN {{ c.down_price }}</span>
     </div>
     <div class="bar"><div style="width:{{ c.up_price }}%"></div></div>

@@ -7,13 +7,26 @@
       <div><strong>{{ card.start_pct|floatformat:2 }}{{ card.unit }}</strong> →
         <strong>{% if card.cur_pct is not None %}{{ card.cur_pct|floatformat:2 }}{{ card.unit }}{% else %}—{% endif %}</strong>
         <span class="chg {% if card.change_pp > 0 %}up{% elif card.change_pp < 0 %}down{% endif %}">({{ card.change_pp|signed:2 }})</span></div>
-      <div class="muted small">{% if card.cur_sample %}{{ card.cur_sample }} maps so far · {% endif %}{% if card.m.status == 'open' %}closes in {{ card.seconds_left|countdown }}{% else %}{{ card.m.status|upper }}{% endif %}</div>
+      <div class="muted small">{% if card.cur_sample %}{{ card.cur_sample }} maps so far · {% endif %}{% if card.m.status == 'open' %}closes in <span class="cd" data-deadline="{{ card.deadline_ms }}">{{ card.real_seconds_left|countdown }}</span>{% if card.speed > 1 %} <span class="muted">(replay: {{ card.seconds_left|countdown }} of event time)</span>{% endif %}{% else %}{{ card.m.status|upper }}{% endif %}</div>
     </div>
     <span class="price down" style="font-size:20px">DOWN {{ card.down_price }}</span>
   </div>
   <div class="bar"><div style="width:{{ card.up_price }}%"></div></div>
   <div class="row small"><span><strong>{{ card.sides.up_people }}</strong> people UP · {{ card.sides.up_contracts }} contracts</span>
     <span><strong>{{ card.sides.down_people }}</strong> people DOWN · {{ card.sides.down_contracts }} contracts</span></div>
+</div>
+<div class="panel">
+  <div class="row small muted"><span><strong style="color:var(--up)">UP chance</strong> over this window</span><span>{{ chart.trades }} trade{{ chart.trades|pluralize }}</span></div>
+  <svg viewBox="0 0 {{ chart.w }} {{ chart.h }}" width="100%" role="img" aria-label="UP price over time, now {{ chart.current }}%" style="display:block;margin-top:6px">
+    {% for g in chart.grid %}<line x1="{{ chart.x_left }}" x2="{{ chart.x_right }}" y1="{{ g.y }}" y2="{{ g.y }}" stroke="var(--border)" {% if g.label == '50%' %}stroke-dasharray="4 4"{% endif %}/>
+    <text x="{{ chart.x_left|add:'-6' }}" y="{{ g.y }}" dy="4" text-anchor="end" font-size="11" fill="var(--muted)">{{ g.label }}</text>{% endfor %}
+    <path d="{{ chart.area }}" fill="var(--up)" opacity="0.10"/>
+    <path d="{{ chart.path }}" fill="none" stroke="var(--up)" stroke-width="2.5" stroke-linejoin="round"/>
+    <circle cx="{{ chart.last_x }}" cy="{{ chart.last_y }}" r="5" fill="var(--up)"/>
+    <text x="{{ chart.last_x }}" y="{{ chart.last_y }}" dx="8" dy="-8" font-size="13" font-weight="700" fill="var(--up)">{{ chart.current }}%</text>
+    <text x="{{ chart.x_left }}" y="{{ chart.label_y }}" font-size="11" fill="var(--muted)">{{ card.m.opens_at|date:"H:i" }}</text>
+    <text x="{{ chart.x_right }}" y="{{ chart.label_y }}" font-size="11" fill="var(--muted)" text-anchor="end">{{ card.m.closes_at|date:"H:i" }} UTC</text>
+  </svg>
 </div>
 {% if settlement %}
 <div class="panel"><strong>Result: <span class="{% if settlement.outcome == 'up' %}ok{% elif settlement.outcome == 'down' %}err{% endif %}">{{ settlement.outcome|upper }}</span></strong> ({{ settlement.reason }}) ·
