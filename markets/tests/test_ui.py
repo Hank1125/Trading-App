@@ -2,7 +2,7 @@ from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
 from django.db import connection
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.test.utils import CaptureQueriesContext
 from django.utils import timezone as dj_timezone
 
@@ -363,3 +363,17 @@ class BatchedTilesTests(TestCase):
 
     def test_dashboard_query_count_does_not_grow_per_tile(self):
         self.assertEqual(self._queries_with(2, '/'), self._queries_with(12, '/'))
+
+
+@override_settings(ALLOWED_HOSTS=['127.0.0.1', 'localhost'])
+class WalletTabTests(TestCase):
+    def test_wallet_tab_embeds_wallet_with_real_funds_warning(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='localhost:8000').content.decode()
+        self.assertIn('<iframe src="http://localhost:5173/"', html)
+        self.assertIn('real funds on Solana mainnet', html)
+        self.assertIn('>Wallet</a>', html)
+        self.assertNotIn('only loads when', html)
+
+    def test_wallet_tab_points_127_users_to_localhost(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
+        self.assertIn('http://localhost:8000/markets/wallet/', html)

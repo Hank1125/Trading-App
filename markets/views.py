@@ -2,6 +2,7 @@ import uuid
 from datetime import timedelta
 from fractions import Fraction
 
+from django.conf import settings
 from django.db.models import Count, Q, Sum
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
@@ -351,3 +352,19 @@ def account_page(request):
         .count(),
     )
     return render(request, 'markets/account.html', ctx)
+
+
+def wallet(request):
+    """The separate True Markets wallet app (real Solana funds), embedded as a tab. Never linked to market stakes.
+
+    Its dev server only answers on `localhost`, so this site must be opened via localhost too: then both share a
+    site and the wallet's SameSite=Lax login cookie works inside the iframe.
+    """
+    ctx = _header(request)
+    host, _, port = request.get_host().partition(':')
+    ctx.update(
+        wallet_url=settings.WALLET_URL,
+        wrong_host=host != 'localhost',
+        localhost_url=f"http://localhost{':' + port if port else ''}{request.get_full_path()}",
+    )
+    return render(request, 'markets/wallet.html', ctx)

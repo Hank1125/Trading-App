@@ -87,6 +87,7 @@
     <a href="{% url 'markets:list' %}" class="{% if here == 'list' or here == 'detail' %}on{% endif %}">Markets</a>
     <a href="{% url 'markets:portfolio' %}" class="{% if here == 'portfolio' %}on{% endif %}">Portfolio</a>
     <a href="{% url 'markets:account' %}" class="{% if here == 'account' %}on{% endif %}">Account</a>
+    <a href="{% url 'markets:wallet' %}" class="{% if here == 'wallet' %}on{% endif %}" title="True Markets wallet: real funds on Solana mainnet, separate from the markets">Wallet</a>
   </nav>
   {% endwith %}
   <a class="balance" href="{% url 'markets:account' %}">{{ account.balance_units|pts }} pts</a>
