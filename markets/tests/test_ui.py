@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from markets import chart, clock
 from markets.models import ClockState, Market
@@ -43,3 +43,30 @@ class CountdownTests(TestCase):
         self.assertIn('<svg', html)
         self.assertIn('UP chance', html)
         self.assertEqual(Market.objects.count(), 1)
+
+
+class ClashDisplayTests(TestCase):
+    def test_card_price_is_shown_in_points_not_scaled_as_a_percent(self):
+        now = clock.real_now()
+        make_market(game='clash_royale', stat_kind='card_price', subject='Barbarian Barrel',
+                    scope={'source': 'live'}, formula_version='cr-price-v1',
+                    start_numerator=163413, start_denominator=5000,  # 32.6826
+                    opens_at=now - timedelta(minutes=5), closes_at=now + timedelta(minutes=55),
+                    settles_after=now + timedelta(minutes=75))  # fmt: skip
+        html = self.client.get('/markets/?game=clash_royale').content.decode()
+        self.assertIn('start 32.68 pts', html)
+        self.assertIn('meta price', html)
+        self.assertNotIn('3268', html)
+
+
+@override_settings(ALLOWED_HOSTS=['127.0.0.1', 'localhost'])
+class WalletTabTests(TestCase):
+    def test_wallet_tab_embeds_wallet_with_real_funds_warning(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='localhost:8000').content.decode()
+        self.assertIn('<iframe src="http://localhost:5173/"', html)
+        self.assertIn('real funds on Solana mainnet', html)
+        self.assertNotIn('only loads when', html)
+
+    def test_wallet_tab_points_127_users_to_localhost(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
+        self.assertIn('http://localhost:8000/markets/wallet/', html)

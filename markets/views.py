@@ -1,11 +1,15 @@
 import uuid
 
+from django.conf import settings
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
 
 from markets import chart, clock, lmsr, providers, services
 from markets.models import Account, Market, Position, Trade
+
+
+STAT_LABELS = {'operator_ban_rate': 'pro ban rate', 'map_play_rate': 'pro play rate', 'card_price': 'meta price'}
 
 
 def _account(request) -> Account:
@@ -21,9 +25,11 @@ def _card(m: Market, now) -> dict:
     speed = clock.mode(m.game)['speed']
     demo_left = max(int((m.closes_at - now).total_seconds()), 0)
     real_left = demo_left / speed
-    start_pct = 100 * m.start_numerator / m.start_denominator
+    # Rates are shown as % (x100); Clash card prices are already points.
+    scale = 1 if m.stat_kind == 'card_price' else 100
+    start_pct = scale * m.start_numerator / m.start_denominator
     cur = providers.value_at(m.game, m.stat_kind, m.subject, m.scope, min(now, m.closes_at))
-    cur_pct = cur.percent if cur else None
+    cur_pct = scale * float(cur.fraction) if cur else None
     return {
         'm': m,
         'up_price': lmsr.display_price(state, 'up'),
@@ -38,13 +44,22 @@ def _card(m: Market, now) -> dict:
         'deadline_ms': int((clock.real_now().timestamp() + real_left) * 1000),
         'speed': speed,
         'sides': services.sides_summary(m),
-        'unit': '' if m.stat_kind == 'card_price' else '%',
+        'unit': ' pts' if m.stat_kind == 'card_price' else '%',
+        'stat_label': STAT_LABELS.get(m.stat_kind, m.stat_kind),
+        'sample_label': 'battles' if m.stat_kind == 'card_price' else 'maps',
     }
 
 
 def _header(request, game: str) -> dict:
     account = _account(request)
-    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
+    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game,
+            'wallet_url': _wallet_url(request)}
+
+
+def _wallet_url(request) -> str:
+    """The wallet app's URL. Its dev server only answers on `localhost`, so browse this site via localhost too:
+    then both share a site and the wallet's SameSite=Lax login cookie works inside our page."""
+    return settings.WALLET_URL
 
 
 def market_list(request):
@@ -145,3 +160,12 @@ def portfolio(request):
         ledger=account.ledger.order_by('-created_at', '-id')[:30],
     )
     return render(request, 'markets/portfolio.html', ctx)
+
+
+def wallet(request):
+    """The separate True Markets wallet app, embedded as a tab. Real funds; never linked to market stakes."""
+    ctx = _header(request, 'siege')
+    host, _, port = request.get_host().partition(':')
+    ctx['wrong_host'] = host != 'localhost'
+    ctx['localhost_url'] = f"http://localhost{':' + port if port else ''}{request.get_full_path()}"
+    return render(request, 'markets/wallet.html', ctx)
