@@ -156,3 +156,6 @@ MARKET_FEEDS = [
     {'game': 'clash_royale', 'stat_kind': 'card_price', 'scope': {'source': os.environ.get('CR_MARKET_SOURCE', 'live')},
      'top': 8, 'windows': MARKET_WINDOWS, 'exact_time': True, 'grace_seconds': 20 * 60},
 ]
+
+# Separate True Markets wallet app (examples/apps/tensho-wallet). Real funds; never linked to market stakes.
+WALLET_URL = os.environ.get('WALLET_URL', 'http://localhost:5173/')

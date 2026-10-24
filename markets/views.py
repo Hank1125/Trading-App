@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.http import Http404, HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, render
 from django.views.decorators.http import require_POST
@@ -51,7 +52,8 @@ def _card(m: Market, now) -> dict:
 
 def _header(request, game: str) -> dict:
     account = _account(request)
-    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game}
+    return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game,
+            'wallet_url': settings.WALLET_URL}
 
 
 def market_list(request):
