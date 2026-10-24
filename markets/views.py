@@ -53,7 +53,14 @@ def _card(m: Market, now) -> dict:
 def _header(request, game: str) -> dict:
     account = _account(request)
     return {'account': account, 'clock': clock.mode(game), 'now': clock.now(game), 'game': game,
-            'wallet_url': settings.WALLET_URL}
+            'wallet_url': _wallet_url(request)}
+
+
+def _wallet_url(request) -> str:
+    """Wallet app URL on the same hostname the user is browsing, so its SameSite=Lax login cookie works
+    inside our page (localhost vs 127.0.0.1 count as different sites)."""
+    host = request.get_host().split(':')[0]
+    return settings.WALLET_URL.replace('localhost', host) if host in ('localhost', '127.0.0.1') else settings.WALLET_URL
 
 
 def market_list(request):
@@ -154,3 +161,9 @@ def portfolio(request):
         ledger=account.ledger.order_by('-created_at', '-id')[:30],
     )
     return render(request, 'markets/portfolio.html', ctx)
+
+
+def wallet(request):
+    """The separate True Markets wallet app, embedded as a tab. Real funds; never linked to market stakes."""
+    ctx = _header(request, 'siege')
+    return render(request, 'markets/wallet.html', ctx)

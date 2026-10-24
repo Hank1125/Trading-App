@@ -51,7 +51,7 @@
   <a href="{% url 'markets:portfolio' %}">Portfolio</a>
   <strong>{{ account.balance_units|pts }} pts</strong>
   <a href="{% url 'cr_prices' %}" class="small">Clash prices</a>
-  <a href="{{ wallet_url }}" class="small" target="_blank" rel="noopener" title="Separate app on True Markets. Real funds on Solana mainnet; not connected to the UP/DOWN markets">Wallet (real crypto) ↗</a>
+  <a href="{% url 'markets:wallet' %}" title="True Markets wallet: real funds on Solana mainnet, separate from the UP/DOWN markets">Wallet</a>
 </header>
 <p class="warn">Experimental simulation with <strong>virtual points only</strong>. They can't be bought, withdrawn or redeemed. Siege data is pro matches from Liquipedia (CC-BY-SA). Not affiliated with Ubisoft, Supercell, Liquipedia or Kalshi.</p>
 {% block content %}{% endblock %}

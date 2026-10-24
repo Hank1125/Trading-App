@@ -1,0 +1,12 @@
+{% extends "markets/base.html" %}
+{% block title %}Wallet{% endblock %}
+{% block content %}
+<div class="panel" style="border-color:var(--down)">
+  <strong>Real crypto wallet (True Markets).</strong>
+  Buys, sells and sends here move <strong>real funds on Solana mainnet</strong>. This wallet is separate from the
+  UP/DOWN markets, which use virtual points only. Funds here never go into market stakes.
+  <a href="{{ wallet_url }}" target="_blank" rel="noopener">Open in a new tab ↗</a>
+</div>
+<iframe src="{{ wallet_url }}" title="True Markets wallet" style="width:100%;height:78vh;border:1px solid var(--border);border-radius:12px;background:var(--panel)"></iframe>
+<p class="muted small">If the wallet shows a connection error, start it: <code>cd ~/Desktop/examples/apps/tensho-wallet && npm run dev</code></p>
+{% endblock %}

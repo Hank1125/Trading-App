@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from markets import chart, clock
 from markets.models import ClockState, Market
@@ -57,3 +57,13 @@ class ClashDisplayTests(TestCase):
         self.assertIn('start 32.68 pts', html)
         self.assertIn('meta price', html)
         self.assertNotIn('3268', html)
+
+
+@override_settings(ALLOWED_HOSTS=['127.0.0.1', 'localhost'])
+class WalletTabTests(TestCase):
+    def test_wallet_tab_embeds_wallet_on_same_hostname_with_real_funds_warning(self):
+        html = self.client.get('/markets/wallet/', HTTP_HOST='127.0.0.1:8000').content.decode()
+        self.assertIn('<iframe src="http://127.0.0.1:5173/"', html)
+        self.assertIn('real funds on Solana mainnet', html)
+        html = self.client.get('/markets/wallet/', HTTP_HOST='localhost:8000').content.decode()
+        self.assertIn('<iframe src="http://localhost:5173/"', html)
