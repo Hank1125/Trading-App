@@ -153,8 +153,25 @@ def test_non_numeric_rounds_are_reported():
     assert any("non-numeric" in p.reason for p in parse_page("P", text, NS).problems)
 
 
-def test_duplicate_match_on_a_page_is_reported_once():
+def test_editing_match_time_keeps_the_same_key():
+    _, before = _single_match_page(date="2026-11-06 - 10:00 {{Abbr/JST}}")
+    _, after = _single_match_page(date="2026-11-06 - 12:30 {{Abbr/JST}}")
+    assert parse_page("P", before, NS).matches[0].match_key == parse_page("P", after, NS).matches[0].match_key
+
+
+def test_team_name_case_does_not_change_the_key():
+    _, a = _single_match_page(opp2="{{TeamOpponent|Furia}}")
+    _, b = _single_match_page(opp2="{{TeamOpponent|FURIA}}")
+    assert parse_page("P", a, NS).matches[0].match_key == parse_page("P", b, NS).matches[0].match_key
+
+
+def test_rematch_on_the_same_page_gets_its_own_key():
     _, text = _single_match_page()
-    r = parse_page("P", text + text, NS)
-    assert len(r.matches) == 1
-    assert [p.reason for p in r.problems] == ["duplicate match on page"]
+    first, second = parse_page("P", text + text, NS).matches
+    assert first.match_key != second.match_key
+
+
+def test_same_team_spelled_differently_on_both_sides_is_rejected():
+    _, text = _single_match_page(opp2="{{TeamOpponent|a}}")
+    r = parse_page("P", text, NS)
+    assert r.matches == [] and [p.reason for p in r.problems] == ["same team on both sides"]

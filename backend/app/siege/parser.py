@@ -6,10 +6,12 @@ Catalog checks (unknown operator/map names) happen at ingest, not here.
 
 import hashlib
 import re
+from collections import Counter
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta, timezone
 from typing import Literal
 
+from app.siege.catalog import team_key
 from app.siege.wikitext import Template, clean, find_templates, first_template
 
 PARSER_VERSION = "liquipedia-r6-match-v1"
@@ -109,8 +111,13 @@ class ParseResult:
     problems: list[Problem] = field(default_factory=list)
 
 
-def match_key(namespace: str, page: str, scheduled: str, team1: str, team2: str) -> str:
-    raw = "|".join([namespace, page, scheduled, team1, team2])
+def match_key(namespace: str, page: str, team1: str, team2: str, occurrence: int) -> str:
+    """Stable identity: page + both teams (team_key) + which meeting of that pair on the page.
+
+    Deliberately excludes the date, which editors often adjust, so a time edit never creates a
+    second copy of the same match. `occurrence` separates real rematches (e.g. GSL deciders).
+    """
+    raw = "|".join([namespace, page, team_key(team1), team_key(team2), str(occurrence)])
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
@@ -211,7 +218,9 @@ def _opponent(value: str) -> tuple[str, str]:
     return t.positional[0], t.get("score").strip().upper()
 
 
-def _parse_match(t: Template, page: str, namespace: str, problems: list[Problem]) -> MatchRecord | None:
+def _parse_match(
+    t: Template, page: str, namespace: str, problems: list[Problem], meetings: Counter[tuple[str, str]]
+) -> MatchRecord | None:
     team1, score1 = _opponent(t.get("opponent1"))
     team2, score2 = _opponent(t.get("opponent2"))
     ctx = f"{page}: {team1 or '?'} vs {team2 or '?'} ({t.get('date') or 'no date'})"
@@ -219,9 +228,12 @@ def _parse_match(t: Template, page: str, namespace: str, problems: list[Problem]
         if t.get("finished").strip() == "true":
             problems.append(Problem("finished match missing an opponent", ctx))
         return None  # unscheduled bracket slots (TBD) are normal, not problems
-    if team1 == team2:
+    if team_key(team1) == team_key(team2):
         problems.append(Problem("same team on both sides", ctx))
         return None
+
+    pair = (team_key(team1), team_key(team2))
+    meetings[pair] += 1
 
     scheduled, precision, date_problem = parse_date(t.get("date"))
     if date_problem:
@@ -253,7 +265,7 @@ def _parse_match(t: Template, page: str, namespace: str, problems: list[Problem]
 
     return MatchRecord(
         page=page,
-        match_key=match_key(namespace, page, t.get("date").strip(), team1, team2),
+        match_key=match_key(namespace, page, team1, team2, meetings[pair]),
         scheduled_at=scheduled,
         date_precision=precision,
         team1=team1,
@@ -270,14 +282,9 @@ def _parse_match(t: Template, page: str, namespace: str, problems: list[Problem]
 
 def parse_page(page: str, wikitext: str, namespace: str) -> ParseResult:
     result = ParseResult()
-    seen: set[str] = set()
+    meetings: Counter[tuple[str, str]] = Counter()
     for t in find_templates(clean(wikitext), "Match"):
-        record = _parse_match(t, page, namespace, result.problems)
-        if record is None:
-            continue
-        if record.match_key in seen:
-            result.problems.append(Problem("duplicate match on page", f"{record.team1} vs {record.team2}"))
-            continue
-        seen.add(record.match_key)
-        result.matches.append(record)
+        record = _parse_match(t, page, namespace, result.problems, meetings)
+        if record is not None:
+            result.matches.append(record)
     return result

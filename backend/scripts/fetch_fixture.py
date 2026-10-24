@@ -1,10 +1,13 @@
 """One-time download of an event's Liquipedia wikitext for the replay demo.
 
-Usage: python -m scripts.fetch_fixture blast-2026-may "BLAST Major/2026/May" "BLAST Major/2026/May/Phase 2"
+Usage: python -m scripts.fetch_fixture <slug> <page title>...
+  e.g. blast-2026-may "BLAST Major/2026/May" "BLAST Major/2026/May/Phase 2"
+       catalog "Portal:Operators" "Portal:Maps"
 """
 
 import hashlib
 import json
+import re
 import sys
 from datetime import UTC, datetime
 from pathlib import Path
@@ -22,7 +25,7 @@ def main(slug: str, titles: list[str]) -> None:
     try:
         for title in titles:
             page = client.get_page(title)
-            filename = title.replace("/", "__").replace(" ", "_") + ".wikitext"
+            filename = re.sub(r"[^A-Za-z0-9._-]", "_", title.replace("/", "__")) + ".wikitext"
             (out_dir / filename).write_text(page.wikitext, encoding="utf-8")
             pages.append(
                 {

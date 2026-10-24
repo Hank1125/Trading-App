@@ -1,0 +1,97 @@
+{{DISPLAYTITLE:Portal: Rainbow Six Siege Operators}}
+<!-- Attacking Operators -->
+<center><div class="bright-sun-text" style="border-bottom:2px ;padding:15px 0 5px 0;"><span style="float:left;margin-top:-5px;padding:0 0 0 5px;">[[File:R6S Atk outline.png|46x46px|link=]]</span><span class="gigas-text" 
+style="font-size:180%;vertical-align:middle;font-weight:500;">Attackers</span><span style="float:right;margin-top:-5px;padding:0 5px 0 0;">[[File:R6S Atk outline.png|46x46px|link=]]</span></div></center>
+<section begin="Included in Damage" />
+'''<gallery style="text-align:center;" mode="nolines" widths="107px" heights="100px">
+File:R6S Striker Operator Icon.png|link=Striker|[[Striker]]{{New Blood}}
+File:R6S Sledge_Icon_2021_allmode.png|link=Sledge|[[Sledge]]
+File:R6S Thatcher_Icon_2021_allmode.png|link=Thatcher|[[Thatcher]]
+File:R6S Ash_Icon_2021_allmode.png|link=Ash|[[Ash]]
+File:R6S Thermite_Icon_2021_allmode.png|link=Thermite|[[Thermite]]
+File:R6S Twitch_Icon_2021_allmode.png|link=Twitch|[[Twitch]]
+File:R6S Montagne_Icon_2021_allmode.png|link=Montagne|[[Montagne]]
+File:R6S Glaz_Icon_2021_allmode.png|link=Glaz|[[Glaz]]
+File:R6S Fuze_Icon_2021_allmode.png|link=Fuze|[[Fuze]]
+File:R6S Blitz_Icon_2021_allmode.png|link=Blitz|[[Blitz]]
+File:R6S IQ_Icon_2021_allmode.png|link=IQ|[[IQ]]
+File:R6S Buck_Icon_2021_allmode.png|link=Buck|[[Buck]]{{Black ice}}
+File:R6S Blackbeard_Icon_2021_allmode.png|link=Blackbeard|<span style="word-wrap:normal;">[[Blackbeard]]{{Dust line}}</span>
+File:R6S Capitão_Icon_2021_allmode.png|link=Capitão|[[Capitão]]{{Skull rain}}
+File:R6S Hibana_Icon_2021_allmode.png|link=Hibana|[[Hibana]]{{Red crow}}
+File:R6S Jackal_Icon_2021_allmode.png|link=Jackal|[[Jackal]]{{Velvet shell}}
+File:R6S Ying_Icon_2021_allmode.png|link=Ying|[[Ying]]{{Blood orchid}}
+File:R6S Zofia_Icon_2021_allmode.png|link=Zofia|[[Zofia]]{{White noise}}
+File:R6S Dokkaebi_Icon_2021_allmode.png|link=Dokkaebi|[[Dokkaebi]]{{White noise}}
+File:R6S Lion_Icon_2021_allmode.png|link=Lion|[[Lion]]{{Chimera}}
+File:R6S Finka_Icon_2021_allmode.png|link=Finka|[[Finka]]{{Chimera}}
+File:R6S Maverick_Icon_2021_allmode.png|link=Maverick|[[Maverick]]{{Grim sky}}
+File:R6S Nomad_Icon_2021_allmode.png|link=Nomad|[[Nomad]]{{wind bastion}}
+File:R6S Gridlock_Icon_2021_allmode.png|link=Gridlock|[[Gridlock]]{{burnt horizon}}
+File:R6S Nøkk_Icon_2021_allmode.png|link=Nøkk|[[Nøkk]]{{phantom sight}}
+File:R6S Amaru_Icon_2021_allmode.png|link=Amaru|[[Amaru]]{{Ember Rise}}
+File:R6S Kali_Icon_2021_allmode.png|link=Kali|[[Kali]]{{Shifting Tides‎}}
+File:R6S Iana_Icon_2021_allmode.png|link=Iana|[[Iana]]{{Void Edge}}
+File:R6S Ace_Icon_2021_allmode.png|link=Ace|[[Ace]]{{Steel Wave}}
+File:R6S Zero_Icon_2021_allmode.png|link=Zero|[[Zero]]{{Shadow Legacy}}
+File:R6S Flores_Icon_2021_allmode.png|link=Flores|[[Flores]]{{Crimson Heist}}
+File:R6S Osa_Icon_2021_allmode.png|link=Osa|[[Osa]]{{Crystal Guard}}
+File:R6S Sens_Icon_2022_allmode.png|link=Sens|[[Sens]]{{Vector Glare}}
+File:R6S Grim Icon 2022 allmode.png|link=Grim|[[Grim]]{{Brutal Swarm}}
+File:R6S Brava Icon 2023 allmode.png|link=Brava|[[Brava]]{{Commanding Force}}
+File:R6S Ram Icon 2022 allmode.png|link=Ram|[[Ram]]{{Heavy Mettle}}
+File:R6S_Deimos_Operator_Icon.png|link=Deimos|[[Deimos]]{{Deadly Omen}}
+File:R6S Rauora Icon 2025 allmode.png|link=Rauora|[[Rauora]]{{Prep Phase}}
+File:R6S Solid Snake Operator Icon.png|link=Solid Snake|[[Solid Snake]]{{Silent Hunt}}
+</gallery>'''
+<!-- Defending Operators -->
+<center><div class="bright-sun-text" style="border-bottom:2px ;padding:15px 0 5px 0;"><span style="float:left;margin-top:-5px;padding:0 0 0 5px;">[[File:R6S Def outline.png|46x46px|link=]]</span><span class="gigas-text" style="font-size:180%;vertical-align:middle;font-weight:500;">Defenders</span><span style="float:right;margin-top:-5px;padding:0 5px 0 0;">[[File:R6S Def outline.png|46x46px|link=]]</span></div></center>
+<section begin="Included in Damage" />
+'''<gallery style="text-align:center;" mode="nolines" widths="107px" heights="100px">
+File:R6S Sentry Operator Icon.png|link=Sentry|[[Sentry]]{{New Blood}}
+File:R6S Smoke_Icon_2021_allmode.png|link=Smoke|[[Smoke]]
+File:R6S Mute_Icon_2021_allmode.png|link=Mute|[[Mute]]
+File:R6S Castle_Icon_2021_allmode.png|link=Castle|[[Castle]]
+File:R6S Pulse_Icon_2021_allmode.png|link=Pulse|[[Pulse]]
+File:R6S Doc_Icon_2021_allmode.png|link=Doc|[[Doc]]
+File:R6S Rook_Icon_2021_allmode.png|link=Rook|[[Rook]]
+File:R6S Kapkan_Icon_2021_allmode.png|link=Kapkan|[[Kapkan]]
+File:R6S Tachanka_Icon_2021_allmode.png|link=Tachanka|[[Tachanka]]
+File:R6S_Jager_Icon_2021_allmode.png|link=Jäger|[[Jäger]]
+File:R6S Bandit_Icon_2021_allmode.png|link=Bandit|[[Bandit]]
+File:R6S Frost_Icon_2021_allmode.png|link=Frost|[[Frost]]{{Black ice}}
+File:R6S Valkyrie_Icon_2021_allmode.png|link=Valkyrie|[[Valkyrie]]{{Dust line}}
+File:R6S Caveira_Icon_2021_allmode.png|link=Caveira|[[Caveira]]{{Skull rain}}
+File:R6S Echo_Icon_2021_allmode.png|link=Echo|[[Echo]]{{Red crow}}
+File:R6S Mira_Icon_2021_allmode.png|link=Mira|[[Mira]]{{Velvet shell}}
+File:R6S Lesion_Icon_2021_allmode.png|link=Lesion|[[Lesion]]{{Blood orchid}}
+File:R6S Ela_Icon_2021_allmode.png|link=Ela|[[Ela]]{{Blood orchid}}
+File:R6S Vigil_Icon_2021_allmode.png|link=Vigil|[[Vigil]]{{White noise}}
+File:R6S Alibi_Icon_2021_allmode.png|link=Alibi|[[Alibi]]{{Para bellum}}
+File:R6S Maestro_Icon_2021_allmode.png|link=Maestro|[[Maestro]]{{Para bellum}}
+File:R6S Clash_Icon_2021_allmode.png|link=Clash|[[Clash]]{{Grim sky}}
+File:R6S Kaid_Icon_2021_allmode.png|link=Kaid|[[Kaid]]{{wind bastion}}
+File:R6S Mozzie_Icon_2021_allmode.png|link=Mozzie|[[Mozzie]]{{burnt horizon}}
+File:R6S Warden_Icon_2021_allmode.png|link=Warden (Operator)|[[Warden (Operator)|Warden]]{{phantom sight}}
+File:R6S Goyo_Icon_2021_allmode.png|link=Goyo|[[Goyo]]{{Ember Rise}}
+File:R6S Wamai_Icon_2021_allmode.png|link=Wamai|[[Wamai]]{{Shifting Tides‎}}
+File:R6S Oryx_Icon_2021_allmode.png|link=Oryx|[[Oryx]]{{Void Edge}}
+File:R6S Melusi_Icon_2021_allmode.png|link=Melusi|[[Melusi]]{{Steel Wave}}
+File:R6S Aruni_Icon_2021_allmode.png|link=Aruni|[[Aruni]]{{Neon Dawn}}
+File:R6S_Thunderbird_Icon_2021_allmode.png|link=Thunderbird|[[Thunderbird]]{{North Star}}
+File:R6S_Thorn_Icon_2021_allmode.png|link=Thorn|[[Thorn]]{{High Calibre}}
+File:R6S_Azami_Icon_2021_allmode.png|link=Azami|[[Azami]]{{Demon Veil}}
+File:R6S_Solis_Icon_2022_allmode.png|link=Solis|[[Solis]]{{Solar Raid}}
+File:R6S_Fenrir_Operator_Icon.png|link=Fenrir|[[Fenrir]]{{Dread Factor}}
+File:R6S Tubarao Operator Icon.png|link=Tubarao|[[Tubarao]]{{Deep Freeze}}
+File:R6S_Skopós_Icon_2024_allmode.png|link=Skopos|[[Skopós]]{{Twin Shells}}
+File:R6S_Denari_Operator_Icon.png|link=Denari|[[Denari]]{{High Stakes}}
+File:R6S Noor Icon 2026 allmode.webp|link=Noor|[[Noor]]{{Split Fire}}
+</gallery>'''
+
+<!-- Legacy Operators -->
+<center><div class="bright-sun-text" style="border-bottom:2px ;padding:15px 0 5px 0;"><span style="float:left;margin-top:-5px;padding:0 0 0 5px;">[[File:R6S Atk outline.png|46x46px|link=]][[File:R6S Def outline.png|46x46px|link=]]</span><span class="gigas-text" style="font-size:180%;vertical-align:middle;font-weight:500;">Legacy</span><span style="float:right;margin-top:-5px;padding:0 5px 0 0;">[[File:R6S Def outline.png|46x46px|link=]][[File:R6S Atk outline.png|46x46px|link=]]</span></div></center>
+'''<gallery style="text-align:center;" mode="nolines" widths="107px" heights="100px">
+File:R6S operator recruit logo.png|link=Recruit/Attack|[[Recruit/Attack|Recruit (ATK)]]
+File:R6S operator recruit logo.png|link=Recruit/Defense|[[Recruit/Defense|Recruit (DEF)]]
+</gallery>'''

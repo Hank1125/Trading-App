@@ -21,8 +21,14 @@ cp backend/.env.example backend/.env   # then set your email and a random ADMIN_
 createdb -p 5433 meta_market && createdb -p 5433 meta_market_test
 
 cd backend
-../.venv/bin/uvicorn app.main:app --reload     # http://localhost:8000/api/health
+../.venv/bin/alembic upgrade head                        # create tables
+../.venv/bin/python -m scripts.seed_catalog              # 78 operators + 28 maps (safe to re-run)
+../.venv/bin/python -m scripts.ingest_fixture blast-2026-may   # load the May 2026 Major (safe to re-run)
+../.venv/bin/uvicorn app.main:app --reload               # http://localhost:8000/api/health
 ```
+
+### Name matching
+Liquipedia match pages spell names inconsistently, so every name goes through `name_key` before matching: accents, case and punctuation are ignored (`Capitao` = `Capitão`, `FURIA` = `Furia`). On top of that there are two short, explicit alias tables in `app/siege/catalog.py`: `Valk` → Valkyrie, and `Ninjas In Pyjamas` → NIP. A match containing a name that still doesn't resolve is **quarantined whole** (`siege_quarantine`) and never counted. Liquipedia edits to a map that was already finished are applied, and the before/after is logged in `siege_correction`.
 
 ## Replay demo data
 `DATA_MODE=replay` replays the real **BLAST Major Salt Lake City 2026 (May)** on an accelerated demo clock. The wikitext is saved, unmodified, in `backend/fixtures/siege/blast-2026-may/`, together with revision IDs and checksums. Content © Liquipedia contributors, CC-BY-SA 3.0. To refresh it, run this from `backend/`:
