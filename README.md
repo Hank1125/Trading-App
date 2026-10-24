@@ -24,6 +24,13 @@ cd backend
 ../.venv/bin/uvicorn app.main:app --reload     # http://localhost:8000/api/health
 ```
 
+## Replay demo data
+`DATA_MODE=replay` replays the real **BLAST Major Salt Lake City 2026 (May)** on an accelerated demo clock. The wikitext is saved, unmodified, in `backend/fixtures/siege/blast-2026-may/`, together with revision IDs and checksums. Content © Liquipedia contributors, CC-BY-SA 3.0. To refresh it, run this from `backend/`:
+
+```sh
+../.venv/bin/python -m scripts.fetch_fixture blast-2026-may "BLAST Major/2026/May" "BLAST Major/2026/May/Phase 2"
+```
+
 ## Checks (run before every commit)
 
 ```sh

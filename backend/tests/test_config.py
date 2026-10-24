@@ -4,7 +4,7 @@ from app.config import ConfigError, load_settings
 
 VALID = dict(
     database_url="postgresql+psycopg://u@localhost:5433/db",
-    data_mode="live",
+    data_mode="replay",
     liquipedia_user_agent="TestApp/0.1 (https://example.com)",
     admin_token="x" * 32,
 )
@@ -16,7 +16,7 @@ def load(**over):
 
 def test_valid_config_loads_with_safe_defaults():
     s = load()
-    assert s.data_mode == "live"
+    assert s.data_mode == "replay"
     assert s.liquipedia_min_interval_seconds == 2.0
 
 
